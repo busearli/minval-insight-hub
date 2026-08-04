@@ -187,13 +187,21 @@ function Portal() {
 }
 
 function Overview() {
+  const { profile, user, enrollments } = useAuth();
+  const first = (profile?.name ?? user?.email?.split("@")[0] ?? "Zeynep Hanım").split(" ")[0];
+  const main = enrollments[0];
+  const rate = main ? Math.round(main.completion_rate) : 38;
+  const weeks = main?.workshops?.total_weeks ?? 8;
+
   return (
     <div className="space-y-8">
       <section className="rounded-2xl bg-ink p-8 text-ink-foreground">
         <p className="text-[11px] tracking-[0.22em] uppercase opacity-60">Katılımcı Paneli</p>
-        <h1 className="mt-3 text-3xl text-ink-foreground">Hoş Geldiniz, Zeynep Hanım 🌿</h1>
+        <h1 className="mt-3 text-3xl text-ink-foreground">Hoş Geldiniz, {first} 🌿</h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed opacity-70">
-          Bu hafta iki okuma metniniz ve bir canlı oturumunuz var. İyi çalışmalar dileriz.
+          {enrollments.length > 0
+            ? `${enrollments.length} atölyeye kayıtlısınız. Bu hafta okuma metinleriniz ve canlı oturumunuz sizi bekliyor.`
+            : "Bu hafta iki okuma metniniz ve bir canlı oturumunuz var. İyi çalışmalar dileriz."}
         </p>
       </section>
 
@@ -210,8 +218,12 @@ function Overview() {
           <div className="p-6">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
               <div className="min-w-0">
-                <h2 className="truncate text-xl text-foreground">Çağdaş Felsefe Okumaları</h2>
-                <p className="text-[12px] text-muted-foreground">Prof. Dr. Necmi Aydın</p>
+                <h2 className="truncate text-xl text-foreground">
+                  {main?.workshops?.title ?? "Çağdaş Felsefe Okumaları"}
+                </h2>
+                <p className="text-[12px] text-muted-foreground">
+                  {main?.workshops?.instructor_name ?? "Prof. Dr. Necmi Aydın"}
+                </p>
               </div>
               <span className="shrink-0 rounded-full bg-primary px-3 py-1.5 text-[11px] text-primary-foreground">
                 Bu Perşembe 20:00 · Canlı
@@ -219,15 +231,18 @@ function Overview() {
             </div>
             <div className="mt-6">
               <div className="flex items-center justify-between text-[12px] text-muted-foreground">
-                <span>İlerleme · 3 / 8 hafta</span>
-                <span>%38</span>
+                <span>
+                  İlerleme · {Math.round((rate / 100) * weeks)} / {weeks} hafta
+                </span>
+                <span>%{rate}</span>
               </div>
               <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-secondary">
-                <div className="h-full w-[38%] rounded-full bg-sage" />
+                <div className="h-full rounded-full bg-sage" style={{ width: `${rate}%` }} />
               </div>
             </div>
           </div>
         </section>
+
 
         <section className="card-soft p-6">
           <div className="flex items-center gap-2">
