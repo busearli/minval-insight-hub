@@ -14,7 +14,11 @@ import {
 } from "lucide-react";
 
 import { ViewSwitcher } from "@/components/ViewSwitcher";
+import { LiveClassroom } from "@/components/LiveClassroom";
+import { Library } from "@/components/Library";
+import { useAuth } from "@/hooks/use-auth";
 import philosophy from "@/assets/w-philosophy.jpg";
+
 
 export const Route = createFileRoute("/panel")({
   head: () => ({
@@ -38,11 +42,12 @@ export const Route = createFileRoute("/panel")({
 const navItems = [
   { label: "Genel Bakış", icon: LayoutGrid, key: "overview" as const },
   { label: "Kayıtlı Atölyelerim", icon: GraduationCap, key: "classroom" as const },
-  { label: "Canlı Oturumlar (Zoom)", icon: Radio, key: "classroom" as const },
-  { label: "Ders Notları & Okumalar", icon: BookOpen, key: "classroom" as const },
+  { label: "Canlı Yayın Odası", icon: Radio, key: "live" as const },
+  { label: "Dijital Kütüphane", icon: BookOpen, key: "library" as const },
   { label: "Soru & Tartışma Panosu", icon: MessageSquare, key: "classroom" as const },
   { label: "Sertifikalarım", icon: Award, key: "overview" as const },
 ];
+
 
 const readings = [
   { title: "Byung-Chul Han — Yorgunluk Toplumu (1. Bölüm)", size: "PDF · 1.2 MB" },
@@ -83,10 +88,18 @@ const forum = [
 ];
 
 function Portal() {
-  const [page, setPage] = useState<"overview" | "classroom">("overview");
+  const [page, setPage] = useState<"overview" | "classroom" | "live" | "library">("overview");
   const [active, setActive] = useState("Genel Bakış");
   const [tab, setTab] = useState<"okuma" | "kayit" | "forum">("okuma");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, profile, enrollments, signOut } = useAuth();
+  const initials = (profile?.name ?? user?.email ?? "MA")
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toLocaleUpperCase("tr");
+
 
   return (
     <div className="min-h-screen bg-background">
