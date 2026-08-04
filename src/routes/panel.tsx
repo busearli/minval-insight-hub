@@ -120,8 +120,9 @@ function Portal() {
               <ViewSwitcher />
             </div>
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent text-xs text-accent-foreground">
-              ZA
+              {initials}
             </div>
+
           </div>
         </div>
       </header>
@@ -157,13 +158,29 @@ function Portal() {
           <div className="mt-6 rounded-xl bg-card p-4">
             <p className="eyebrow">Dönem</p>
             <p className="mt-2 font-serif text-lg text-foreground">Güz 2026</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">2 aktif atölye · 1 sertifika</p>
+            <p className="mt-1 text-[12px] text-muted-foreground">
+              {enrollments.length > 0
+                ? `${enrollments.length} kayıtlı atölye`
+                : "Henüz kayıtlı atölyeniz yok"}
+            </p>
+            {user && (
+              <button
+                onClick={() => void signOut()}
+                className="mt-4 w-full rounded-full border border-border px-3 py-2 text-[12px] text-muted-foreground hover:bg-secondary"
+              >
+                Çıkış yap
+              </button>
+            )}
           </div>
         </aside>
 
         <main className="min-w-0 flex-1 px-5 py-8">
-          {page === "overview" ? <Overview /> : <Classroom tab={tab} setTab={setTab} />}
+          {page === "overview" && <Overview />}
+          {page === "classroom" && <Classroom tab={tab} setTab={setTab} />}
+          {page === "live" && <LiveClassroom />}
+          {page === "library" && <Library />}
         </main>
+
       </div>
     </div>
   );
