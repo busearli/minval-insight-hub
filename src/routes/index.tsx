@@ -427,6 +427,9 @@ function PublicSite() {
           © 2026 Minval Akademi. Tüm hakları saklıdır.
         </div>
       </footer>
+
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
     </div>
+
   );
 }
