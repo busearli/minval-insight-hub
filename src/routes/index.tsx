@@ -9,7 +9,6 @@ import {
   MapPin,
   Menu,
   Phone,
-  X,
 } from "lucide-react";
 
 import { ViewSwitcher } from "@/components/ViewSwitcher";
