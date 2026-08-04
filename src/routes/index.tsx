@@ -50,6 +50,9 @@ const navLinks = [
 function PublicSite() {
   const [filter, setFilter] = useState<string>("Tümü");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const { user, profile } = useAuth();
+
 
   const list = filter === "Tümü" ? workshops : workshops.filter((w) => w.category === filter);
 
