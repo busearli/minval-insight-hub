@@ -12,9 +12,12 @@ import {
 } from "lucide-react";
 
 import { ViewSwitcher } from "@/components/ViewSwitcher";
+import { AuthDialog } from "@/components/AuthDialog";
+import { useAuth } from "@/hooks/use-auth";
 import { categories, instructors, values, workshops } from "@/lib/minval-data";
 import heroImage from "@/assets/hero-workshop.jpg";
 import studyCorner from "@/assets/study-corner.jpg";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -80,12 +83,22 @@ function PublicSite() {
             <div className="hidden md:block">
               <ViewSwitcher />
             </div>
-            <Link
-              to="/panel"
-              className="hidden rounded-full border border-border px-4 py-2 text-[13px] text-foreground transition-colors hover:bg-secondary sm:inline-flex"
-            >
-              Katılımcı Girişi
-            </Link>
+            {user ? (
+              <Link
+                to="/panel"
+                className="hidden max-w-[10rem] truncate rounded-full border border-border px-4 py-2 text-[13px] text-foreground transition-colors hover:bg-secondary sm:inline-flex"
+              >
+                {profile?.name ? `${profile.name} · Panelim` : "Panelim"}
+              </Link>
+            ) : (
+              <button
+                onClick={() => setAuthOpen(true)}
+                className="hidden rounded-full border border-border px-4 py-2 text-[13px] text-foreground transition-colors hover:bg-secondary sm:inline-flex"
+              >
+                Katılımcı Girişi
+              </button>
+            )}
+
             <a
               href="#atolyeler"
               className="hidden rounded-full bg-primary px-4 py-2 text-[13px] text-primary-foreground transition-opacity hover:opacity-90 sm:inline-flex"
@@ -118,12 +131,25 @@ function PublicSite() {
                   {l}
                 </a>
               ))}
-              <Link
-                to="/panel"
-                className="mt-2 rounded-full bg-primary px-4 py-2 text-center text-sm text-primary-foreground"
-              >
-                Katılımcı Girişi
-              </Link>
+              {user ? (
+                <Link
+                  to="/panel"
+                  className="mt-2 rounded-full bg-primary px-4 py-2 text-center text-sm text-primary-foreground"
+                >
+                  Panelim
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setAuthOpen(true);
+                  }}
+                  className="mt-2 rounded-full bg-primary px-4 py-2 text-center text-sm text-primary-foreground"
+                >
+                  Katılımcı Girişi
+                </button>
+              )}
+
             </div>
           </div>
         )}
@@ -270,10 +296,15 @@ function PublicSite() {
                 </div>
                 <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
                   <span className="font-serif text-lg text-foreground">{w.price}</span>
-                  <button className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 px-4 py-2 text-[13px] text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
+                  <Link
+                    to="/atolye/$workshopId"
+                    params={{ workshopId: w.id }}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 px-4 py-2 text-[13px] text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                  >
                     Detay ve Kayıt <ArrowRight className="h-3.5 w-3.5" />
-                  </button>
+                  </Link>
                 </div>
+
               </div>
             </article>
           ))}

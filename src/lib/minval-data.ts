@@ -150,3 +150,158 @@ export const values = [
     text: "Sınırlı kontenjanlı atölyelerde, birbirini dinleyen ve tartışabilen bir topluluk oluşturuyoruz.",
   },
 ];
+
+export const workshopDetails: Record<
+  string,
+  {
+    objectives: string[];
+    overview: string;
+    seatsLeft: number;
+    syllabus: { week: string; title: string; text: string }[];
+    instructorBio: { background: string; publications: string[] };
+    readings: { required: string[]; recommended: string[] };
+  }
+> = {
+  "varolusçu-edebiyat": {
+    overview:
+      "Varoluşçuluk yalnızca bir felsefe akımı değil, yirminci yüzyıl edebiyatının da nefes aldığı zemindir. Bu atölyede Kafka'dan Camus'ye, Sartre'dan Oğuz Atay'a uzanan hatta bireyin anlam arayışını, saçmayı ve sorumluluğu metinlerin kendi diliyle okuyoruz. Her hafta ortak bir metin etrafında toplanıyor, kısa yazma egzersizleriyle okumayı derinleştiriyoruz.",
+    objectives: [
+      "Varoluşçu düşüncenin temel kavramlarını edebi metinler üzerinden tanımak",
+      "Yakın okuma (close reading) yöntemini pratikte uygulayabilmek",
+      "Bir metnin felsefi arka planını kendi başına çözümleyebilmek",
+      "Atölye tartışmasında kendi okumasını gerekçelendirerek savunabilmek",
+    ],
+    seatsLeft: 4,
+    syllabus: [
+      { week: "1. Hafta", title: "Kafka & Varoluş", text: "Dönüşüm ve Dava üzerinden yabancılaşmanın edebi kuruluşu." },
+      { week: "2. Hafta", title: "Camus & Yabancılaşma", text: "Yabancı ve Sisifos Söyleni: saçma karşısında duruşlar." },
+      { week: "3. Hafta", title: "Sartre & Özgürlük", text: "Bulantı ve seçim sorumluluğu; kötü niyet kavramı." },
+      { week: "4. Hafta", title: "Dostoyevski & İnanç", text: "Yeraltından Notlar ve iradenin sınırları." },
+      { week: "5. Hafta", title: "Oğuz Atay & Türkiye'de Varoluş", text: "Tutunamayanlar'da ironi, yalnızlık ve dil." },
+      { week: "6. Hafta", title: "Kapanış Atölyesi", text: "Katılımcı metinlerinin ortak okuması ve değerlendirme." },
+    ],
+    instructorBio: {
+      background:
+        "Boğaziçi Üniversitesi Karşılaştırmalı Edebiyat bölümünde doktorasını tamamladı; modern roman ve varoluşçuluk ilişkisi üzerine dersler veriyor.",
+      publications: [
+        "Saçmanın Grameri: Camus ve Roman (2019)",
+        "Tutunamayanlar'ı Yeniden Okumak (2022)",
+        "Modern Anlatıda Yabancılaşma — makale derlemesi (2024)",
+      ],
+    },
+    readings: {
+      required: ["Franz Kafka — Dönüşüm", "Albert Camus — Yabancı", "Oğuz Atay — Tutunamayanlar (seçkiler)"],
+      recommended: ["Jean-Paul Sartre — Bulantı", "Simone de Beauvoir — Belirsizliğin Ahlakı"],
+    },
+  },
+};
+
+export const defaultWorkshopDetail = {
+  overview:
+    "Bu atölye, konuyu haftalık ortak okumalar ve canlı tartışma oturumlarıyla derinlemesine ele alır. Her oturum öncesinde paylaşılan metinler üzerinden ilerlenir; katılımcılar kendi okumalarını sunmaya teşvik edilir.",
+  objectives: [
+    "Alanın temel kavram ve tartışmalarına hâkim olmak",
+    "Birincil metinleri kendi başına çözümleyebilmek",
+    "Disiplinlerarası bağlantılar kurabilmek",
+    "Tartışmada kendi konumunu gerekçelendirebilmek",
+  ],
+  seatsLeft: 6,
+  syllabus: [
+    { week: "1. Hafta", title: "Giriş ve kavram haritası", text: "Alanın temel soruları ve ortak sözlük." },
+    { week: "2. Hafta", title: "Birincil metinler", text: "Kurucu metinlerin yakın okuması." },
+    { week: "3. Hafta", title: "Tartışmalar", text: "Karşıt yorumlar ve eleştiriler." },
+    { week: "4. Hafta", title: "Kapanış", text: "Katılımcı sunumları ve genel değerlendirme." },
+  ],
+  instructorBio: {
+    background: "Alanında uzun yıllardır ders veren, Minval'de düzenli atölye yürüten bir akademisyen.",
+    publications: ["Seçilmiş makaleler ve derleme çalışmaları"],
+  },
+  readings: {
+    required: ["Haftalık ortak metin seçkisi (PDF)"],
+    recommended: ["Genişletilmiş okuma listesi (PDF)"],
+  },
+};
+
+export type LibraryResource = {
+  id: string;
+  title: string;
+  author: string;
+  meta: string;
+  category: "Haftalık PDF Metinler" | "Makaleler" | "E-Kitaplar" | "Ses Kayıtları / Podcastler";
+  tags: string[];
+};
+
+export const libraryCategories = [
+  "Tümü",
+  "Haftalık PDF Metinler",
+  "Makaleler",
+  "E-Kitaplar",
+  "Ses Kayıtları / Podcastler",
+] as const;
+
+export const libraryResources: LibraryResource[] = [
+  {
+    id: "r1",
+    title: "Yorgunluk Toplumu — 1. Bölüm Seçkisi",
+    author: "Byung-Chul Han",
+    meta: "24 sayfa · 1.2 MB",
+    category: "Haftalık PDF Metinler",
+    tags: ["#Felsefe", "#ZorunluOkuma"],
+  },
+  {
+    id: "r2",
+    title: "Panoptikizm (Hapishanenin Doğuşu'ndan)",
+    author: "Michel Foucault",
+    meta: "31 sayfa · 860 KB",
+    category: "Haftalık PDF Metinler",
+    tags: ["#Felsefe", "#Gözetim"],
+  },
+  {
+    id: "r3",
+    title: "Saçmanın Grameri: Camus ve Roman",
+    author: "Doç. Dr. Elif Karaman",
+    meta: "18 sayfa · 640 KB",
+    category: "Makaleler",
+    tags: ["#Edebiyat", "#Varoluşçuluk"],
+  },
+  {
+    id: "r4",
+    title: "Modern Sanatta Kırılma: Manet'den Duchamp'a",
+    author: "Dr. Ayşe Tunalı",
+    meta: "22 sayfa · 3.1 MB",
+    category: "Makaleler",
+    tags: ["#SanatTarihi"],
+  },
+  {
+    id: "r5",
+    title: "Psikanalize Giriş — Ders Notları Kitapçığı",
+    author: "Uzm. Psk. Mert Soydan",
+    meta: "96 sayfa · 4.7 MB",
+    category: "E-Kitaplar",
+    tags: ["#Psikoloji", "#ZorunluOkuma"],
+  },
+  {
+    id: "r6",
+    title: "Tutunamayanlar Üzerine Notlar",
+    author: "Doç. Dr. Elif Karaman",
+    meta: "120 sayfa · 5.4 MB",
+    category: "E-Kitaplar",
+    tags: ["#Edebiyat"],
+  },
+  {
+    id: "r7",
+    title: "Minval Sohbetleri #12: Etik ve Gündelik Hayat",
+    author: "Prof. Dr. Necmi Aydın",
+    meta: "48 dk · 44 MB",
+    category: "Ses Kayıtları / Podcastler",
+    tags: ["#Felsefe", "#Podcast"],
+  },
+  {
+    id: "r8",
+    title: "Minval Sohbetleri #13: Şiirde İmge",
+    author: "Yrd. Doç. Dr. Selin Peker",
+    meta: "39 dk · 36 MB",
+    category: "Ses Kayıtları / Podcastler",
+    tags: ["#Edebiyat", "#Podcast"],
+  },
+];

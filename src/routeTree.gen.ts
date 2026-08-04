@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PanelRouteImport } from './routes/panel'
+import { Route as AtolyeWorkshopIdRouteImport } from './routes/atolye.$workshopId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const PanelRoute = PanelRouteImport.update({
   path: '/panel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AtolyeWorkshopIdRoute = AtolyeWorkshopIdRouteImport.update({
+  id: '/atolye/$workshopId',
+  path: '/atolye/$workshopId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/panel': typeof PanelRoute
+  '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/panel': typeof PanelRoute
+  '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/panel': typeof PanelRoute
+  '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/panel'
+  fullPaths: '/' | '/panel' | '/atolye/$workshopId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/panel'
-  id: '__root__' | '/' | '/panel'
+  to: '/' | '/panel' | '/atolye/$workshopId'
+  id: '__root__' | '/' | '/panel' | '/atolye/$workshopId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PanelRoute: typeof PanelRoute
+  AtolyeWorkshopIdRoute: typeof AtolyeWorkshopIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,23 +75,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PanelRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/atolye/$workshopId': {
+      id: '/atolye/$workshopId'
+      path: '/atolye/$workshopId'
+      fullPath: '/atolye/$workshopId'
+      preLoaderRoute: typeof AtolyeWorkshopIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PanelRoute: PanelRoute,
+  AtolyeWorkshopIdRoute: AtolyeWorkshopIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
