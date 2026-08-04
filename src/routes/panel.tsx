@@ -14,7 +14,11 @@ import {
 } from "lucide-react";
 
 import { ViewSwitcher } from "@/components/ViewSwitcher";
+import { LiveClassroom } from "@/components/LiveClassroom";
+import { Library } from "@/components/Library";
+import { useAuth } from "@/hooks/use-auth";
 import philosophy from "@/assets/w-philosophy.jpg";
+
 
 export const Route = createFileRoute("/panel")({
   head: () => ({
@@ -38,11 +42,12 @@ export const Route = createFileRoute("/panel")({
 const navItems = [
   { label: "Genel Bakış", icon: LayoutGrid, key: "overview" as const },
   { label: "Kayıtlı Atölyelerim", icon: GraduationCap, key: "classroom" as const },
-  { label: "Canlı Oturumlar (Zoom)", icon: Radio, key: "classroom" as const },
-  { label: "Ders Notları & Okumalar", icon: BookOpen, key: "classroom" as const },
+  { label: "Canlı Yayın Odası", icon: Radio, key: "live" as const },
+  { label: "Dijital Kütüphane", icon: BookOpen, key: "library" as const },
   { label: "Soru & Tartışma Panosu", icon: MessageSquare, key: "classroom" as const },
   { label: "Sertifikalarım", icon: Award, key: "overview" as const },
 ];
+
 
 const readings = [
   { title: "Byung-Chul Han — Yorgunluk Toplumu (1. Bölüm)", size: "PDF · 1.2 MB" },
@@ -83,10 +88,18 @@ const forum = [
 ];
 
 function Portal() {
-  const [page, setPage] = useState<"overview" | "classroom">("overview");
+  const [page, setPage] = useState<"overview" | "classroom" | "live" | "library">("overview");
   const [active, setActive] = useState("Genel Bakış");
   const [tab, setTab] = useState<"okuma" | "kayit" | "forum">("okuma");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, profile, enrollments, signOut } = useAuth();
+  const initials = (profile?.name ?? user?.email ?? "MA")
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toLocaleUpperCase("tr");
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -107,8 +120,9 @@ function Portal() {
               <ViewSwitcher />
             </div>
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent text-xs text-accent-foreground">
-              ZA
+              {initials}
             </div>
+
           </div>
         </div>
       </header>
@@ -144,26 +158,50 @@ function Portal() {
           <div className="mt-6 rounded-xl bg-card p-4">
             <p className="eyebrow">Dönem</p>
             <p className="mt-2 font-serif text-lg text-foreground">Güz 2026</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">2 aktif atölye · 1 sertifika</p>
+            <p className="mt-1 text-[12px] text-muted-foreground">
+              {enrollments.length > 0
+                ? `${enrollments.length} kayıtlı atölye`
+                : "Henüz kayıtlı atölyeniz yok"}
+            </p>
+            {user && (
+              <button
+                onClick={() => void signOut()}
+                className="mt-4 w-full rounded-full border border-border px-3 py-2 text-[12px] text-muted-foreground hover:bg-secondary"
+              >
+                Çıkış yap
+              </button>
+            )}
           </div>
         </aside>
 
         <main className="min-w-0 flex-1 px-5 py-8">
-          {page === "overview" ? <Overview /> : <Classroom tab={tab} setTab={setTab} />}
+          {page === "overview" && <Overview />}
+          {page === "classroom" && <Classroom tab={tab} setTab={setTab} />}
+          {page === "live" && <LiveClassroom />}
+          {page === "library" && <Library />}
         </main>
+
       </div>
     </div>
   );
 }
 
 function Overview() {
+  const { profile, user, enrollments } = useAuth();
+  const first = (profile?.name ?? user?.email?.split("@")[0] ?? "Zeynep Hanım").split(" ")[0];
+  const main = enrollments[0];
+  const rate = main ? Math.round(main.completion_rate) : 38;
+  const weeks = main?.workshops?.total_weeks ?? 8;
+
   return (
     <div className="space-y-8">
       <section className="rounded-2xl bg-ink p-8 text-ink-foreground">
         <p className="text-[11px] tracking-[0.22em] uppercase opacity-60">Katılımcı Paneli</p>
-        <h1 className="mt-3 text-3xl text-ink-foreground">Hoş Geldiniz, Zeynep Hanım 🌿</h1>
+        <h1 className="mt-3 text-3xl text-ink-foreground">Hoş Geldiniz, {first} 🌿</h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed opacity-70">
-          Bu hafta iki okuma metniniz ve bir canlı oturumunuz var. İyi çalışmalar dileriz.
+          {enrollments.length > 0
+            ? `${enrollments.length} atölyeye kayıtlısınız. Bu hafta okuma metinleriniz ve canlı oturumunuz sizi bekliyor.`
+            : "Bu hafta iki okuma metniniz ve bir canlı oturumunuz var. İyi çalışmalar dileriz."}
         </p>
       </section>
 
@@ -180,8 +218,12 @@ function Overview() {
           <div className="p-6">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
               <div className="min-w-0">
-                <h2 className="truncate text-xl text-foreground">Çağdaş Felsefe Okumaları</h2>
-                <p className="text-[12px] text-muted-foreground">Prof. Dr. Necmi Aydın</p>
+                <h2 className="truncate text-xl text-foreground">
+                  {main?.workshops?.title ?? "Çağdaş Felsefe Okumaları"}
+                </h2>
+                <p className="text-[12px] text-muted-foreground">
+                  {main?.workshops?.instructor_name ?? "Prof. Dr. Necmi Aydın"}
+                </p>
               </div>
               <span className="shrink-0 rounded-full bg-primary px-3 py-1.5 text-[11px] text-primary-foreground">
                 Bu Perşembe 20:00 · Canlı
@@ -189,15 +231,18 @@ function Overview() {
             </div>
             <div className="mt-6">
               <div className="flex items-center justify-between text-[12px] text-muted-foreground">
-                <span>İlerleme · 3 / 8 hafta</span>
-                <span>%38</span>
+                <span>
+                  İlerleme · {Math.round((rate / 100) * weeks)} / {weeks} hafta
+                </span>
+                <span>%{rate}</span>
               </div>
               <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-secondary">
-                <div className="h-full w-[38%] rounded-full bg-sage" />
+                <div className="h-full rounded-full bg-sage" style={{ width: `${rate}%` }} />
               </div>
             </div>
           </div>
         </section>
+
 
         <section className="card-soft p-6">
           <div className="flex items-center gap-2">
