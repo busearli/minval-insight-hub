@@ -186,7 +186,81 @@ function ClassesPage() {
                 <tr key={`${c.id}-roster`} className="border-b border-border/70 bg-secondary/40">
                   <td colSpan={5} className="px-5 py-4">
                     <p className="eyebrow">{classLabel(c)} · Öğrenci Listesi</p>
+
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <Input
+                        placeholder="Yeni öğrenci ad soyad"
+                        value={newStudent[c.id] ?? ""}
+                        onChange={(e) =>
+                          setNewStudent((m) => ({ ...m, [c.id]: e.target.value }))
+                        }
+                        className="h-9 w-56"
+                      />
+                      <button
+                        onClick={() => {
+                          const name = (newStudent[c.id] ?? "").trim();
+                          if (!name) {
+                            toast.error("Öğrenci adı giriniz.");
+                            return;
+                          }
+                          saveStudent.mutate(
+                            { full_name: name, class_id: c.id, status: "aktif" },
+                            {
+                              onSuccess: () => {
+                                setNewStudent((m) => ({ ...m, [c.id]: "" }));
+                                toast.success("Öğrenci sınıfa eklendi.");
+                              },
+                              onError: () => toast.error("Öğrenci eklenemedi."),
+                            },
+                          );
+                        }}
+                        className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-[13px] text-primary-foreground"
+                      >
+                        <Plus className="h-3.5 w-3.5" /> Sınıfa Ekle
+                      </button>
+
+                      <select
+                        value={addExisting[c.id] ?? ""}
+                        onChange={(e) =>
+                          setAddExisting((m) => ({ ...m, [c.id]: e.target.value }))
+                        }
+                        className="h-9 rounded-md border border-input bg-card px-2 text-[13px] text-foreground"
+                      >
+                        <option value="">Mevcut öğrenciyi ekle…</option>
+                        {students
+                          .filter((s) => s.class_id !== c.id)
+                          .map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.full_name}
+                            </option>
+                          ))}
+                      </select>
+                      <button
+                        onClick={() => {
+                          const id = addExisting[c.id];
+                          if (!id) {
+                            toast.error("Önce öğrenci seçiniz.");
+                            return;
+                          }
+                          saveStudent.mutate(
+                            { id, class_id: c.id },
+                            {
+                              onSuccess: () => {
+                                setAddExisting((m) => ({ ...m, [c.id]: "" }));
+                                toast.success("Öğrenci sınıfa eklendi.");
+                              },
+                              onError: () => toast.error("Öğrenci eklenemedi."),
+                            },
+                          );
+                        }}
+                        className="rounded-full border border-border px-4 py-2 text-[13px] text-muted-foreground hover:text-primary"
+                      >
+                        Ekle
+                      </button>
+                    </div>
+
                     <div className="mt-3 space-y-2">
+
                       {students.filter((s) => s.class_id === c.id).length === 0 && (
                         <p className="text-sm text-muted-foreground">Bu sınıfta öğrenci yok.</p>
                       )}
