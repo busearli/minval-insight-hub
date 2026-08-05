@@ -3,7 +3,14 @@ import { useState } from "react";
 import { Check, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
-import { classLabel, useClasses, useSave, useStudents } from "@/lib/admin-api";
+import {
+  classLabel,
+  useClasses,
+  useProfiles,
+  useSave,
+  useSetProfileStatus,
+  useStudents,
+} from "@/lib/admin-api";
 import {
   applicationLabel,
   useApplications,
@@ -136,6 +143,92 @@ function ApplicationsPage() {
                 </button>
               </div>
             )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PendingMembers() {
+  const { data: profiles = [], isLoading } = useProfiles();
+  const { data: classes = [] } = useClasses();
+  const { data: students = [] } = useStudents();
+  const saveStudent = useSave("students");
+  const setStatus = useSetProfileStatus();
+  const [pick, setPick] = useState<Record<string, string>>({});
+
+  const linked = new Set(students.map((s) => s.user_id).filter(Boolean) as string[]);
+  const pending = profiles.filter(
+    (p) => p.status === "pending_assignment" && !linked.has(p.user_id),
+  );
+
+  const addToClass = async (p: (typeof profiles)[number]) => {
+    const classId = pick[p.user_id];
+    if (!classId) {
+      toast.error("Önce bir sınıf seçiniz.");
+      return;
+    }
+    try {
+      await saveStudent.mutateAsync({
+        full_name: p.name || "İsimsiz",
+        phone: p.phone ?? "",
+        class_id: classId,
+        user_id: p.user_id,
+        status: "aktif",
+        notes: p.notes ?? "",
+      });
+      await setStatus.mutateAsync({ user_id: p.user_id, status: "active" });
+      toast.success("Üye sınıfa eklendi ve paneli aktifleşti.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "İşlem başarısız");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <p className="eyebrow">Sınıf Atama</p>
+        <h1 className="mt-2 text-2xl text-foreground">Sınıf Bekleyen Üyeler</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Siteden kendi hesabını oluşturan ve henüz sınıfa atanmamış kursiyerler.
+        </p>
+      </div>
+
+      {isLoading && <p className="text-sm text-muted-foreground">Yükleniyor…</p>}
+      {!isLoading && pending.length === 0 && (
+        <p className="text-sm text-muted-foreground">Sınıf bekleyen üye bulunmuyor.</p>
+      )}
+
+      <div className="grid gap-4">
+        {pending.map((p) => (
+          <div key={p.user_id} className="card-soft border-accent/40 p-6">
+            <h3 className="text-lg text-foreground">{p.name || "İsimsiz üye"}</h3>
+            <p className="mt-1 text-[13px] text-muted-foreground">
+              {p.phone || "Telefon yok"} · {p.program_choice || "Program seçilmedi"} ·{" "}
+              {p.age_level || "Düzey belirtilmedi"}
+            </p>
+            {p.notes && <p className="mt-3 text-sm text-muted-foreground">{p.notes}</p>}
+            <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-5">
+              <select
+                value={pick[p.user_id] ?? ""}
+                onChange={(e) => setPick((s) => ({ ...s, [p.user_id]: e.target.value }))}
+                className="h-9 min-w-56 rounded-md border border-input bg-card px-3 text-sm text-foreground"
+              >
+                <option value="">Sınıf seçiniz</option>
+                {classes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {classLabel(c)}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => void addToClass(p)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[12px] text-primary-foreground"
+              >
+                <Check className="h-3.5 w-3.5" /> Sınıfa Ekle
+              </button>
+            </div>
           </div>
         ))}
       </div>
