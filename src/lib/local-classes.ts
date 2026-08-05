@@ -34,6 +34,7 @@ export function saveLocalClass(row: Record<string, unknown>): ClassRow {
     instructor_name: String(row["instructor_name"] ?? ""),
     schedule: String(row["schedule"] ?? ""),
     notes: String(row["notes"] ?? ""),
+    capacity: Number(row["capacity"] ?? 0),
     created_at: now(),
     updated_at: now(),
   };
