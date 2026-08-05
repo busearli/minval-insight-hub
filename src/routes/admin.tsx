@@ -94,7 +94,7 @@ function AdminLayout() {
     );
   }
 
-  if (!loading && !rolesLoading && user && !isStaff) {
+  if (!devAdmin && !loading && !rolesLoading && user && !isStaff) {
     return (
       <div className="grid min-h-screen place-items-center bg-background px-5">
         <div className="card-soft w-full max-w-md border-accent/40 p-9 text-center">
@@ -128,6 +128,21 @@ function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-background">
+      {devAdmin && (
+        <div className="flex flex-wrap items-center gap-3 bg-[#2e7d32] px-5 py-2 text-[12px] text-white">
+          <span className="font-medium">Geliştirici Modu (Süper Admin) Aktif</span>
+          <button
+            type="button"
+            onClick={() => {
+              disableDevAdmin();
+              void signOut();
+            }}
+            className="ml-auto rounded-full border border-white/40 px-3 py-1 transition-colors hover:bg-white/15"
+          >
+            Geliştirici Modundan Çık
+          </button>
+        </div>
+      )}
       <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-5 py-3">
           <Link to="/" className="flex items-center gap-3">
