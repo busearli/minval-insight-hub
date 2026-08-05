@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { RegistrationModal } from "@/components/RegistrationModal";
 import { whatsappUrl } from "@/lib/minval-programs";
-import { useSiteSettings } from "@/lib/site-api";
+import { mapsUrl, telUrl, useSiteSettings } from "@/lib/site-api";
 
 
 export const Route = createFileRoute("/iletisim")({
@@ -79,16 +79,23 @@ function ContactPage() {
               {settings.phone && (
                 <li className="flex gap-3">
                   <Phone className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                  <span>{settings.phone}</span>
+                  <a href={telUrl(settings.phone)} className="hover:text-primary">{settings.phone}</a>
                 </li>
               )}
               <li className="flex gap-3">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>{settings.email}</span>
+                <a href={`mailto:${settings.email}`} className="hover:text-primary">{settings.email}</a>
               </li>
               <li className="flex gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>{settings.address}</span>
+                <a
+                  href={mapsUrl(settings.address)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-primary"
+                >
+                  {settings.address}
+                </a>
               </li>
             </ul>
             <p className="mt-6 text-[13px] leading-relaxed text-muted-foreground">

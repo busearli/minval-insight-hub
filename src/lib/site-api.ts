@@ -14,16 +14,21 @@ export const applicationLabel: Record<string, string> = {
 
 export const defaultSettings: SiteSettings = {
   id: "main",
-  instagram_url: "https://instagram.com/minvalakademi",
-  whatsapp_number: "905000000000",
-  phone: "",
+  instagram_url: "https://www.instagram.com/minvalakademikahve/",
+  whatsapp_number: "905010641717",
+  phone: "+90 501 064 17 17",
   email: "merhaba@minvalakademi.com",
-  address: "Minval Kahve, İstanbul",
+  address: "1450. Sokak, ATM İş Merkezi B Blok, Kat 19, No 88, Çukurambar, Çankaya/Ankara",
   intro: "",
   pre_registration_enabled: true,
   cuz_tracking_enabled: false,
   updated_at: "",
 };
+
+export const mapsUrl = (address: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+export const telUrl = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+
 
 export function useSiteSettings() {
   const query = useQuery({

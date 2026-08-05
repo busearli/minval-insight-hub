@@ -3,7 +3,7 @@ import { Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { MinvalMark } from "@/components/MinvalMark";
 import { whatsappUrl } from "@/lib/minval-programs";
-import { useSiteSettings } from "@/lib/site-api";
+import { mapsUrl, telUrl, useSiteSettings } from "@/lib/site-api";
 
 export function SiteFooter() {
   const { settings } = useSiteSettings();
@@ -60,12 +60,27 @@ export function SiteFooter() {
             </li>
             {settings.phone && (
               <li className="flex gap-2">
-                <Phone className="mt-0.5 h-4 w-4 shrink-0" /> {settings.phone}
+                <Phone className="mt-0.5 h-4 w-4 shrink-0" />
+                <a href={telUrl(settings.phone)} className="hover:text-primary">{settings.phone}</a>
               </li>
             )}
-            <li className="flex gap-2"><Mail className="mt-0.5 h-4 w-4 shrink-0" /> {settings.email}</li>
-            <li className="flex gap-2"><MapPin className="mt-0.5 h-4 w-4 shrink-0" /> {settings.address}</li>
+            <li className="flex gap-2">
+              <Mail className="mt-0.5 h-4 w-4 shrink-0" />
+              <a href={`mailto:${settings.email}`} className="hover:text-primary">{settings.email}</a>
+            </li>
+            <li className="flex gap-2">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+              <a
+                href={mapsUrl(settings.address)}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-primary"
+              >
+                {settings.address}
+              </a>
+            </li>
           </ul>
+
         </div>
       </div>
       <div className="border-t border-border py-6 text-center text-[12px] text-muted-foreground">
