@@ -68,8 +68,9 @@ function AdminLayout() {
   const { isSuperAdmin, isAdmin, isStaff, roles, loading: rolesLoading } = useMyRoles();
   const { settings } = useSiteSettings();
   const [authOpen, setAuthOpen] = useState(false);
+  const devAdmin = useDevAdmin();
 
-  if (!loading && !user) {
+  if (!devAdmin && !loading && !user) {
     return (
       <div className="grid min-h-screen place-items-center bg-background px-5">
         <div className="card-soft w-full max-w-md border-accent/40 p-9 text-center">
