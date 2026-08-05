@@ -71,6 +71,11 @@ function ClassesPage() {
   const remove = useRemoveClass();
   const { data: students = [] } = useStudents();
   const saveStudent = useSave("students");
+  const { data: profiles = [] } = useProfiles();
+  const { data: roles = [] } = useAllRoles();
+  const { data: links = [] } = useClassInstructors();
+  const assign = useAssignInstructor();
+  const unassign = useUnassignInstructor();
   const [openRoster, setOpenRoster] = useState<string | null>(null);
   const [moveTo, setMoveTo] = useState<Record<string, string>>({});
   const [newStudent, setNewStudent] = useState<Record<string, string>>({});
@@ -81,6 +86,15 @@ function ClassesPage() {
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  /** Eğitmen rolüne sahip kullanıcılar. */
+  const instructors = profiles.filter((p) =>
+    roles.some((r) => r.user_id === p.user_id && r.role === "instructor"),
+  );
+  const instructorOf = (classId: string) =>
+    links.find((l) => l.class_id === classId) ?? null;
+  const instructorName = (userId: string) =>
+    profiles.find((p) => p.user_id === userId)?.name ?? "—";
+
   if (!isAdmin && !isInstructor) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -89,28 +103,40 @@ function ClassesPage() {
     );
   }
 
+  /** Sınıfın eğitmen bağlantısını seçilen kullanıcıya göre günceller. */
+  const syncInstructor = async (classId: string, userId: string) => {
+    const current = links.filter((l) => l.class_id === classId);
+    const keep = current.find((l) => l.user_id === userId);
+    for (const l of current) {
+      if (l.id !== keep?.id) await unassign.mutateAsync(l.id);
+    }
+    if (userId && !keep) await assign.mutateAsync({ class_id: classId, user_id: userId });
+  };
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form["name"]?.trim()) {
       toast.error("Lütfen grup adını girin.");
       return;
     }
-    const { day, start_time, end_time, ...rest } = form;
+    const { day, start_time, end_time, instructor_user_id, ...rest } = form;
     const payload: Record<string, unknown> = {
       ...rest,
       schedule: composeSchedule(day ?? "", start_time ?? "", end_time ?? ""),
       capacity: Number(form["capacity"] ?? 0) || 0,
       ...(editing ? { id: editing } : {}),
     };
+    const wasEditing = editing;
     setForm(empty);
     setEditing(null);
     save.mutate(payload, {
-      onSuccess: ({ local }) => {
-        if (local) {
-          toast.warning("Sunucuya kaydedilemedi — sınıf bu cihazda yerel olarak saklandı.");
-        } else {
-          toast.success(editing ? "Sınıf güncellendi" : "Sınıf başarıyla oluşturuldu");
+      onSuccess: async ({ id }) => {
+        try {
+          await syncInstructor(id, instructor_user_id ?? "");
+        } catch {
+          toast.error("Sınıf kaydedildi ama hoca ataması yapılamadı.");
         }
+        toast.success(wasEditing ? "Sınıf güncellendi" : "Sınıf başarıyla oluşturuldu");
       },
       onError: () => toast.error("Sınıf kaydedilemedi."),
     });
@@ -128,8 +154,10 @@ function ClassesPage() {
       ...parseSchedule(c.schedule ?? ""),
       capacity: String(c.capacity ?? 0),
       notes: c.notes,
+      instructor_user_id: instructorOf(c.id)?.user_id ?? "",
     });
   };
+
 
   return (
     <div className="space-y-6">
