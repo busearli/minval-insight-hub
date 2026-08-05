@@ -192,7 +192,7 @@ function UsersPage() {
                 </button>
               </div>
 
-              {studentRow && (
+              {studentRow && !isInstructor && (
                 <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
                   <p className="eyebrow w-full">Sınıfını Değiştir</p>
                   <select

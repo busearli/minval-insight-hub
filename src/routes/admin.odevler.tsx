@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { BookOpen, CheckCircle2, Clock, Plus, Trash2 } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronDown, Clock, Plus, Trash2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,6 +66,7 @@ function HomeworkPage() {
   };
   const [form, setForm] = useState(emptyForm);
   const [selected, setSelected] = useState<string | null>(null);
+  const [listOpen, setListOpen] = useState(true);
 
   const visibleHomework = useMemo(
     () => homework.filter((h) => classIds.has(h.class_id)),
@@ -182,18 +183,31 @@ function HomeworkPage() {
       </form>
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-        <div className="card-soft divide-y divide-border border-accent/40">
-          {visibleHomework.length === 0 && (
+        <div className="card-soft h-fit divide-y divide-border border-accent/40">
+          <button
+            onClick={() => setListOpen((o) => !o)}
+            className="flex w-full items-center justify-between px-5 py-4 text-left"
+          >
+            <span className="text-sm text-foreground">
+              Ödev Listesi{" "}
+              <span className="text-muted-foreground">({visibleHomework.length})</span>
+            </span>
+            <ChevronDown
+              className={`h-4 w-4 text-muted-foreground transition-transform ${listOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+          {listOpen && visibleHomework.length === 0 && (
             <p className="px-5 py-6 text-sm text-muted-foreground">Henüz ödev atanmadı.</p>
           )}
-          {visibleHomework.map((h) => {
+          {listOpen &&
+            visibleHomework.map((h) => {
             const c = classes.find((x) => x.id === h.class_id);
             return (
               <div
                 key={h.id}
                 className={`flex items-start gap-2 px-5 py-4 ${selected === h.id ? "bg-secondary/60" : ""}`}
               >
-                <button onClick={() => setSelected(h.id)} className="min-w-0 flex-1 text-left">
+                <button onClick={() => { setSelected(h.id); setListOpen(false); }} className="min-w-0 flex-1 text-left">
                   <div className="truncate text-sm text-foreground">{h.title}</div>
                   <div className="mt-1 truncate text-[12px] text-muted-foreground">
                     {c ? classLabel(c) : "—"} · {h.due_date ?? "tarihsiz"}
