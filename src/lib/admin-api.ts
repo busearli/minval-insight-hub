@@ -33,21 +33,10 @@ function throwIf<T>(res: { data: T | null; error: { message: string } | null }):
 
 export function useClasses() {
   const devAdmin = useDevAdmin();
-  return useQuery({
+  return useQuery<ClassRow[]>({
     queryKey: ["classes", devAdmin],
-    queryFn: async () => {
-      const local = readLocalClasses();
-      if (devAdmin) {
-        try {
-          const remote = throwIf(
-            await supabase.from("classes").select("*").order("created_at"),
-          ) as ClassRow[];
-          const ids = new Set(remote.map((r) => r.id));
-          return [...remote, ...local.filter((r) => !ids.has(r.id))];
-        } catch {
-          return local;
-        }
-      }
+    queryFn: async (): Promise<ClassRow[]> => {
+      const local: ClassRow[] = readLocalClasses();
       try {
         const remote = throwIf(
           await supabase.from("classes").select("*").order("created_at"),
@@ -55,12 +44,13 @@ export function useClasses() {
         const ids = new Set(remote.map((r) => r.id));
         return [...remote, ...local.filter((r) => !ids.has(r.id))];
       } catch (e) {
-        if (local.length) return local;
+        if (devAdmin || local.length) return local;
         throw e;
       }
     },
   });
 }
+
 
 /** Sınıf kaydı: Supabase'e yazmayı dener, başarısız olursa localStorage'a düşer. */
 export function useSaveClass() {
