@@ -32,42 +32,29 @@ function throwIf<T>(res: { data: T | null; error: { message: string } | null }):
 }
 
 export function useClasses() {
-  const devAdmin = useDevAdmin();
   return useQuery<ClassRow[]>({
-    queryKey: ["classes", devAdmin],
+    queryKey: ["classes"],
     queryFn: async (): Promise<ClassRow[]> => {
-      const local: ClassRow[] = readLocalClasses();
-      try {
-        const remote = throwIf(
-          await supabase.from("classes").select("*").order("created_at"),
-        ) as ClassRow[];
-        const ids = new Set(remote.map((r) => r.id));
-        return [...remote, ...local.filter((r) => !ids.has(r.id))];
-      } catch (e) {
-        if (devAdmin || local.length) return local;
-        throw e;
-      }
+      // Eski sürümden kalan yerel (hayalet) sınıf kayıtlarını temizle.
+      purgeLocalClasses();
+      return throwIf(
+        await supabase.from("classes").select("*").order("created_at"),
+      ) as ClassRow[];
     },
   });
 }
 
-
-/** Sınıf kaydı: Supabase'e yazmayı dener, başarısız olursa localStorage'a düşer. */
+/** Sınıf kaydı: doğrudan veritabanına yazar, hata olursa yüzeye çıkarır. */
 export function useSaveClass() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (row: Record<string, unknown>): Promise<{ local: boolean }> => {
-      try {
-        const q = supabase.from("classes");
-        const res = row["id"]
-          ? await q.update(row as never).eq("id", row["id"] as string)
-          : await q.insert(row as never);
-        if (res.error) throw new Error(res.error.message);
-        return { local: false };
-      } catch {
-        saveLocalClass(row);
-        return { local: true };
-      }
+      const q = supabase.from("classes");
+      const res = row["id"]
+        ? await q.update(row as never).eq("id", row["id"] as string)
+        : await q.insert(row as never);
+      if (res.error) throw new Error(res.error.message);
+      return { local: false };
     },
     onSuccess: () => void qc.invalidateQueries({ queryKey: ["classes"] }),
   });
@@ -77,17 +64,13 @@ export function useRemoveClass() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      removeLocalClass(id);
-      try {
-        const res = await supabase.from("classes").delete().eq("id", id);
-        if (res.error) throw new Error(res.error.message);
-      } catch {
-        /* yerel kayıt zaten silindi */
-      }
+      const res = await supabase.from("classes").delete().eq("id", id);
+      if (res.error) throw new Error(res.error.message);
     },
     onSuccess: () => void qc.invalidateQueries({ queryKey: ["classes"] }),
   });
 }
+
 
 export function useStudents() {
   return useQuery({
