@@ -17,6 +17,7 @@ import { useState } from "react";
 import { MinvalMark } from "@/components/MinvalMark";
 import { PortalDialog } from "@/components/PortalDialog";
 import { useAuth } from "@/hooks/use-auth";
+import { disableDevAdmin, useDevAdmin } from "@/lib/dev-mode";
 import { useMyRoles, roleLabel } from "@/lib/rbac";
 import { useSiteSettings } from "@/lib/site-api";
 
