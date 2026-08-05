@@ -228,7 +228,7 @@ function StudentPortalPage() {
               <div className="space-y-6">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <StatCard label="Sınıfım" value={data.className} icon={GraduationCap} />
-                  <StatCard label="Ders Saati" value={data.schedule || "—"} icon={Clock} />
+                  <StatCard label="Ders Günü & Saati" value={data.schedule || "—"} icon={Clock} />
                   <StatCard
                     label="Devam Oranım"
                     value={`%${stats.rate}`}
