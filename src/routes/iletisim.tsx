@@ -31,6 +31,9 @@ export const Route = createFileRoute("/iletisim")({
 });
 
 function ContactPage() {
+  const { settings } = useSiteSettings();
+  const [regOpen, setRegOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -41,19 +44,27 @@ function ContactPage() {
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           <div className="card-soft border-accent/40 p-8">
             <MessageCircle className="h-6 w-6 text-primary" />
-            <h2 className="mt-4 text-xl text-foreground">WhatsApp ile Kayıt</h2>
+            <h2 className="mt-4 text-xl text-foreground">Ön kayıt ve WhatsApp</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Tüm kayıtlarımız kurumsal WhatsApp hattımız üzerinden mesajla alınmaktadır. Katılmak
-              istediğiniz programı ve grubu belirterek bize yazabilirsiniz.
+              Ön kayıt formunu doldurabilir ya da kurumsal WhatsApp hattımızdan katılmak istediğiniz
+              programı belirterek bize yazabilirsiniz.
             </p>
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground"
-            >
-              <MessageCircle className="h-4 w-4" /> WhatsApp ile Kayıt Ol
-            </a>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                onClick={() => setRegOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground"
+              >
+                <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+              </button>
+              <a
+                href={whatsappUrl(settings.whatsapp_number)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm text-foreground"
+              >
+                <MessageCircle className="h-4 w-4" /> WhatsApp
+              </a>
+            </div>
           </div>
 
           <div className="card-soft border-accent/40 p-8">
@@ -61,15 +72,23 @@ function ContactPage() {
             <ul className="mt-5 space-y-4 text-sm text-muted-foreground">
               <li className="flex gap-3">
                 <Instagram className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>Instagram · @minvalakademi</span>
+                <a href={settings.instagram_url} target="_blank" rel="noreferrer" className="hover:text-primary">
+                  Instagram
+                </a>
               </li>
+              {settings.phone && (
+                <li className="flex gap-3">
+                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                  <span>{settings.phone}</span>
+                </li>
+              )}
               <li className="flex gap-3">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>merhaba@minvalakademi.com</span>
+                <span>{settings.email}</span>
               </li>
               <li className="flex gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>Minval Kahve · İstanbul</span>
+                <span>{settings.address}</span>
               </li>
             </ul>
             <p className="mt-6 text-[13px] leading-relaxed text-muted-foreground">
@@ -79,7 +98,9 @@ function ContactPage() {
           </div>
         </div>
       </main>
+      <RegistrationModal open={regOpen} onOpenChange={setRegOpen} />
       <SiteFooter />
     </div>
   );
 }
+
