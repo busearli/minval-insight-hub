@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HakkimizdaRouteImport } from './routes/hakkimizda'
+import { Route as MinvalSanatRouteImport } from './routes/minval-sanat'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as ProgramlarRouteImport } from './routes/programlar'
 import { Route as AtolyeWorkshopIdRouteImport } from './routes/atolye.$workshopId'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const HakkimizdaRoute = HakkimizdaRouteImport.update({
   id: '/hakkimizda',
   path: '/hakkimizda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinvalSanatRoute = MinvalSanatRouteImport.update({
+  id: '/minval-sanat',
+  path: '/minval-sanat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PanelRoute = PanelRouteImport.update({
@@ -44,6 +50,7 @@ const AtolyeWorkshopIdRoute = AtolyeWorkshopIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
+  '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
+  '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
+  '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
@@ -66,13 +75,25 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/hakkimizda' | '/panel' | '/programlar' | '/atolye/$workshopId'
+    | '/'
+    | '/hakkimizda'
+    | '/minval-sanat'
+    | '/panel'
+    | '/programlar'
+    | '/atolye/$workshopId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/hakkimizda' | '/panel' | '/programlar' | '/atolye/$workshopId'
+  to:
+    | '/'
+    | '/hakkimizda'
+    | '/minval-sanat'
+    | '/panel'
+    | '/programlar'
+    | '/atolye/$workshopId'
   id:
     | '__root__'
     | '/'
     | '/hakkimizda'
+    | '/minval-sanat'
     | '/panel'
     | '/programlar'
     | '/atolye/$workshopId'
@@ -81,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HakkimizdaRoute: typeof HakkimizdaRoute
+  MinvalSanatRoute: typeof MinvalSanatRoute
   PanelRoute: typeof PanelRoute
   ProgramlarRoute: typeof ProgramlarRoute
   AtolyeWorkshopIdRoute: typeof AtolyeWorkshopIdRoute
@@ -100,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/hakkimizda'
       fullPath: '/hakkimizda'
       preLoaderRoute: typeof HakkimizdaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minval-sanat': {
+      id: '/minval-sanat'
+      path: '/minval-sanat'
+      fullPath: '/minval-sanat'
+      preLoaderRoute: typeof MinvalSanatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/panel': {
@@ -129,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HakkimizdaRoute: HakkimizdaRoute,
+  MinvalSanatRoute: MinvalSanatRoute,
   PanelRoute: PanelRoute,
   ProgramlarRoute: ProgramlarRoute,
   AtolyeWorkshopIdRoute: AtolyeWorkshopIdRoute,
