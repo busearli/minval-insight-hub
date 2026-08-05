@@ -89,8 +89,10 @@ function ClassesPage() {
       toast.error("Lütfen grup adını girin.");
       return;
     }
+    const { day, start_time, end_time, ...rest } = form;
     const payload: Record<string, unknown> = {
-      ...form,
+      ...rest,
+      schedule: composeSchedule(day ?? "", start_time ?? "", end_time ?? ""),
       capacity: Number(form["capacity"] ?? 0) || 0,
       ...(editing ? { id: editing } : {}),
     };
