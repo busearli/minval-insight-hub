@@ -36,11 +36,45 @@ export const defaultSettings: SiteSettings = {
     "Formu doldurun; kontenjan durumuna göre kurumsal WhatsApp hattımızdan sizinle iletişime geçelim.",
   programs_section_enabled: true,
   schedule_section_enabled: true,
+  hero_primary_label: "Programlarımızı Keşfedin",
+  hero_secondary_label: "Ön Kayıt Ol",
+  about_eyebrow: "Hakkımızda",
+  about_heading: "",
+  about_link_label: "Daha fazlası",
+  about_section_enabled: true,
+  programs_eyebrow: "Programlarımız",
+  programs_description: "",
+  programs_button_label: "Tüm Programlar",
+  schedule_eyebrow: "Haftalık Program",
+  schedule_description: "",
+  cta_button_label: "Ön Kayıt Formu",
+  cta_section_enabled: true,
+  stats_heading: "Sayılarla Minval",
+  stats_section_enabled: false,
+  testimonials_heading: "Katılımcılarımız ne diyor?",
+  testimonials_section_enabled: false,
+  faq_heading: "Sıkça Sorulan Sorular",
+  faq_section_enabled: false,
+  principles_json: [],
+  stats_json: [],
+  testimonials_json: [],
+  faq_json: [],
 };
+
+export type PrincipleItem = { title: string; text: string };
+export type StatItem = { value: string; label: string };
+export type TestimonialItem = { name: string; role: string; text: string };
+export type FaqItem = { question: string; answer: string };
+
+/** jsonb sütunlarını güvenli biçimde listeye çevirir. */
+export function asList<T>(value: unknown): T[] {
+  return Array.isArray(value) ? (value as T[]) : [];
+}
 
 export const mapsUrl = (address: string) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 export const telUrl = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+
 
 
 export function useSiteSettings() {
