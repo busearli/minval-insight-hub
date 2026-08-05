@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          body: string
+          class_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          class_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          class_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcements_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attendance_records: {
         Row: {
           class_id: string
@@ -90,6 +128,7 @@ export type Database = {
       }
       classes: {
         Row: {
+          capacity: number
           created_at: string
           id: string
           instructor_name: string
@@ -101,6 +140,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          capacity?: number
           created_at?: string
           id?: string
           instructor_name?: string
@@ -112,6 +152,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          capacity?: number
           created_at?: string
           id?: string
           instructor_name?: string
@@ -243,6 +284,8 @@ export type Database = {
           id: string
           status: string
           student_id: string
+          submission_text: string
+          submitted_at: string | null
           updated_at: string
         }
         Insert: {
@@ -252,6 +295,8 @@ export type Database = {
           id?: string
           status?: string
           student_id: string
+          submission_text?: string
+          submitted_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -261,6 +306,8 @@ export type Database = {
           id?: string
           status?: string
           student_id?: string
+          submission_text?: string
+          submitted_at?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -324,6 +371,7 @@ export type Database = {
           age_level: string
           assigned_class_id: string | null
           created_at: string
+          email: string
           full_name: string
           id: string
           notes: string
@@ -337,6 +385,7 @@ export type Database = {
           age_level?: string
           assigned_class_id?: string | null
           created_at?: string
+          email?: string
           full_name: string
           id?: string
           notes?: string
@@ -350,6 +399,7 @@ export type Database = {
           age_level?: string
           assigned_class_id?: string | null
           created_at?: string
+          email?: string
           full_name?: string
           id?: string
           notes?: string
