@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HakkimizdaRouteImport } from './routes/hakkimizda'
 import { Route as PanelRouteImport } from './routes/panel'
+import { Route as ProgramlarRouteImport } from './routes/programlar'
 import { Route as AtolyeWorkshopIdRouteImport } from './routes/atolye.$workshopId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const PanelRoute = PanelRouteImport.update({
   path: '/panel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProgramlarRoute = ProgramlarRouteImport.update({
+  id: '/programlar',
+  path: '/programlar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AtolyeWorkshopIdRoute = AtolyeWorkshopIdRouteImport.update({
   id: '/atolye/$workshopId',
   path: '/atolye/$workshopId',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
   '/panel': typeof PanelRoute
+  '/programlar': typeof ProgramlarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
   '/panel': typeof PanelRoute
+  '/programlar': typeof ProgramlarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,29 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
   '/panel': typeof PanelRoute
+  '/programlar': typeof ProgramlarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/hakkimizda' | '/panel' | '/atolye/$workshopId'
+  fullPaths:
+    '/' | '/hakkimizda' | '/panel' | '/programlar' | '/atolye/$workshopId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/hakkimizda' | '/panel' | '/atolye/$workshopId'
-  id: '__root__' | '/' | '/hakkimizda' | '/panel' | '/atolye/$workshopId'
+  to: '/' | '/hakkimizda' | '/panel' | '/programlar' | '/atolye/$workshopId'
+  id:
+    | '__root__'
+    | '/'
+    | '/hakkimizda'
+    | '/panel'
+    | '/programlar'
+    | '/atolye/$workshopId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HakkimizdaRoute: typeof HakkimizdaRoute
   PanelRoute: typeof PanelRoute
+  ProgramlarRoute: typeof ProgramlarRoute
   AtolyeWorkshopIdRoute: typeof AtolyeWorkshopIdRoute
 }
 
@@ -92,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PanelRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/programlar': {
+      id: '/programlar'
+      path: '/programlar'
+      fullPath: '/programlar'
+      preLoaderRoute: typeof ProgramlarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/atolye/$workshopId': {
       id: '/atolye/$workshopId'
       path: '/atolye/$workshopId'
@@ -106,6 +130,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HakkimizdaRoute: HakkimizdaRoute,
   PanelRoute: PanelRoute,
+  ProgramlarRoute: ProgramlarRoute,
   AtolyeWorkshopIdRoute: AtolyeWorkshopIdRoute,
 }
 export const routeTree = rootRouteImport
