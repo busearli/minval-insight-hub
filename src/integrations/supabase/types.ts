@@ -501,38 +501,68 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          about_quote: string
           address: string
+          cta_text: string
+          cta_title: string
           cuz_tracking_enabled: boolean
           email: string
+          hero_eyebrow: string
+          hero_subtitle: string
+          hero_title: string
           id: string
           instagram_url: string
           intro: string
           phone: string
           pre_registration_enabled: boolean
+          programs_heading: string
+          programs_section_enabled: boolean
+          schedule_heading: string
+          schedule_section_enabled: boolean
           updated_at: string
           whatsapp_number: string
         }
         Insert: {
+          about_quote?: string
           address?: string
+          cta_text?: string
+          cta_title?: string
           cuz_tracking_enabled?: boolean
           email?: string
+          hero_eyebrow?: string
+          hero_subtitle?: string
+          hero_title?: string
           id?: string
           instagram_url?: string
           intro?: string
           phone?: string
           pre_registration_enabled?: boolean
+          programs_heading?: string
+          programs_section_enabled?: boolean
+          schedule_heading?: string
+          schedule_section_enabled?: boolean
           updated_at?: string
           whatsapp_number?: string
         }
         Update: {
+          about_quote?: string
           address?: string
+          cta_text?: string
+          cta_title?: string
           cuz_tracking_enabled?: boolean
           email?: string
+          hero_eyebrow?: string
+          hero_subtitle?: string
+          hero_title?: string
           id?: string
           instagram_url?: string
           intro?: string
           phone?: string
           pre_registration_enabled?: boolean
+          programs_heading?: string
+          programs_section_enabled?: boolean
+          schedule_heading?: string
+          schedule_section_enabled?: boolean
           updated_at?: string
           whatsapp_number?: string
         }
