@@ -56,7 +56,7 @@ const items: NavItem[] = [
   { to: "/admin", label: "Genel Bakış & Kontrol", icon: BarChart3, exact: true },
   { to: "/admin/kullanicilar", label: "Kullanıcı & Yetki", icon: ShieldCheck, superOnly: true },
   { to: "/admin/basvurular", label: "Başvuru & Sınıf Atama", icon: Inbox },
-  { to: "/admin/siniflar", label: "Sınıflar", icon: Home, adminOnly: true },
+  { to: "/admin/siniflar", label: "Sınıflar", icon: Home },
   { to: "/admin/ogrenciler", label: "Öğrenciler", icon: Users },
   { to: "/admin/yoklama", label: "Yoklama", icon: CalendarCheck },
   { to: "/admin/odevler", label: "Ödevler", icon: BookOpen },
