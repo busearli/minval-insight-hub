@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { attendanceLabel, classLabel, cuzLabel, submissionLabel } from "@/lib/admin-api";
 import { useSiteSettings } from "@/lib/site-api";
+import { useRealtimeSync } from "@/lib/use-realtime-sync";
 
 export const Route = createFileRoute("/ogrenci")({
   head: () => ({
@@ -39,6 +40,7 @@ const statusTone: Record<string, string> = {
 function StudentPortalPage() {
   const { user, profile, loading, signOut } = useAuth();
   const { settings } = useSiteSettings();
+  useRealtimeSync(!!user);
 
   const { data, isLoading } = useQuery({
     queryKey: ["student-self", user?.id],
