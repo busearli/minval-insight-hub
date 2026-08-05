@@ -16,6 +16,7 @@ import { Route as IletisimRouteImport } from './routes/iletisim'
 import { Route as MinvalSanatRouteImport } from './routes/minval-sanat'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as ProgramlarRouteImport } from './routes/programlar'
+import { Route as AdminSiniflarRouteImport } from './routes/admin.siniflar'
 import { Route as AtolyeWorkshopIdRouteImport } from './routes/atolye.$workshopId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -53,6 +54,11 @@ const ProgramlarRoute = ProgramlarRouteImport.update({
   path: '/programlar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSiniflarRoute = AdminSiniflarRouteImport.update({
+  id: '/siniflar',
+  path: '/siniflar',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AtolyeWorkshopIdRoute = AtolyeWorkshopIdRouteImport.update({
   id: '/atolye/$workshopId',
   path: '/atolye/$workshopId',
@@ -61,33 +67,36 @@ const AtolyeWorkshopIdRoute = AtolyeWorkshopIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/hakkimizda': typeof HakkimizdaRoute
   '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/siniflar': typeof AdminSiniflarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/hakkimizda': typeof HakkimizdaRoute
   '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/siniflar': typeof AdminSiniflarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/hakkimizda': typeof HakkimizdaRoute
   '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/siniflar': typeof AdminSiniflarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
+    | '/admin/siniflar'
     | '/atolye/$workshopId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
+    | '/admin/siniflar'
     | '/atolye/$workshopId'
   id:
     | '__root__'
@@ -120,12 +131,13 @@ export interface FileRouteTypes {
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
+    | '/admin/siniflar'
     | '/atolye/$workshopId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   HakkimizdaRoute: typeof HakkimizdaRoute
   IletisimRoute: typeof IletisimRoute
   MinvalSanatRoute: typeof MinvalSanatRoute
@@ -185,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramlarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/siniflar': {
+      id: '/admin/siniflar'
+      path: '/siniflar'
+      fullPath: '/admin/siniflar'
+      preLoaderRoute: typeof AdminSiniflarRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/atolye/$workshopId': {
       id: '/atolye/$workshopId'
       path: '/atolye/$workshopId'
@@ -195,9 +214,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminSiniflarRoute: typeof AdminSiniflarRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminSiniflarRoute: AdminSiniflarRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   HakkimizdaRoute: HakkimizdaRoute,
   IletisimRoute: IletisimRoute,
   MinvalSanatRoute: MinvalSanatRoute,
