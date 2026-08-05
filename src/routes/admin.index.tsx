@@ -10,6 +10,8 @@ import {
   useStudents,
   useSubmissions,
 } from "@/lib/admin-api";
+import { useApplications } from "@/lib/site-api";
+
 
 export const Route = createFileRoute("/admin/")({
   component: ReportsPage,
@@ -25,7 +27,9 @@ function ReportsPage() {
   const { data: records = [] } = useAttendance();
   const { data: homework = [] } = useHomework();
   const { data: submissions = [] } = useSubmissions();
+  const { data: applications = [] } = useApplications();
   const [studentId, setStudentId] = useState("");
+
 
   const activeStudents = students.filter((s) => s.status === "aktif");
   const avgAttendance = pct(records.filter((r) => r.status === "var").length, records.length);
@@ -58,7 +62,9 @@ function ReportsPage() {
     ["Aktif Sınıf", String(classes.length)],
     ["Ortalama Devam", `%${avgAttendance}`],
     ["Ödev Tamamlama", `%${hwCompletion}`],
+    ["Bekleyen Başvuru", String(applications.filter((a) => a.status === "bekliyor").length)],
   ];
+
 
   return (
     <div className="space-y-6">
@@ -67,7 +73,7 @@ function ReportsPage() {
         <h1 className="mt-2 text-2xl text-foreground">Genel Bakış</h1>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {kpis.map(([label, value]) => (
           <div key={label} className="card-soft border-accent/40 p-6">
             <p className="eyebrow">{label}</p>

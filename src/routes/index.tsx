@@ -1,11 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight, MessageCircle, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ArchPattern } from "@/components/MinvalMark";
 import { ProgramCard } from "@/components/ProgramCard";
-import { WHATSAPP_URL, principles, programs } from "@/lib/minval-programs";
+import { ProgramDetailModal } from "@/components/ProgramDetailModal";
+import { RegistrationModal } from "@/components/RegistrationModal";
+import { WeeklySchedule } from "@/components/WeeklySchedule";
+import { WHATSAPP_URL, principles, programs, type Program } from "@/lib/minval-programs";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,7 +35,16 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const [detail, setDetail] = useState<Program | null>(null);
+  const [regOpen, setRegOpen] = useState(false);
+  const [regProgram, setRegProgram] = useState("");
+  const openRegister = (id = "") => {
+    setRegProgram(id);
+    setRegOpen(true);
+  };
+
   return (
+
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
@@ -55,14 +69,13 @@ function HomePage() {
             >
               Programlarımızı Keşfedin <ArrowRight className="h-4 w-4" />
             </Link>
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={() => openRegister()}
               className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm transition-colors hover:bg-primary-foreground/10"
             >
-              <MessageCircle className="h-4 w-4" /> WhatsApp'tan İletişime Geçin
-            </a>
+              <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+            </button>
+
           </div>
         </div>
       </section>
@@ -98,7 +111,7 @@ function HomePage() {
           <h2 className="mt-4 text-3xl text-foreground sm:text-4xl">Açık okuma halkalarımız</h2>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {programs.slice(0, 3).map((p) => (
-              <ProgramCard key={p.id} p={p} />
+              <ProgramCard key={p.id} p={p} onOpen={setDetail} />
             ))}
           </div>
           <Link
@@ -110,27 +123,61 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Registration */}
+      {/* Weekly timetable */}
       <section className="mx-auto max-w-6xl px-5 py-16">
-        <div className="card-soft flex flex-col items-start gap-6 border-accent/40 p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
-          <div>
-            <h2 className="text-2xl text-foreground">Kayıtlar WhatsApp üzerinden</h2>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Tüm kayıtlarımız kurumsal WhatsApp hattımız üzerinden mesajla alınmaktadır.
-            </p>
-          </div>
-          <a
-            href={WHATSAPP_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground"
-          >
-            <MessageCircle className="h-4 w-4" /> WhatsApp ile Kayıt Ol
-          </a>
+        <p className="eyebrow">Haftalık Program</p>
+        <h2 className="mt-4 text-3xl text-foreground sm:text-4xl">Hangi grup, hangi gün?</h2>
+        <div className="mt-10">
+          <WeeklySchedule />
         </div>
       </section>
 
+      {/* Registration */}
+      <section className="mx-auto max-w-6xl px-5 pb-16">
+        <div className="card-soft flex flex-col items-start gap-6 border-accent/40 p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
+          <div>
+            <h2 className="text-2xl text-foreground">Ön kayıt formu ile başlayın</h2>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+              Formu doldurun; kontenjan durumuna göre kurumsal WhatsApp hattımızdan sizinle
+              iletişime geçelim.
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-wrap gap-3">
+            <button
+              onClick={() => openRegister()}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground"
+            >
+              <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+            </button>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm text-foreground"
+            >
+              <MessageCircle className="h-4 w-4" /> WhatsApp
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <ProgramDetailModal
+        program={detail}
+        onOpenChange={(v) => !v && setDetail(null)}
+        onRegister={(p) => {
+          setDetail(null);
+          openRegister(p.id);
+        }}
+      />
+      <RegistrationModal
+        key={regProgram}
+        open={regOpen}
+        onOpenChange={setRegOpen}
+        defaultProgramId={regProgram}
+      />
+
       <SiteFooter />
     </div>
+
   );
 }
