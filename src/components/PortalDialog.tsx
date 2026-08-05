@@ -6,8 +6,6 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { signInWithPhone } from "@/lib/auth-lookup.functions";
-import { devSuperAdminLogin } from "@/lib/dev-admin.functions";
-import { enableDevAdmin } from "@/lib/dev-mode";
 
 import { programs } from "@/lib/minval-programs";
 import {
@@ -155,7 +153,7 @@ export function PortalDialog({
       const staff = roles.some((r) => ["super_admin", "admin", "instructor"].includes(r));
       if (!staff) {
         await supabase.auth.signOut();
-        toast.error("Bu alana sadece yetkili yöneticiler ve eğitmenler giriş yapabilir.");
+        toast.error("Bu alana erişim yetkiniz bulunmamaktadır.");
         return;
       }
       toast.success("Hoş geldiniz.");
@@ -189,27 +187,6 @@ export function PortalDialog({
         "Kayıt talebiniz alındı. Yöneticilerimiz tarafından sınıf atamanız yapıldıktan sonra paneliniz aktifleşecektir.",
       );
       onOpenChange(false);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const devLogin = async () => {
-    setBusy(true);
-    try {
-      // Geliştirici modu bayrağı: oturum kurulamasa bile /admin erişilebilir kalır.
-      enableDevAdmin();
-      const res = await devSuperAdminLogin();
-      if (res.session) {
-        await supabase.auth.setSession(res.session);
-      }
-      toast.success("Süper Admin (Geliştirici Modu) aktif.");
-      onOpenChange(false);
-      void navigate({ to: "/admin" });
-    } catch {
-      toast.success("Geliştirici Modu aktif.");
-      onOpenChange(false);
-      void navigate({ to: "/admin" });
     } finally {
       setBusy(false);
     }
@@ -404,16 +381,6 @@ export function PortalDialog({
                 {busy ? "Giriş yapılıyor…" : "Yönetim Paneline Gir"}
               </button>
             </form>
-            {import.meta.env.DEV && (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={devLogin}
-                className="w-full rounded-full bg-[#2e7d32] px-4 py-2.5 text-[13px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-              >
-                {busy ? "Hazırlanıyor…" : "Süper Admin Girişi Yap (Geliştirici Modu)"}
-              </button>
-            )}
 
             <p className="text-[12px] leading-relaxed text-muted-foreground">
               Bu alana sadece yetkili yöneticiler ve eğitmenler giriş yapabilir. Eğitmenler yalnızca
