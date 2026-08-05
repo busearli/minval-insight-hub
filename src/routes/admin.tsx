@@ -186,7 +186,7 @@ function AdminLayout() {
         </nav>
 
         <main className="min-w-0 flex-1">
-          {loading || rolesLoading ? (
+          {!devAdmin && (loading || rolesLoading) ? (
             <div className="flex items-center gap-2 p-10 text-sm text-muted-foreground">
               <GraduationCap className="h-4 w-4" /> Yükleniyor…
             </div>
