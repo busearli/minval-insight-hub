@@ -1,0 +1,33 @@
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.announcements TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.attendance_records TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.class_instructors TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.classes TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.cuz_records TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.enrollments TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.homework TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.homework_submissions TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.profiles TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.registration_applications TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.site_settings TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.students TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_roles TO authenticated;
+GRANT SELECT ON public.workshops TO authenticated;
+
+GRANT INSERT ON public.registration_applications TO anon;
+GRANT SELECT ON public.site_settings TO anon;
+GRANT SELECT ON public.workshops TO anon;
+
+GRANT ALL ON public.announcements TO service_role;
+GRANT ALL ON public.attendance_records TO service_role;
+GRANT ALL ON public.class_instructors TO service_role;
+GRANT ALL ON public.classes TO service_role;
+GRANT ALL ON public.cuz_records TO service_role;
+GRANT ALL ON public.enrollments TO service_role;
+GRANT ALL ON public.homework TO service_role;
+GRANT ALL ON public.homework_submissions TO service_role;
+GRANT ALL ON public.profiles TO service_role;
+GRANT ALL ON public.registration_applications TO service_role;
+GRANT ALL ON public.site_settings TO service_role;
+GRANT ALL ON public.students TO service_role;
+GRANT ALL ON public.user_roles TO service_role;
+GRANT ALL ON public.workshops TO service_role;
