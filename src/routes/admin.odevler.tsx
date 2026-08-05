@@ -16,13 +16,15 @@ import {
   useSubmissions,
   useUpsert,
 } from "@/lib/admin-api";
+import { useMyRoles } from "@/lib/rbac";
 
 export const Route = createFileRoute("/admin/odevler")({
   component: HomeworkPage,
 });
 
 function HomeworkPage() {
-  const { data: classes = [] } = useClasses();
+  const { isAdmin, myClassIds } = useMyRoles();
+  const { data: allClasses = [] } = useClasses();
   const { data: students = [] } = useStudents();
   const { data: homework = [] } = useHomework();
   const { data: submissions = [] } = useSubmissions();
@@ -30,10 +32,20 @@ function HomeworkPage() {
   const remove = useRemove("homework");
   const upsert = useUpsert("homework_submissions", "homework_id,student_id");
 
+  const classes = useMemo(
+    () => (isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id))),
+    [allClasses, isAdmin, myClassIds],
+  );
+  const classIds = useMemo(() => new Set(classes.map((c) => c.id)), [classes]);
+
   const [form, setForm] = useState({ class_id: "", title: "", description: "", due_date: "" });
   const [selected, setSelected] = useState<string | null>(null);
 
-  const active = homework.find((h) => h.id === selected) ?? null;
+  const visibleHomework = useMemo(
+    () => homework.filter((h) => classIds.has(h.class_id)),
+    [homework, classIds],
+  );
+  const active = visibleHomework.find((h) => h.id === selected) ?? null;
   const roster = useMemo(
     () => (active ? students.filter((s) => s.class_id === active.class_id) : []),
     [students, active],
@@ -95,10 +107,10 @@ function HomeworkPage() {
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <div className="card-soft divide-y divide-border border-accent/40">
-          {homework.length === 0 && (
+          {visibleHomework.length === 0 && (
             <p className="px-5 py-6 text-sm text-muted-foreground">Henüz ödev atanmadı.</p>
           )}
-          {homework.map((h) => {
+          {visibleHomework.map((h) => {
             const c = classes.find((x) => x.id === h.class_id);
             return (
               <div

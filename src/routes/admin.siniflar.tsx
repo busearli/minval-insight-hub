@@ -23,8 +23,9 @@ export const Route = createFileRoute("/admin/siniflar")({
 const empty = { program: "", name: "", level: "", instructor_name: "", schedule: "", capacity: "", notes: "" };
 
 function ClassesPage() {
-  const { isAdmin } = useMyRoles();
-  const { data: classes = [], isLoading } = useClasses();
+  const { isAdmin, isInstructor, myClassIds } = useMyRoles();
+  const { data: allClasses = [], isLoading } = useClasses();
+  const classes = isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id));
   const save = useSaveClass();
   const remove = useRemoveClass();
   const { data: students = [] } = useStudents();
@@ -36,10 +37,10 @@ function ClassesPage() {
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  if (!isAdmin) {
+  if (!isAdmin && !isInstructor) {
     return (
       <p className="text-sm text-muted-foreground">
-        Sınıf oluşturma ve düzenleme yetkisi yalnızca yöneticilere aittir.
+        Sınıf bilgilerini görüntüleme yetkiniz bulunmuyor.
       </p>
     );
   }
@@ -90,6 +91,13 @@ function ClassesPage() {
         <h1 className="mt-2 text-2xl text-foreground">Sınıflar & Gruplar</h1>
       </div>
 
+      {!isAdmin && (
+        <p className="text-sm text-muted-foreground">
+          Yalnızca size atanmış sınıfları görüntüleyip düzenleyebilirsiniz.
+        </p>
+      )}
+
+      {isAdmin && (
       <form onSubmit={submit} className="card-soft grid gap-3 border-accent/40 p-6 sm:grid-cols-2">
         <Input placeholder="Program (ör. Minval Risale)" value={form["program"] ?? ""} onChange={(e) => set("program", e.target.value)} />
         <Input placeholder="Grup adı (ör. Grup 1)" value={form["name"] ?? ""} onChange={(e) => set("name", e.target.value)} />
@@ -120,6 +128,7 @@ function ClassesPage() {
           )}
         </div>
       </form>
+      )}
 
       <div className="card-soft overflow-x-auto border-accent/40">
         <table className="w-full min-w-[640px] text-left text-sm">
@@ -159,9 +168,11 @@ function ClassesPage() {
                     <button onClick={() => edit(c)} className="rounded-full border border-border p-2 text-muted-foreground hover:text-primary">
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
+                    {isAdmin && (
                     <button onClick={() => remove.mutate(c.id)} className="rounded-full border border-border p-2 text-muted-foreground hover:text-destructive">
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
+                    )}
                   </div>
                 </td>
               </tr>

@@ -21,9 +21,13 @@ export const Route = createFileRoute("/admin/ogrenciler")({
 const empty = { full_name: "", phone: "", class_id: "", status: "aktif", notes: "" };
 
 function StudentsPage() {
-  const { data: students = [], isLoading } = useStudents();
-  const { data: classes = [] } = useClasses();
-  const { isAdmin } = useMyRoles();
+  const { data: allStudents = [], isLoading } = useStudents();
+  const { data: allClasses = [] } = useClasses();
+  const { isAdmin, myClassIds } = useMyRoles();
+  const classes = isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id));
+  const students = isAdmin
+    ? allStudents
+    : allStudents.filter((s) => s.class_id && myClassIds.includes(s.class_id));
   const save = useSave("students");
   const remove = useRemove("students");
   const [form, setForm] = useState<Record<string, string>>(empty);
