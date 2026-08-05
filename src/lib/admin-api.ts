@@ -85,8 +85,8 @@ export function useSave(table: TableName) {
   return useMutation({
     mutationFn: async (row: Record<string, unknown>) => {
       const q = supabase.from(table);
-      const res = row.id
-        ? await q.update(row as never).eq("id", row.id as string)
+      const res = row["id"]
+        ? await q.update(row as never).eq("id", row["id"] as string)
         : await q.insert(row as never);
       if (res.error) throw new Error(res.error.message);
     },
