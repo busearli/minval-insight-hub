@@ -6,6 +6,7 @@ import {
   GraduationCap,
   Home,
   Inbox,
+  Megaphone,
   Settings,
   ShieldCheck,
   Sparkles,
