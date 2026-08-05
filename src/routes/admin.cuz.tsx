@@ -36,6 +36,7 @@ function CuzPage() {
   const saveHatim = useSaveHatim();
   const removeHatim = useRemoveHatim();
   const [hatimTitle, setHatimTitle] = useState("");
+  const [hatimDesc, setHatimDesc] = useState("");
 
   const visibleClasses = useMemo(
     () => (isAdmin ? classes : classes.filter((c) => myClassIds.includes(c.id))),
@@ -83,12 +84,18 @@ function CuzPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg text-foreground">Hatim Organizasyonu</h2>
           {isAdmin && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Input
-                placeholder="Hatim adı (ör. Ramazan Hatmi)"
+                placeholder="Hatim adı (ör. 15 Temmuz Hatmi)"
                 value={hatimTitle}
                 onChange={(e) => setHatimTitle(e.target.value)}
                 className="h-9 w-56"
+              />
+              <Input
+                placeholder="Açıklama (isteğe bağlı)"
+                value={hatimDesc}
+                onChange={(e) => setHatimDesc(e.target.value)}
+                className="h-9 w-64"
               />
               <button
                 onClick={() => {
@@ -97,10 +104,16 @@ function CuzPage() {
                     return;
                   }
                   saveHatim.mutate(
-                    { title: hatimTitle.trim(), created_by: user?.id ?? null },
+                    {
+                      title: hatimTitle.trim(),
+                      description: hatimDesc.trim(),
+                      is_open: true,
+                      created_by: user?.id ?? null,
+                    },
                     {
                       onSuccess: () => {
                         setHatimTitle("");
+                        setHatimDesc("");
                         toast.success("Hatim açıldı.");
                       },
                       onError: (e) =>
