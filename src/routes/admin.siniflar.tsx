@@ -119,6 +119,7 @@ function ClassesPage() {
       level: c.level,
       instructor_name: c.instructor_name,
       schedule: c.schedule,
+      ...parseSchedule(c.schedule ?? ""),
       capacity: String(c.capacity ?? 0),
       notes: c.notes,
     });
