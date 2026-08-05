@@ -191,7 +191,29 @@ export function PortalDialog({
     }
   };
 
+  const devLogin = async () => {
+    setBusy(true);
+    try {
+      const res = await devSuperAdminLogin();
+      if (res.error || !res.session) {
+        toast.error(res.error ?? "Süper admin girişi başarısız.");
+        return;
+      }
+      const { error } = await supabase.auth.setSession(res.session);
+      if (error) {
+        toast.error(trAuthError(error.message));
+        return;
+      }
+      toast.success("Süper Admin olarak giriş yapıldı.");
+      onOpenChange(false);
+      void navigate({ to: "/admin" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const google = async () => {
+
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
