@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useDevAdmin } from "@/lib/dev-mode";
 
 export type AppRole = "super_admin" | "admin" | "instructor" | "student";
 
@@ -13,6 +14,8 @@ export const roleLabel: Record<AppRole, string> = {
 
 export function useMyRoles() {
   const { user, loading: authLoading } = useAuth();
+  const devAdmin = useDevAdmin();
+
 
   const { data: roles = [], isLoading } = useQuery({
     queryKey: ["my-roles", user?.id],
@@ -40,17 +43,17 @@ export function useMyRoles() {
     },
   });
 
-  const isSuperAdmin = roles.includes("super_admin");
+  const isSuperAdmin = devAdmin || roles.includes("super_admin");
   const isAdmin = isSuperAdmin || roles.includes("admin");
   const isInstructor = roles.includes("instructor");
 
   return {
-    roles,
+    roles: devAdmin && !roles.length ? (["super_admin"] as AppRole[]) : roles,
     myClassIds,
     isSuperAdmin,
     isAdmin,
     isInstructor,
     isStaff: isAdmin || isInstructor,
-    loading: authLoading || (!!user && isLoading),
+    loading: devAdmin ? false : authLoading || (!!user && isLoading),
   };
 }
