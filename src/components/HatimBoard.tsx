@@ -40,7 +40,7 @@ export function HatimBoard({
     <div className="space-y-6">
       {visible.map((h) => {
         const rows = claims.filter((c) => c.hatim_id === h.id);
-        const mine = userId ? rows.find((c) => c.user_id === userId) : undefined;
+        const mineCount = userId ? rows.filter((c) => c.user_id === userId).length : 0;
         const done = rows.filter((c) => c.completed).length;
         return (
           <div key={h.id} className="card-soft border-accent/40 p-6">
@@ -52,7 +52,9 @@ export function HatimBoard({
                 )}
               </div>
               <span className="rounded-full bg-secondary px-3 py-1 text-[11px] text-secondary-foreground">
-                {rows.length}/30 alındı · {done} tamamlandı {h.is_open ? "" : "· Kapalı"}
+                {rows.length}/30 alındı · {done} tamamlandı
+                {mineCount > 0 ? ` · sizde ${mineCount} cüz` : ""}
+                {h.is_open ? "" : " · Kapalı"}
               </span>
             </div>
 
@@ -60,7 +62,7 @@ export function HatimBoard({
               {CUZ_NUMBERS.map((no) => {
                 const taken = rows.find((c) => c.cuz_no === no);
                 const isMine = !!taken && taken.user_id === userId;
-                const selectable = !taken && h.is_open && !!userId && !mine;
+                const selectable = !taken && h.is_open && !!userId;
                 return (
                   <div
                     key={no}
