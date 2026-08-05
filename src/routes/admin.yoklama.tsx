@@ -10,6 +10,8 @@ import {
   useStudents,
   useUpsert,
 } from "@/lib/admin-api";
+import { ClassSessionBars } from "@/components/SessionAttendanceChart";
+import { useMyRoles } from "@/lib/rbac";
 
 export const Route = createFileRoute("/admin/yoklama")({
   component: AttendancePage,
@@ -23,10 +25,16 @@ const statusStyle: Record<string, string> = {
 };
 
 function AttendancePage() {
-  const { data: classes = [] } = useClasses();
+  const { isAdmin, myClassIds } = useMyRoles();
+  const { data: allClasses = [] } = useClasses();
   const { data: students = [] } = useStudents();
   const { data: records = [] } = useAttendance();
   const upsert = useUpsert("attendance_records", "student_id,session_date");
+
+  const classes = useMemo(
+    () => (isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id))),
+    [allClasses, isAdmin, myClassIds],
+  );
 
   const [classId, setClassId] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
@@ -34,6 +42,11 @@ function AttendancePage() {
   const roster = useMemo(
     () => students.filter((s) => s.class_id === classId),
     [students, classId],
+  );
+
+  const classRecords = useMemo(
+    () => records.filter((r) => r.class_id === classId),
+    [records, classId],
   );
 
   const statusOf = (studentId: string) =>
@@ -64,6 +77,10 @@ function AttendancePage() {
           className="h-9 rounded-md border border-input bg-card px-3 text-sm text-foreground"
         />
       </div>
+
+      {classId && (
+        <ClassSessionBars records={classRecords} rosterCount={roster.length} />
+      )}
 
       {!classId ? (
         <p className="text-sm text-muted-foreground">Yoklama almak için bir sınıf seçin.</p>
