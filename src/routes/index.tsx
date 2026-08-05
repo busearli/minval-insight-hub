@@ -10,6 +10,7 @@ import { ProgramDetailModal } from "@/components/ProgramDetailModal";
 import { RegistrationModal } from "@/components/RegistrationModal";
 import { WeeklySchedule } from "@/components/WeeklySchedule";
 import { WHATSAPP_URL, principles, programs, type Program } from "@/lib/minval-programs";
+import { useSiteSettings } from "@/lib/site-api";
 
 
 export const Route = createFileRoute("/")({
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const { settings } = useSiteSettings();
   const [detail, setDetail] = useState<Program | null>(null);
   const [regOpen, setRegOpen] = useState(false);
   const [regProgram, setRegProgram] = useState("");
@@ -53,14 +55,13 @@ function HomePage() {
         <ArchPattern className="pointer-events-none absolute inset-0 h-full w-full text-primary-foreground/15" />
         <div className="relative mx-auto max-w-6xl px-5 py-20 sm:py-28">
           <p className="text-[11px] tracking-[0.28em] uppercase opacity-70">
-            Minval Akademi | Kahve
+            {settings.hero_eyebrow}
           </p>
           <h1 className="mt-6 max-w-3xl font-serif text-4xl leading-[1.12] sm:text-5xl md:text-6xl">
-            İlim, Hikmet ve Güzel Ahlak Ekseninde Bir Gelecek
+            {settings.hero_title}
           </h1>
           <p className="mt-6 max-w-2xl text-[15px] leading-relaxed opacity-85">
-            Maneviyat, kültür ve sanatı bir arada yaşatmayı hedefleyen bağımsız eğitim ve gönül
-            merkezi.
+            {settings.hero_subtitle}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
@@ -69,12 +70,14 @@ function HomePage() {
             >
               Programlarımızı Keşfedin <ArrowRight className="h-4 w-4" />
             </Link>
-            <button
-              onClick={() => openRegister()}
-              className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm transition-colors hover:bg-primary-foreground/10"
-            >
-              <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
-            </button>
+            {settings.pre_registration_enabled && (
+              <button
+                onClick={() => openRegister()}
+                className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm transition-colors hover:bg-primary-foreground/10"
+              >
+                <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+              </button>
+            )}
 
           </div>
         </div>
@@ -84,8 +87,7 @@ function HomePage() {
       <section className="mx-auto max-w-6xl px-5 py-16">
         <p className="eyebrow">Hakkımızda</p>
         <blockquote className="mt-5 max-w-3xl border-l-2 border-accent pl-5 font-serif text-2xl leading-snug text-foreground sm:text-3xl">
-          “Minval Akademi, ilim, hikmet ve güzel ahlak ekseninde; insanın aklına, kalbine ve
-          hayatına dokunmayı amaçlayan bağımsız bir ilim, kültür ve gençlik hareketidir.”
+          “{settings.about_quote}”
         </blockquote>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {principles.map((v, i) => (
@@ -105,10 +107,11 @@ function HomePage() {
       </section>
 
       {/* Programs preview */}
+      {settings.programs_section_enabled && (
       <section className="border-y border-border bg-secondary/50">
         <div className="mx-auto max-w-6xl px-5 py-16">
           <p className="eyebrow">Programlarımız</p>
-          <h2 className="mt-4 text-3xl text-foreground sm:text-4xl">Açık okuma halkalarımız</h2>
+          <h2 className="mt-4 text-3xl text-foreground sm:text-4xl">{settings.programs_heading}</h2>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {programs.slice(0, 3).map((p) => (
               <ProgramCard key={p.id} p={p} onOpen={setDetail} />
@@ -122,33 +125,37 @@ function HomePage() {
           </Link>
         </div>
       </section>
+      )}
 
       {/* Weekly timetable */}
+      {settings.schedule_section_enabled && (
       <section className="mx-auto max-w-6xl px-5 py-16">
         <p className="eyebrow">Haftalık Program</p>
-        <h2 className="mt-4 text-3xl text-foreground sm:text-4xl">Hangi grup, hangi gün?</h2>
+        <h2 className="mt-4 text-3xl text-foreground sm:text-4xl">{settings.schedule_heading}</h2>
         <div className="mt-10">
           <WeeklySchedule />
         </div>
       </section>
+      )}
 
       {/* Registration */}
       <section className="mx-auto max-w-6xl px-5 pb-16">
         <div className="card-soft flex flex-col items-start gap-6 border-accent/40 p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
           <div>
-            <h2 className="text-2xl text-foreground">Ön kayıt formu ile başlayın</h2>
+            <h2 className="text-2xl text-foreground">{settings.cta_title}</h2>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Formu doldurun; kontenjan durumuna göre kurumsal WhatsApp hattımızdan sizinle
-              iletişime geçelim.
+              {settings.cta_text}
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
-            <button
-              onClick={() => openRegister()}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground"
-            >
-              <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
-            </button>
+            {settings.pre_registration_enabled && (
+              <button
+                onClick={() => openRegister()}
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground"
+              >
+                <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+              </button>
+            )}
             <a
               href={WHATSAPP_URL}
               target="_blank"
