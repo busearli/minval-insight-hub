@@ -316,6 +316,8 @@ export type Database = {
           description: string
           due_date: string | null
           id: string
+          target_pages: number
+          task_type: string
           title: string
           updated_at: string
         }
@@ -325,6 +327,8 @@ export type Database = {
           description?: string
           due_date?: string | null
           id?: string
+          target_pages?: number
+          task_type?: string
           title: string
           updated_at?: string
         }
@@ -334,6 +338,8 @@ export type Database = {
           description?: string
           due_date?: string | null
           id?: string
+          target_pages?: number
+          task_type?: string
           title?: string
           updated_at?: string
         }
@@ -353,6 +359,7 @@ export type Database = {
           feedback: string
           homework_id: string
           id: string
+          pages_read: number
           status: string
           student_id: string
           submission_text: string
@@ -364,6 +371,7 @@ export type Database = {
           feedback?: string
           homework_id: string
           id?: string
+          pages_read?: number
           status?: string
           student_id: string
           submission_text?: string
@@ -375,6 +383,7 @@ export type Database = {
           feedback?: string
           homework_id?: string
           id?: string
+          pages_read?: number
           status?: string
           student_id?: string
           submission_text?: string
