@@ -12,9 +12,15 @@ import {
   useStudents,
   useRemoveClass,
   useSaveClass,
+  useProfiles,
+  useAllRoles,
+  useClassInstructors,
+  useAssignInstructor,
+  useUnassignInstructor,
   type ClassRow,
 } from "@/lib/admin-api";
 import { useMyRoles } from "@/lib/rbac";
+
 
 export const Route = createFileRoute("/admin/siniflar")({
   component: ClassesPage,
