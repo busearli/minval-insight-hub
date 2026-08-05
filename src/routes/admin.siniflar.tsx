@@ -20,7 +20,42 @@ export const Route = createFileRoute("/admin/siniflar")({
   component: ClassesPage,
 });
 
-const empty = { program: "", name: "", level: "", instructor_name: "", schedule: "", capacity: "", notes: "" };
+const empty = {
+  program: "",
+  name: "",
+  level: "",
+  instructor_name: "",
+  schedule: "",
+  day: "",
+  start_time: "",
+  end_time: "",
+  capacity: "",
+  notes: "",
+};
+
+const weekDays = [
+  "Pazartesi",
+  "Salı",
+  "Çarşamba",
+  "Perşembe",
+  "Cuma",
+  "Cumartesi",
+  "Pazar",
+];
+
+/** "Salı 20:00 – 21:30" biçiminde ders günü/saati metni üretir. */
+function composeSchedule(day: string, start: string, end: string) {
+  const time = [start, end].filter(Boolean).join(" – ");
+  return [day, time].filter(Boolean).join(" ").trim();
+}
+
+/** Kayıtlı metinden gün ve saatleri geri okur. */
+function parseSchedule(value: string) {
+  const day = weekDays.find((d) => value.toLowerCase().includes(d.toLowerCase())) ?? "";
+  const times = value.match(/\d{1,2}[:.]\d{2}/g) ?? [];
+  const norm = (t?: string) => (t ? t.replace(".", ":").padStart(5, "0") : "");
+  return { day, start_time: norm(times[0]), end_time: norm(times[1]) };
+}
 
 function ClassesPage() {
   const { isAdmin, isInstructor, myClassIds } = useMyRoles();
@@ -54,8 +89,10 @@ function ClassesPage() {
       toast.error("Lütfen grup adını girin.");
       return;
     }
+    const { day, start_time, end_time, ...rest } = form;
     const payload: Record<string, unknown> = {
-      ...form,
+      ...rest,
+      schedule: composeSchedule(day ?? "", start_time ?? "", end_time ?? ""),
       capacity: Number(form["capacity"] ?? 0) || 0,
       ...(editing ? { id: editing } : {}),
     };
@@ -82,6 +119,7 @@ function ClassesPage() {
       level: c.level,
       instructor_name: c.instructor_name,
       schedule: c.schedule,
+      ...parseSchedule(c.schedule ?? ""),
       capacity: String(c.capacity ?? 0),
       notes: c.notes,
     });
@@ -106,7 +144,32 @@ function ClassesPage() {
         <Input placeholder="Grup adı (ör. Grup 1)" value={form["name"] ?? ""} onChange={(e) => set("name", e.target.value)} />
         <Input placeholder="Düzey (ör. Orta Düzey N2)" value={form["level"] ?? ""} onChange={(e) => set("level", e.target.value)} />
         <Input placeholder="Eğitmen adı" value={form["instructor_name"] ?? ""} onChange={(e) => set("instructor_name", e.target.value)} />
-        <Input placeholder="Program saati (ör. Salı 20:00)" value={form["schedule"] ?? ""} onChange={(e) => set("schedule", e.target.value)} />
+        <div className="grid grid-cols-3 gap-2 sm:col-span-2">
+          <select
+            value={form["day"] ?? ""}
+            onChange={(e) => set("day", e.target.value)}
+            className="h-10 rounded-md border border-input bg-card px-3 text-sm text-foreground"
+          >
+            <option value="">Ders günü</option>
+            {weekDays.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <Input
+            type="time"
+            aria-label="Başlangıç saati"
+            value={form["start_time"] ?? ""}
+            onChange={(e) => set("start_time", e.target.value)}
+          />
+          <Input
+            type="time"
+            aria-label="Bitiş saati"
+            value={form["end_time"] ?? ""}
+            onChange={(e) => set("end_time", e.target.value)}
+          />
+        </div>
         <Input type="number" min={0} placeholder="Kontenjan (kişi)" value={form["capacity"] ?? ""} onChange={(e) => set("capacity", e.target.value)} />
         <Textarea placeholder="Not" value={form["notes"] ?? ""} onChange={(e) => set("notes", e.target.value)} className="sm:col-span-2" />
         <div className="flex gap-2 sm:col-span-2">

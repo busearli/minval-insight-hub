@@ -122,6 +122,17 @@ export function PortalDialog({
           return;
         }
       }
+      const { data: sess } = await supabase.auth.getUser();
+      const roles = sess.user ? await rolesOf(sess.user.id) : [];
+      if (roles.some((r) => ["super_admin", "admin", "instructor"].includes(r))) {
+        await supabase.auth.signOut();
+        setForm((f) => ({ ...f, password: "" }));
+        setTab("staff");
+        toast.error(
+          "Hesabınız eğitmen/yönetici olarak tanımlı. Lütfen “Yönetici / Eğitmen” sekmesinden giriş yapın.",
+        );
+        return;
+      }
       toast.success("Hoş geldiniz.");
       onOpenChange(false);
       void navigate({ to: "/ogrenci" });
