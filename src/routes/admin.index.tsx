@@ -119,7 +119,27 @@ function ReportsPage() {
     };
   }, [studentId, students, records, submissions, allClasses, homework]);
 
-  const kpis = [
+  const activity = useMemo(() => {
+    const items: { text: string; at: string }[] = [
+      ...students.map((s) => ({
+        text: `${s.full_name} öğrenci kaydı oluşturuldu`,
+        at: s.created_at,
+      })),
+      ...applications.map((a) => ({
+        text: `${a.full_name} ön kayıt başvurusu yaptı (${a.status})`,
+        at: a.created_at,
+      })),
+      ...submissions.map((s) => ({
+        text: `Ödev teslim durumu güncellendi: ${
+          students.find((st) => st.id === s.student_id)?.full_name ?? "Öğrenci"
+        } — ${s.status}`,
+        at: s.updated_at ?? s.created_at,
+      })),
+    ];
+    return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 10);
+  }, [students, applications, submissions]);
+
+
     ["Aktif Öğrenci", String(activeStudents.length)],
     ["Sınıf Ataması Bekleyen", String(pendingAssignments)],
     ["Aktif Sınıf", String(classes.length)],
