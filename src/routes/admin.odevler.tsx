@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { BookOpen, CheckCircle2, Clock, Plus, Trash2 } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronDown, Clock, Plus, Trash2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,6 +66,7 @@ function HomeworkPage() {
   };
   const [form, setForm] = useState(emptyForm);
   const [selected, setSelected] = useState<string | null>(null);
+  const [listOpen, setListOpen] = useState(true);
 
   const visibleHomework = useMemo(
     () => homework.filter((h) => classIds.has(h.class_id)),
@@ -206,7 +207,7 @@ function HomeworkPage() {
                 key={h.id}
                 className={`flex items-start gap-2 px-5 py-4 ${selected === h.id ? "bg-secondary/60" : ""}`}
               >
-                <button onClick={() => setSelected(h.id)} className="min-w-0 flex-1 text-left">
+                <button onClick={() => { setSelected(h.id); setListOpen(false); }} className="min-w-0 flex-1 text-left">
                   <div className="truncate text-sm text-foreground">{h.title}</div>
                   <div className="mt-1 truncate text-[12px] text-muted-foreground">
                     {c ? classLabel(c) : "—"} · {h.due_date ?? "tarihsiz"}
