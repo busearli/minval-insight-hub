@@ -59,6 +59,35 @@ export type Database = {
           },
         ]
       }
+      class_instructors: {
+        Row: {
+          class_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_instructors_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           created_at: string
@@ -94,6 +123,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      cuz_records: {
+        Row: {
+          created_at: string
+          cuz_no: number
+          feedback: string
+          id: string
+          pages_memorized: number
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cuz_no: number
+          feedback?: string
+          id?: string
+          pages_memorized?: number
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cuz_no?: number
+          feedback?: string
+          id?: string
+          pages_memorized?: number
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cuz_records_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       enrollments: {
         Row: {
@@ -212,24 +282,39 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_level: string
           avatar_url: string | null
           created_at: string
           name: string
+          notes: string
+          phone: string
+          program_choice: string
           role: Database["public"]["Enums"]["app_user_role"]
+          status: string
           user_id: string
         }
         Insert: {
+          age_level?: string
           avatar_url?: string | null
           created_at?: string
           name?: string
+          notes?: string
+          phone?: string
+          program_choice?: string
           role?: Database["public"]["Enums"]["app_user_role"]
+          status?: string
           user_id: string
         }
         Update: {
+          age_level?: string
           avatar_url?: string | null
           created_at?: string
           name?: string
+          notes?: string
+          phone?: string
+          program_choice?: string
           role?: Database["public"]["Enums"]["app_user_role"]
+          status?: string
           user_id?: string
         }
         Relationships: []
@@ -287,31 +372,37 @@ export type Database = {
       site_settings: {
         Row: {
           address: string
+          cuz_tracking_enabled: boolean
           email: string
           id: string
           instagram_url: string
           intro: string
           phone: string
+          pre_registration_enabled: boolean
           updated_at: string
           whatsapp_number: string
         }
         Insert: {
           address?: string
+          cuz_tracking_enabled?: boolean
           email?: string
           id?: string
           instagram_url?: string
           intro?: string
           phone?: string
+          pre_registration_enabled?: boolean
           updated_at?: string
           whatsapp_number?: string
         }
         Update: {
           address?: string
+          cuz_tracking_enabled?: boolean
           email?: string
           id?: string
           instagram_url?: string
           intro?: string
           phone?: string
+          pre_registration_enabled?: boolean
           updated_at?: string
           whatsapp_number?: string
         }
@@ -328,6 +419,7 @@ export type Database = {
           registered_at: string
           status: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           class_id?: string | null
@@ -339,6 +431,7 @@ export type Database = {
           registered_at?: string
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           class_id?: string | null
@@ -350,6 +443,7 @@ export type Database = {
           registered_at?: string
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -360,6 +454,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
       }
       workshops: {
         Row: {
@@ -405,9 +520,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      teaches_class: {
+        Args: { _class_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "super_admin" | "admin" | "instructor" | "student"
       app_user_role: "student" | "instructor"
     }
     CompositeTypes: {
@@ -536,6 +665,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["super_admin", "admin", "instructor", "student"],
       app_user_role: ["student", "instructor"],
     },
   },
