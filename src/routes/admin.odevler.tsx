@@ -199,7 +199,7 @@ function HomeworkPage() {
             <p className="px-5 py-6 text-sm text-muted-foreground">Henüz ödev atanmadı.</p>
           )}
           {listOpen &&
-          {visibleHomework.map((h) => {
+            visibleHomework.map((h) => {
             const c = classes.find((x) => x.id === h.class_id);
             return (
               <div
