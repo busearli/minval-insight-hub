@@ -2,6 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { HatimBoard } from "@/components/HatimBoard";
+import { Input } from "@/components/ui/input";
+import { useHatims, useRemoveHatim, useSaveHatim } from "@/lib/hatim-api";
+import { useAuth } from "@/hooks/use-auth";
 import {
   CUZ_STATUSES,
   classLabel,
