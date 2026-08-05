@@ -143,6 +143,21 @@ function ReportsPage() {
         ))}
       </div>
 
+      <div className="card-soft border-accent/40 p-6">
+        <h2 className="text-lg text-foreground">Son Hareketler</h2>
+        <ul className="mt-4 space-y-2">
+          {activity.length === 0 && (
+            <li className="text-sm text-muted-foreground">Henüz hareket yok.</li>
+          )}
+          {activity.map((a, i) => (
+            <li key={i} className="flex items-start justify-between gap-4 text-sm text-foreground">
+              <span>{a.text}</span>
+              <span className="shrink-0 text-[12px] text-muted-foreground">{a.at.slice(0, 10)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {isSuperAdmin && (
         <div className="card-soft space-y-3 border-accent/40 p-6">
           <h2 className="text-lg text-foreground">Sistem Modülleri</h2>
