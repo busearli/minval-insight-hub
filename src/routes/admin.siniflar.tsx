@@ -32,6 +32,9 @@ function ClassesPage() {
   const saveStudent = useSave("students");
   const [openRoster, setOpenRoster] = useState<string | null>(null);
   const [moveTo, setMoveTo] = useState<Record<string, string>>({});
+  const [newStudent, setNewStudent] = useState<Record<string, string>>({});
+  const [addExisting, setAddExisting] = useState<Record<string, string>>({});
+
   const [form, setForm] = useState<Record<string, string>>(empty);
   const [editing, setEditing] = useState<string | null>(null);
 
