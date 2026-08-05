@@ -25,13 +25,13 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-const items = [
+const items: { to: string; label: string; icon: typeof Home; exact?: boolean }[] = [
   { to: "/admin", label: "Genel Bakış & Raporlar", icon: BarChart3, exact: true },
   { to: "/admin/siniflar", label: "Sınıflar", icon: Home },
   { to: "/admin/ogrenciler", label: "Öğrenciler", icon: Users },
   { to: "/admin/yoklama", label: "Yoklama", icon: CalendarCheck },
   { to: "/admin/odevler", label: "Ödevler", icon: BookOpen },
-] as const;
+];
 
 function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
