@@ -26,16 +26,22 @@ const CUZ_NUMBERS = Array.from({ length: 30 }, (_, i) => i + 1);
 
 function CuzPage() {
   const { settings } = useSiteSettings();
+  const { user, profile } = useAuth();
   const { isAdmin, myClassIds } = useMyRoles();
   const { data: classes = [] } = useClasses();
   const { data: students = [] } = useStudents();
   const { data: records = [] } = useCuzRecords();
   const save = useSaveCuz();
+  const { data: hatims = [] } = useHatims();
+  const saveHatim = useSaveHatim();
+  const removeHatim = useRemoveHatim();
+  const [hatimTitle, setHatimTitle] = useState("");
 
   const visibleClasses = useMemo(
     () => (isAdmin ? classes : classes.filter((c) => myClassIds.includes(c.id))),
     [classes, isAdmin, myClassIds],
   );
+
   const [classId, setClassId] = useState("");
   const [studentId, setStudentId] = useState("");
 
