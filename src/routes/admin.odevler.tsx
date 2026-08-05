@@ -107,10 +107,10 @@ function HomeworkPage() {
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <div className="card-soft divide-y divide-border border-accent/40">
-          {homework.length === 0 && (
+          {visibleHomework.length === 0 && (
             <p className="px-5 py-6 text-sm text-muted-foreground">Henüz ödev atanmadı.</p>
           )}
-          {homework.map((h) => {
+          {visibleHomework.map((h) => {
             const c = classes.find((x) => x.id === h.class_id);
             return (
               <div
