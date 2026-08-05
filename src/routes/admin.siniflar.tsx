@@ -20,7 +20,42 @@ export const Route = createFileRoute("/admin/siniflar")({
   component: ClassesPage,
 });
 
-const empty = { program: "", name: "", level: "", instructor_name: "", schedule: "", capacity: "", notes: "" };
+const empty = {
+  program: "",
+  name: "",
+  level: "",
+  instructor_name: "",
+  schedule: "",
+  day: "",
+  start_time: "",
+  end_time: "",
+  capacity: "",
+  notes: "",
+};
+
+const weekDays = [
+  "Pazartesi",
+  "Salı",
+  "Çarşamba",
+  "Perşembe",
+  "Cuma",
+  "Cumartesi",
+  "Pazar",
+];
+
+/** "Salı 20:00 – 21:30" biçiminde ders günü/saati metni üretir. */
+function composeSchedule(day: string, start: string, end: string) {
+  const time = [start, end].filter(Boolean).join(" – ");
+  return [day, time].filter(Boolean).join(" ").trim();
+}
+
+/** Kayıtlı metinden gün ve saatleri geri okur. */
+function parseSchedule(value: string) {
+  const day = weekDays.find((d) => value.toLowerCase().includes(d.toLowerCase())) ?? "";
+  const times = value.match(/\d{1,2}[:.]\d{2}/g) ?? [];
+  const norm = (t?: string) => (t ? t.replace(".", ":").padStart(5, "0") : "");
+  return { day, start_time: norm(times[0]), end_time: norm(times[1]) };
+}
 
 function ClassesPage() {
   const { isAdmin, isInstructor, myClassIds } = useMyRoles();
