@@ -37,7 +37,13 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const { settings } = useSiteSettings();
+  const customPrinciples = asList<PrincipleItem>(settings.principles_json);
+  const principleList = customPrinciples.length > 0 ? customPrinciples : principles;
+  const stats = asList<StatItem>(settings.stats_json);
+  const testimonials = asList<TestimonialItem>(settings.testimonials_json);
+  const faq = asList<FaqItem>(settings.faq_json);
   const [detail, setDetail] = useState<Program | null>(null);
+
   const [regOpen, setRegOpen] = useState(false);
   const [regProgram, setRegProgram] = useState("");
   const openRegister = (id = "") => {
