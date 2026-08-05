@@ -238,6 +238,77 @@ export type Database = {
           },
         ]
       }
+      hatim_claims: {
+        Row: {
+          completed: boolean
+          created_at: string
+          cuz_no: number
+          hatim_id: string
+          id: string
+          participant_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          cuz_no: number
+          hatim_id: string
+          id?: string
+          participant_name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          cuz_no?: number
+          hatim_id?: string
+          id?: string
+          participant_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hatim_claims_hatim_id_fkey"
+            columns: ["hatim_id"]
+            isOneToOne: false
+            referencedRelation: "hatims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hatims: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          is_open: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_open?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_open?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       homework: {
         Row: {
           class_id: string

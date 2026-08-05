@@ -2,6 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { HatimBoard } from "@/components/HatimBoard";
+import { Input } from "@/components/ui/input";
+import { useHatims, useRemoveHatim, useSaveHatim } from "@/lib/hatim-api";
+import { useAuth } from "@/hooks/use-auth";
 import {
   CUZ_STATUSES,
   classLabel,
@@ -22,16 +26,22 @@ const CUZ_NUMBERS = Array.from({ length: 30 }, (_, i) => i + 1);
 
 function CuzPage() {
   const { settings } = useSiteSettings();
+  const { user, profile } = useAuth();
   const { isAdmin, myClassIds } = useMyRoles();
   const { data: classes = [] } = useClasses();
   const { data: students = [] } = useStudents();
   const { data: records = [] } = useCuzRecords();
   const save = useSaveCuz();
+  const { data: hatims = [] } = useHatims();
+  const saveHatim = useSaveHatim();
+  const removeHatim = useRemoveHatim();
+  const [hatimTitle, setHatimTitle] = useState("");
 
   const visibleClasses = useMemo(
     () => (isAdmin ? classes : classes.filter((c) => myClassIds.includes(c.id))),
     [classes, isAdmin, myClassIds],
   );
+
   const [classId, setClassId] = useState("");
   const [studentId, setStudentId] = useState("");
 
@@ -68,6 +78,72 @@ function CuzPage() {
         <p className="eyebrow">Modül</p>
         <h1 className="mt-2 text-2xl text-foreground">Cüz & Ezber Takibi</h1>
       </div>
+
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg text-foreground">Hatim Organizasyonu</h2>
+          {isAdmin && (
+            <div className="flex gap-2">
+              <Input
+                placeholder="Hatim adı (ör. Ramazan Hatmi)"
+                value={hatimTitle}
+                onChange={(e) => setHatimTitle(e.target.value)}
+                className="h-9 w-56"
+              />
+              <button
+                onClick={() => {
+                  if (!hatimTitle.trim()) {
+                    toast.error("Hatim adı giriniz.");
+                    return;
+                  }
+                  saveHatim.mutate(
+                    { title: hatimTitle.trim(), created_by: user?.id ?? null },
+                    {
+                      onSuccess: () => {
+                        setHatimTitle("");
+                        toast.success("Hatim açıldı.");
+                      },
+                      onError: (e) =>
+                        toast.error(e instanceof Error ? e.message : "Hatim açılamadı"),
+                    },
+                  );
+                }}
+                className="rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground"
+              >
+                Hatim Aç
+              </button>
+            </div>
+          )}
+        </div>
+
+        {isAdmin && hatims.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {hatims.map((h) => (
+              <div
+                key={h.id}
+                className="flex items-center gap-2 rounded-full border border-border px-3 py-1 text-[12px] text-muted-foreground"
+              >
+                <span className="text-foreground">{h.title}</span>
+                <button
+                  onClick={() => saveHatim.mutate({ id: h.id, is_open: !h.is_open })}
+                  className="hover:text-primary"
+                >
+                  {h.is_open ? "Kapat" : "Yeniden Aç"}
+                </button>
+                <button
+                  onClick={() => removeHatim.mutate(h.id)}
+                  className="hover:text-destructive"
+                >
+                  Sil
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <HatimBoard userId={user?.id} participantName={profile?.name ?? ""} manage />
+      </section>
+
 
       <div className="flex flex-wrap gap-2">
         <select

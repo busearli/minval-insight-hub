@@ -20,6 +20,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { StudentSessionBars } from "@/components/SessionAttendanceChart";
+import { HatimBoard } from "@/components/HatimBoard";
 import { attendanceLabel, classLabel, cuzLabel, submissionLabel } from "@/lib/admin-api";
 import { useSiteSettings } from "@/lib/site-api";
 import { useRealtimeSync } from "@/lib/use-realtime-sync";
@@ -418,6 +419,14 @@ function StudentPortalPage() {
 
             {tab === "cuz" && settings.cuz_tracking_enabled && (
               <div className="space-y-4">
+                <div className="space-y-3">
+                  <h2 className="text-lg text-foreground">Hatim — Cüz Seçimi</h2>
+                  <p className="text-[13px] text-muted-foreground">
+                    Açık hatimlerde boş bir cüzü seçerek listeye adınızı yazdırabilirsiniz.
+                  </p>
+                  <HatimBoard userId={user?.id} participantName={profile?.name ?? ""} />
+                </div>
+
                 <div className="grid gap-4 sm:grid-cols-2">
                   <StatCard
                     label="Tamamlanan Cüz"
