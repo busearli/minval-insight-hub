@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useDevAdmin } from "@/lib/dev-mode";
 import { purgeLocalClasses } from "@/lib/local-classes";
 import type { Database } from "@/integrations/supabase/types";
 
