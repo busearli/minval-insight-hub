@@ -16,8 +16,8 @@ export function HatimBoard({
   participantName,
   manage = false,
 }: {
-  userId?: string;
-  participantName?: string;
+  userId?: string | undefined;
+  participantName?: string | undefined;
   manage?: boolean;
 }) {
   const { data: hatims = [], isLoading } = useHatims();
