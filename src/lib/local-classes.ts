@@ -48,3 +48,9 @@ export function saveLocalClass(row: Record<string, unknown>): ClassRow {
 export function removeLocalClass(id: string) {
   writeLocalClasses(readLocalClasses().filter((r) => r.id !== id));
 }
+
+/** Eski sürümden kalan yerel sınıf kayıtlarını tamamen siler. */
+export function purgeLocalClasses() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(KEY);
+}
