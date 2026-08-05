@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { RegistrationModal } from "@/components/RegistrationModal";
 import { whatsappUrl } from "@/lib/minval-programs";
-import { useSiteSettings } from "@/lib/site-api";
+import { mapsUrl, telUrl, useSiteSettings } from "@/lib/site-api";
 
 
 export const Route = createFileRoute("/iletisim")({
