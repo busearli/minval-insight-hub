@@ -178,6 +178,24 @@ function ClassesPage() {
         <Input placeholder="Grup adı (ör. Grup 1)" value={form["name"] ?? ""} onChange={(e) => set("name", e.target.value)} />
         <Input placeholder="Düzey (ör. Orta Düzey N2)" value={form["level"] ?? ""} onChange={(e) => set("level", e.target.value)} />
         <Input placeholder="Eğitmen adı" value={form["instructor_name"] ?? ""} onChange={(e) => set("instructor_name", e.target.value)} />
+        <select
+          aria-label="Sorumlu hoca hesabı"
+          value={form["instructor_user_id"] ?? ""}
+          onChange={(e) => {
+            set("instructor_user_id", e.target.value);
+            const n = e.target.value ? instructorName(e.target.value) : "";
+            if (n && n !== "—") set("instructor_name", n);
+          }}
+          className="h-10 rounded-md border border-input bg-card px-3 text-sm text-foreground sm:col-span-2"
+        >
+          <option value="">Sorumlu hoca hesabı seçin (panelde görsün)</option>
+          {instructors.map((p) => (
+            <option key={p.user_id} value={p.user_id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+
         <div className="grid grid-cols-3 gap-2 sm:col-span-2">
           <select
             value={form["day"] ?? ""}
