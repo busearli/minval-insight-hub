@@ -418,6 +418,14 @@ function StudentPortalPage() {
 
             {tab === "cuz" && settings.cuz_tracking_enabled && (
               <div className="space-y-4">
+                <div className="space-y-3">
+                  <h2 className="text-lg text-foreground">Hatim — Cüz Seçimi</h2>
+                  <p className="text-[13px] text-muted-foreground">
+                    Açık hatimlerde boş bir cüzü seçerek listeye adınızı yazdırabilirsiniz.
+                  </p>
+                  <HatimBoard userId={user?.id} participantName={profile?.name ?? ""} />
+                </div>
+
                 <div className="grid gap-4 sm:grid-cols-2">
                   <StatCard
                     label="Tamamlanan Cüz"
