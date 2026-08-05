@@ -144,7 +144,32 @@ function ClassesPage() {
         <Input placeholder="Grup adı (ör. Grup 1)" value={form["name"] ?? ""} onChange={(e) => set("name", e.target.value)} />
         <Input placeholder="Düzey (ör. Orta Düzey N2)" value={form["level"] ?? ""} onChange={(e) => set("level", e.target.value)} />
         <Input placeholder="Eğitmen adı" value={form["instructor_name"] ?? ""} onChange={(e) => set("instructor_name", e.target.value)} />
-        <Input placeholder="Program saati (ör. Salı 20:00)" value={form["schedule"] ?? ""} onChange={(e) => set("schedule", e.target.value)} />
+        <div className="grid grid-cols-3 gap-2 sm:col-span-2">
+          <select
+            value={form["day"] ?? ""}
+            onChange={(e) => set("day", e.target.value)}
+            className="h-10 rounded-md border border-input bg-card px-3 text-sm text-foreground"
+          >
+            <option value="">Ders günü</option>
+            {weekDays.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <Input
+            type="time"
+            aria-label="Başlangıç saati"
+            value={form["start_time"] ?? ""}
+            onChange={(e) => set("start_time", e.target.value)}
+          />
+          <Input
+            type="time"
+            aria-label="Bitiş saati"
+            value={form["end_time"] ?? ""}
+            onChange={(e) => set("end_time", e.target.value)}
+          />
+        </div>
         <Input type="number" min={0} placeholder="Kontenjan (kişi)" value={form["capacity"] ?? ""} onChange={(e) => set("capacity", e.target.value)} />
         <Textarea placeholder="Not" value={form["notes"] ?? ""} onChange={(e) => set("notes", e.target.value)} className="sm:col-span-2" />
         <div className="flex gap-2 sm:col-span-2">
