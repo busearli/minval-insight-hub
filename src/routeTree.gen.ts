@@ -11,12 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as HaftalikProgramRouteImport } from './routes/haftalik-program'
 import { Route as HakkimizdaRouteImport } from './routes/hakkimizda'
 import { Route as IletisimRouteImport } from './routes/iletisim'
 import { Route as MinvalSanatRouteImport } from './routes/minval-sanat'
+import { Route as OgrenciRouteImport } from './routes/ogrenci'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as ProgramlarRouteImport } from './routes/programlar'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAyarlarRouteImport } from './routes/admin.ayarlar'
+import { Route as AdminBasvurularRouteImport } from './routes/admin.basvurular'
 import { Route as AdminOdevlerRouteImport } from './routes/admin.odevler'
 import { Route as AdminOgrencilerRouteImport } from './routes/admin.ogrenciler'
 import { Route as AdminSiniflarRouteImport } from './routes/admin.siniflar'
@@ -31,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HaftalikProgramRoute = HaftalikProgramRouteImport.update({
+  id: '/haftalik-program',
+  path: '/haftalik-program',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HakkimizdaRoute = HakkimizdaRouteImport.update({
@@ -48,6 +57,11 @@ const MinvalSanatRoute = MinvalSanatRouteImport.update({
   path: '/minval-sanat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OgrenciRoute = OgrenciRouteImport.update({
+  id: '/ogrenci',
+  path: '/ogrenci',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PanelRoute = PanelRouteImport.update({
   id: '/panel',
   path: '/panel',
@@ -61,6 +75,16 @@ const ProgramlarRoute = ProgramlarRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAyarlarRoute = AdminAyarlarRouteImport.update({
+  id: '/ayarlar',
+  path: '/ayarlar',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBasvurularRoute = AdminBasvurularRouteImport.update({
+  id: '/basvurular',
+  path: '/basvurular',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminOdevlerRoute = AdminOdevlerRouteImport.update({
@@ -92,11 +116,15 @@ const AtolyeWorkshopIdRoute = AtolyeWorkshopIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/haftalik-program': typeof HaftalikProgramRoute
   '/hakkimizda': typeof HakkimizdaRoute
   '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
+  '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/ayarlar': typeof AdminAyarlarRoute
+  '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
@@ -106,11 +134,15 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/haftalik-program': typeof HaftalikProgramRoute
   '/hakkimizda': typeof HakkimizdaRoute
   '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
+  '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/ayarlar': typeof AdminAyarlarRoute
+  '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
@@ -122,11 +154,15 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/haftalik-program': typeof HaftalikProgramRoute
   '/hakkimizda': typeof HakkimizdaRoute
   '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
+  '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/ayarlar': typeof AdminAyarlarRoute
+  '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
@@ -139,11 +175,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/haftalik-program'
     | '/hakkimizda'
     | '/iletisim'
     | '/minval-sanat'
+    | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/admin/ayarlar'
+    | '/admin/basvurular'
     | '/admin/odevler'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
@@ -153,11 +193,15 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/haftalik-program'
     | '/hakkimizda'
     | '/iletisim'
     | '/minval-sanat'
+    | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/admin/ayarlar'
+    | '/admin/basvurular'
     | '/admin/odevler'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
@@ -168,11 +212,15 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/haftalik-program'
     | '/hakkimizda'
     | '/iletisim'
     | '/minval-sanat'
+    | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/admin/ayarlar'
+    | '/admin/basvurular'
     | '/admin/odevler'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
@@ -184,9 +232,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  HaftalikProgramRoute: typeof HaftalikProgramRoute
   HakkimizdaRoute: typeof HakkimizdaRoute
   IletisimRoute: typeof IletisimRoute
   MinvalSanatRoute: typeof MinvalSanatRoute
+  OgrenciRoute: typeof OgrenciRoute
   PanelRoute: typeof PanelRoute
   ProgramlarRoute: typeof ProgramlarRoute
   AtolyeWorkshopIdRoute: typeof AtolyeWorkshopIdRoute
@@ -206,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/haftalik-program': {
+      id: '/haftalik-program'
+      path: '/haftalik-program'
+      fullPath: '/haftalik-program'
+      preLoaderRoute: typeof HaftalikProgramRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hakkimizda': {
@@ -229,6 +286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MinvalSanatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ogrenci': {
+      id: '/ogrenci'
+      path: '/ogrenci'
+      fullPath: '/ogrenci'
+      preLoaderRoute: typeof OgrenciRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/panel': {
       id: '/panel'
       path: '/panel'
@@ -248,6 +312,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ayarlar': {
+      id: '/admin/ayarlar'
+      path: '/ayarlar'
+      fullPath: '/admin/ayarlar'
+      preLoaderRoute: typeof AdminAyarlarRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/basvurular': {
+      id: '/admin/basvurular'
+      path: '/basvurular'
+      fullPath: '/admin/basvurular'
+      preLoaderRoute: typeof AdminBasvurularRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/odevler': {
@@ -289,6 +367,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAyarlarRoute: typeof AdminAyarlarRoute
+  AdminBasvurularRoute: typeof AdminBasvurularRoute
   AdminOdevlerRoute: typeof AdminOdevlerRoute
   AdminOgrencilerRoute: typeof AdminOgrencilerRoute
   AdminSiniflarRoute: typeof AdminSiniflarRoute
@@ -297,6 +377,8 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAyarlarRoute: AdminAyarlarRoute,
+  AdminBasvurularRoute: AdminBasvurularRoute,
   AdminOdevlerRoute: AdminOdevlerRoute,
   AdminOgrencilerRoute: AdminOgrencilerRoute,
   AdminSiniflarRoute: AdminSiniflarRoute,
@@ -309,9 +391,11 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  HaftalikProgramRoute: HaftalikProgramRoute,
   HakkimizdaRoute: HakkimizdaRoute,
   IletisimRoute: IletisimRoute,
   MinvalSanatRoute: MinvalSanatRoute,
+  OgrenciRoute: OgrenciRoute,
   PanelRoute: PanelRoute,
   ProgramlarRoute: ProgramlarRoute,
   AtolyeWorkshopIdRoute: AtolyeWorkshopIdRoute,

@@ -234,6 +234,89 @@ export type Database = {
         }
         Relationships: []
       }
+      registration_applications: {
+        Row: {
+          age_level: string
+          assigned_class_id: string | null
+          created_at: string
+          full_name: string
+          id: string
+          notes: string
+          phone: string
+          program_id: string
+          program_label: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          age_level?: string
+          assigned_class_id?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          notes?: string
+          phone: string
+          program_id?: string
+          program_label?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          age_level?: string
+          assigned_class_id?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          notes?: string
+          phone?: string
+          program_id?: string
+          program_label?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registration_applications_assigned_class_id_fkey"
+            columns: ["assigned_class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_settings: {
+        Row: {
+          address: string
+          email: string
+          id: string
+          instagram_url: string
+          intro: string
+          phone: string
+          updated_at: string
+          whatsapp_number: string
+        }
+        Insert: {
+          address?: string
+          email?: string
+          id?: string
+          instagram_url?: string
+          intro?: string
+          phone?: string
+          updated_at?: string
+          whatsapp_number?: string
+        }
+        Update: {
+          address?: string
+          email?: string
+          id?: string
+          instagram_url?: string
+          intro?: string
+          phone?: string
+          updated_at?: string
+          whatsapp_number?: string
+        }
+        Relationships: []
+      }
       students: {
         Row: {
           class_id: string | null

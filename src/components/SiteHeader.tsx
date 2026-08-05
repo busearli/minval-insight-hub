@@ -1,19 +1,23 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, MessageCircle, ShieldCheck, X } from "lucide-react";
+import { LogIn, Menu, Sparkles, X } from "lucide-react";
 
 import { MinvalMark, ArchPattern } from "@/components/MinvalMark";
-import { WHATSAPP_URL } from "@/lib/minval-programs";
+import { PortalDialog } from "@/components/PortalDialog";
+import { RegistrationModal } from "@/components/RegistrationModal";
 
 const navLinks = [
   { label: "Hakkımızda", to: "/hakkimizda" },
   { label: "Programlarımız", to: "/programlar" },
+  { label: "Haftalık Program", to: "/haftalik-program" },
   { label: "Minval Sanat", to: "/minval-sanat" },
   { label: "İletişim", to: "/iletisim" },
 ] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [portal, setPortal] = useState(false);
+  const [register, setRegister] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 overflow-hidden border-b border-border bg-background/90 backdrop-blur">
@@ -31,7 +35,7 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="mx-auto hidden items-center gap-7 lg:flex">
+        <nav className="mx-auto hidden items-center gap-6 lg:flex">
           {navLinks.map((l) => (
             <Link
               key={l.to}
@@ -45,23 +49,18 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
-          <Link
-            to="/admin"
-            title="Yönetim Paneli"
-            className="hidden items-center gap-1.5 rounded-full border border-border px-3 py-2 text-[12px] text-muted-foreground transition-colors hover:border-accent hover:text-primary sm:inline-flex"
+          <button
+            onClick={() => setPortal(true)}
+            className="hidden items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground transition-colors hover:border-accent hover:text-primary sm:inline-flex"
           >
-            <ShieldCheck className="h-3.5 w-3.5" /> Yönetim
-          </Link>
-          <a
-            href={WHATSAPP_URL}
-            target="_blank"
-            rel="noreferrer"
+            <LogIn className="h-3.5 w-3.5" /> Giriş Yap
+          </button>
+          <button
+            onClick={() => setRegister(true)}
             className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[13px] text-primary-foreground transition-opacity hover:opacity-90"
           >
-            <MessageCircle className="h-4 w-4" />
-            <span className="hidden sm:inline">WhatsApp ile Kayıt Ol</span>
-            <span className="sm:hidden">Kayıt</span>
-          </a>
+            <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+          </button>
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label="Menü"
@@ -85,12 +84,21 @@ export function SiteHeader() {
                 {l.label}
               </Link>
             ))}
-            <Link to="/admin" onClick={() => setOpen(false)} className="text-sm text-muted-foreground">
-              Yönetim Paneli
-            </Link>
+            <button
+              onClick={() => {
+                setOpen(false);
+                setPortal(true);
+              }}
+              className="text-left text-sm text-muted-foreground"
+            >
+              Giriş Yap
+            </button>
           </div>
         </div>
       )}
+
+      <PortalDialog open={portal} onOpenChange={setPortal} />
+      <RegistrationModal open={register} onOpenChange={setRegister} />
     </header>
   );
 }

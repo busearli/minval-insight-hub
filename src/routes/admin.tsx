@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { BarChart3, BookOpen, CalendarCheck, GraduationCap, Home, Users } from "lucide-react";
+import { BarChart3, BookOpen, CalendarCheck, GraduationCap, Home, Inbox, Settings, Users } from "lucide-react";
+
 import { useState } from "react";
 
 import { MinvalMark } from "@/components/MinvalMark";
@@ -27,11 +28,14 @@ export const Route = createFileRoute("/admin")({
 
 const items: { to: string; label: string; icon: typeof Home; exact?: boolean }[] = [
   { to: "/admin", label: "Genel Bakış & Raporlar", icon: BarChart3, exact: true },
+  { to: "/admin/basvurular", label: "Başvuru Yönetimi", icon: Inbox },
   { to: "/admin/siniflar", label: "Sınıflar", icon: Home },
   { to: "/admin/ogrenciler", label: "Öğrenciler", icon: Users },
   { to: "/admin/yoklama", label: "Yoklama", icon: CalendarCheck },
   { to: "/admin/odevler", label: "Ödevler", icon: BookOpen },
+  { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings },
 ];
+
 
 function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

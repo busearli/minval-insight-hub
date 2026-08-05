@@ -1,11 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight, MessageCircle, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ArchPattern } from "@/components/MinvalMark";
 import { ProgramCard } from "@/components/ProgramCard";
-import { WHATSAPP_URL, principles, programs } from "@/lib/minval-programs";
+import { ProgramDetailModal } from "@/components/ProgramDetailModal";
+import { RegistrationModal } from "@/components/RegistrationModal";
+import { WeeklySchedule } from "@/components/WeeklySchedule";
+import { WHATSAPP_URL, principles, programs, type Program } from "@/lib/minval-programs";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,7 +35,16 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const [detail, setDetail] = useState<Program | null>(null);
+  const [regOpen, setRegOpen] = useState(false);
+  const [regProgram, setRegProgram] = useState("");
+  const openRegister = (id = "") => {
+    setRegProgram(id);
+    setRegOpen(true);
+  };
+
   return (
+
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
@@ -55,14 +69,13 @@ function HomePage() {
             >
               Programlarımızı Keşfedin <ArrowRight className="h-4 w-4" />
             </Link>
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={() => openRegister()}
               className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm transition-colors hover:bg-primary-foreground/10"
             >
-              <MessageCircle className="h-4 w-4" /> WhatsApp'tan İletişime Geçin
-            </a>
+              <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+            </button>
+
           </div>
         </div>
       </section>
