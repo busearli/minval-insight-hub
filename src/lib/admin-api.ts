@@ -47,17 +47,21 @@ export function useClasses() {
 export function useSaveClass() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (row: Record<string, unknown>): Promise<{ local: boolean }> => {
+    mutationFn: async (row: Record<string, unknown>): Promise<{ local: boolean; id: string }> => {
       const q = supabase.from("classes");
       const res = row["id"]
-        ? await q.update(row as never).eq("id", row["id"] as string)
-        : await q.insert(row as never);
+        ? await q.update(row as never).eq("id", row["id"] as string).select("id").single()
+        : await q.insert(row as never).select("id").single();
       if (res.error) throw new Error(res.error.message);
-      return { local: false };
+      return { local: false, id: (res.data as { id: string }).id };
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ["classes"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["classes"] });
+      void qc.invalidateQueries({ queryKey: ["class-instructors"] });
+    },
   });
 }
+
 
 export function useRemoveClass() {
   const qc = useQueryClient();
