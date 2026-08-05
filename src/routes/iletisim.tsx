@@ -1,9 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Instagram, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Instagram, Mail, MapPin, MessageCircle, Phone, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { WHATSAPP_URL } from "@/lib/minval-programs";
+import { RegistrationModal } from "@/components/RegistrationModal";
+import { whatsappUrl } from "@/lib/minval-programs";
+import { useSiteSettings } from "@/lib/site-api";
+
 
 export const Route = createFileRoute("/iletisim")({
   head: () => ({
