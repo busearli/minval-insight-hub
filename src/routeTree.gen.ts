@@ -19,6 +19,7 @@ import { Route as OgrenciRouteImport } from './routes/ogrenci'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as ProgramlarRouteImport } from './routes/programlar'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAnasayfaRouteImport } from './routes/admin.anasayfa'
 import { Route as AdminAyarlarRouteImport } from './routes/admin.ayarlar'
 import { Route as AdminBasvurularRouteImport } from './routes/admin.basvurular'
 import { Route as AdminCuzRouteImport } from './routes/admin.cuz'
@@ -78,6 +79,11 @@ const ProgramlarRoute = ProgramlarRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnasayfaRoute = AdminAnasayfaRouteImport.update({
+  id: '/anasayfa',
+  path: '/anasayfa',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAyarlarRoute = AdminAyarlarRouteImport.update({
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/anasayfa': typeof AdminAnasayfaRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/cuz': typeof AdminCuzRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/anasayfa': typeof AdminAnasayfaRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/cuz': typeof AdminCuzRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/anasayfa': typeof AdminAnasayfaRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/cuz': typeof AdminCuzRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/admin/anasayfa'
     | '/admin/ayarlar'
     | '/admin/basvurular'
     | '/admin/cuz'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/admin/anasayfa'
     | '/admin/ayarlar'
     | '/admin/basvurular'
     | '/admin/cuz'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/admin/anasayfa'
     | '/admin/ayarlar'
     | '/admin/basvurular'
     | '/admin/cuz'
@@ -350,6 +362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/anasayfa': {
+      id: '/admin/anasayfa'
+      path: '/anasayfa'
+      fullPath: '/admin/anasayfa'
+      preLoaderRoute: typeof AdminAnasayfaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/ayarlar': {
       id: '/admin/ayarlar'
       path: '/ayarlar'
@@ -424,6 +443,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAnasayfaRoute: typeof AdminAnasayfaRoute
   AdminAyarlarRoute: typeof AdminAyarlarRoute
   AdminBasvurularRoute: typeof AdminBasvurularRoute
   AdminCuzRoute: typeof AdminCuzRoute
@@ -437,6 +457,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnasayfaRoute: AdminAnasayfaRoute,
   AdminAyarlarRoute: AdminAyarlarRoute,
   AdminBasvurularRoute: AdminBasvurularRoute,
   AdminCuzRoute: AdminCuzRoute,
