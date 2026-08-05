@@ -19,6 +19,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { StudentSessionBars } from "@/components/SessionAttendanceChart";
 import { attendanceLabel, classLabel, cuzLabel, submissionLabel } from "@/lib/admin-api";
 import { useSiteSettings } from "@/lib/site-api";
 import { useRealtimeSync } from "@/lib/use-realtime-sync";
@@ -285,6 +286,8 @@ function StudentPortalPage() {
                   </div>
                 </div>
 
+                <StudentSessionBars records={stats.att} title="Ders Bazlı Devamım" />
+
                 <div className="card-soft border-accent/40 p-6">
                   <p className="eyebrow">Son Yoklamalarım</p>
                   <div className="mt-4 flex flex-wrap gap-2">
@@ -320,6 +323,8 @@ function StudentPortalPage() {
                     progress={stats.rate}
                   />
                 </div>
+                <StudentSessionBars records={stats.att} />
+
                 <div className="card-soft border-accent/40 p-6">
                   <h2 className="text-lg text-foreground">Yoklama Geçmişi</h2>
                   <ul className="mt-4 divide-y divide-border">
