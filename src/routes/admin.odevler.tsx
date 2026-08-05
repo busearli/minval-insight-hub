@@ -182,10 +182,23 @@ function HomeworkPage() {
       </form>
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-        <div className="card-soft divide-y divide-border border-accent/40">
-          {visibleHomework.length === 0 && (
+        <div className="card-soft h-fit divide-y divide-border border-accent/40">
+          <button
+            onClick={() => setListOpen((o) => !o)}
+            className="flex w-full items-center justify-between px-5 py-4 text-left"
+          >
+            <span className="text-sm text-foreground">
+              Ödev Listesi{" "}
+              <span className="text-muted-foreground">({visibleHomework.length})</span>
+            </span>
+            <ChevronDown
+              className={`h-4 w-4 text-muted-foreground transition-transform ${listOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+          {listOpen && visibleHomework.length === 0 && (
             <p className="px-5 py-6 text-sm text-muted-foreground">Henüz ödev atanmadı.</p>
           )}
+          {listOpen &&
           {visibleHomework.map((h) => {
             const c = classes.find((x) => x.id === h.class_id);
             return (
