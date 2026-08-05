@@ -6,6 +6,8 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { signInWithPhone } from "@/lib/auth-lookup.functions";
+import { devSuperAdminLogin } from "@/lib/dev-admin.functions";
+
 import { programs } from "@/lib/minval-programs";
 import {
   Dialog,
