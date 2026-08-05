@@ -269,7 +269,13 @@ function ClassesPage() {
             {classes.map((c) => (
               <tr key={c.id} className="border-b border-border/70 last:border-0">
                 <td className="px-5 py-3 text-foreground">{classLabel(c)}</td>
-                <td className="px-5 py-3 text-muted-foreground">{c.instructor_name || "—"}</td>
+                <td className="px-5 py-3 text-muted-foreground">
+                  {instructorOf(c.id) ? instructorName(instructorOf(c.id)!.user_id) : c.instructor_name || "—"}
+                  {!instructorOf(c.id) && (
+                    <span className="ml-2 text-[11px] text-destructive">hesap atanmadı</span>
+                  )}
+                </td>
+
                 <td className="px-5 py-3 text-muted-foreground">{c.schedule || "—"}</td>
                 <td className="px-5 py-3 text-muted-foreground">
                   {students.filter((s) => s.class_id === c.id).length}
