@@ -20,6 +20,8 @@ export const defaultSettings: SiteSettings = {
   email: "merhaba@minvalakademi.com",
   address: "Minval Kahve, İstanbul",
   intro: "",
+  pre_registration_enabled: true,
+  cuz_tracking_enabled: false,
   updated_at: "",
 };
 
