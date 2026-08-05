@@ -139,7 +139,7 @@ function ReportsPage() {
     return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 10);
   }, [students, applications, submissions]);
 
-
+  const kpis = [
     ["Aktif Öğrenci", String(activeStudents.length)],
     ["Sınıf Ataması Bekleyen", String(pendingAssignments)],
     ["Aktif Sınıf", String(classes.length)],
