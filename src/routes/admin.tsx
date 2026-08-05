@@ -6,6 +6,7 @@ import {
   GraduationCap,
   Home,
   Inbox,
+  Megaphone,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -59,6 +60,7 @@ const items: NavItem[] = [
   { to: "/admin/yoklama", label: "Yoklama", icon: CalendarCheck },
   { to: "/admin/odevler", label: "Ödevler", icon: BookOpen },
   { to: "/admin/cuz", label: "Cüz & Ezber", icon: Sparkles, module: "cuz" },
+  { to: "/admin/duyurular", label: "Duyurular & İçerik", icon: Megaphone, adminOnly: true },
   { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings, superOnly: true },
 ];
 

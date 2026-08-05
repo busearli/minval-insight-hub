@@ -14,6 +14,7 @@ import { submitApplication } from "@/lib/site-api";
 
 const schema = z.object({
   full_name: z.string().trim().min(3, { message: "Ad soyad giriniz" }).max(80),
+  email: z.string().trim().email({ message: "Geçerli bir e-posta giriniz" }).max(255),
   phone: z
     .string()
     .trim()
@@ -38,6 +39,7 @@ export function RegistrationModal({
 }) {
   const [form, setForm] = useState({
     full_name: "",
+    email: "",
     phone: "",
     program_id: defaultProgramId,
     age_level: "",
@@ -62,7 +64,7 @@ export function RegistrationModal({
         program_label: program ? `${program.title} — ${program.subtitle}` : parsed.data.program_id,
       });
       toast.success("Ön kaydınız alınmıştır. En kısa sürede sizinle iletişime geçilecektir.");
-      setForm({ full_name: "", phone: "", program_id: "", age_level: "", notes: "" });
+      setForm({ full_name: "", email: "", phone: "", program_id: "", age_level: "", notes: "" });
       onOpenChange(false);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Kayıt gönderilemedi");
@@ -91,6 +93,14 @@ export function RegistrationModal({
             maxLength={80}
             value={form.full_name}
             onChange={(e) => set("full_name", e.target.value)}
+          />
+          <input
+            type="email"
+            className={field}
+            placeholder="E-posta Adresi"
+            maxLength={255}
+            value={form.email}
+            onChange={(e) => set("email", e.target.value)}
           />
           <input
             className={field}

@@ -119,6 +119,26 @@ function ReportsPage() {
     };
   }, [studentId, students, records, submissions, allClasses, homework]);
 
+  const activity = useMemo(() => {
+    const items: { text: string; at: string }[] = [
+      ...students.map((s) => ({
+        text: `${s.full_name} öğrenci kaydı oluşturuldu`,
+        at: s.created_at,
+      })),
+      ...applications.map((a) => ({
+        text: `${a.full_name} ön kayıt başvurusu yaptı (${a.status})`,
+        at: a.created_at,
+      })),
+      ...submissions.map((s) => ({
+        text: `Ödev teslim durumu güncellendi: ${
+          students.find((st) => st.id === s.student_id)?.full_name ?? "Öğrenci"
+        } — ${s.status}`,
+        at: s.updated_at ?? s.created_at,
+      })),
+    ];
+    return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 10);
+  }, [students, applications, submissions]);
+
   const kpis = [
     ["Aktif Öğrenci", String(activeStudents.length)],
     ["Sınıf Ataması Bekleyen", String(pendingAssignments)],
@@ -141,6 +161,21 @@ function ReportsPage() {
             <p className="mt-3 font-serif text-3xl text-foreground">{value}</p>
           </div>
         ))}
+      </div>
+
+      <div className="card-soft border-accent/40 p-6">
+        <h2 className="text-lg text-foreground">Son Hareketler</h2>
+        <ul className="mt-4 space-y-2">
+          {activity.length === 0 && (
+            <li className="text-sm text-muted-foreground">Henüz hareket yok.</li>
+          )}
+          {activity.map((a, i) => (
+            <li key={i} className="flex items-start justify-between gap-4 text-sm text-foreground">
+              <span>{a.text}</span>
+              <span className="shrink-0 text-[12px] text-muted-foreground">{a.at.slice(0, 10)}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {isSuperAdmin && (

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, Trash2, X } from "lucide-react";
+import { Check, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin/basvurular")({
 });
 
 function ApplicationsPage() {
-  const { data: apps = [], isLoading } = useApplications();
+  const { data: apps = [], isLoading, refetch, isFetching } = useApplications();
   const { data: classes = [] } = useClasses();
   const { refetch: refetchStudents } = useStudents();
   const update = useUpdateApplication();
@@ -62,7 +62,15 @@ function ApplicationsPage() {
 
       <div>
         <p className="eyebrow">Başvuru Yönetimi</p>
-        <h1 className="mt-2 text-2xl text-foreground">Onay Bekleyen Ön Kayıtlar</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="mt-2 text-2xl text-foreground">Onay Bekleyen Ön Kayıtlar</h1>
+          <button
+            onClick={() => void refetch()}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} /> Yenile
+          </button>
+        </div>
       </div>
 
 
@@ -99,7 +107,11 @@ function ApplicationsPage() {
               <div>
                 <h3 className="text-lg text-foreground">{a.full_name}</h3>
                 <p className="mt-1 text-[13px] text-muted-foreground">
-                  {a.phone} · {a.program_label || a.program_id} · {a.age_level || "Düzey belirtilmedi"}
+                  {a.email || "E-posta yok"} · {a.phone} ·{" "}
+                  {a.program_label || a.program_id} · {a.age_level || "Düzey belirtilmedi"}
+                </p>
+                <p className="mt-1 text-[12px] text-muted-foreground">
+                  Başvuru tarihi: {a.created_at.slice(0, 10)}
                 </p>
               </div>
               <span className="rounded-full bg-secondary px-3 py-1 text-[11px] text-secondary-foreground">

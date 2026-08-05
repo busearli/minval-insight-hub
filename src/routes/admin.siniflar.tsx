@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   classLabel,
   useClasses,
+  useSave,
+  useStudents,
   useRemoveClass,
   useSaveClass,
   type ClassRow,
@@ -18,13 +20,17 @@ export const Route = createFileRoute("/admin/siniflar")({
   component: ClassesPage,
 });
 
-const empty = { program: "", name: "", level: "", instructor_name: "", schedule: "", notes: "" };
+const empty = { program: "", name: "", level: "", instructor_name: "", schedule: "", capacity: "", notes: "" };
 
 function ClassesPage() {
   const { isAdmin } = useMyRoles();
   const { data: classes = [], isLoading } = useClasses();
   const save = useSaveClass();
   const remove = useRemoveClass();
+  const { data: students = [] } = useStudents();
+  const saveStudent = useSave("students");
+  const [openRoster, setOpenRoster] = useState<string | null>(null);
+  const [moveTo, setMoveTo] = useState<Record<string, string>>({});
   const [form, setForm] = useState<Record<string, string>>(empty);
   const [editing, setEditing] = useState<string | null>(null);
 
@@ -44,7 +50,11 @@ function ClassesPage() {
       toast.error("Lütfen grup adını girin.");
       return;
     }
-    const payload = editing ? { ...form, id: editing } : form;
+    const payload: Record<string, unknown> = {
+      ...form,
+      capacity: Number(form["capacity"] ?? 0) || 0,
+      ...(editing ? { id: editing } : {}),
+    };
     setForm(empty);
     setEditing(null);
     save.mutate(payload, {
@@ -68,6 +78,7 @@ function ClassesPage() {
       level: c.level,
       instructor_name: c.instructor_name,
       schedule: c.schedule,
+      capacity: String(c.capacity ?? 0),
       notes: c.notes,
     });
   };
@@ -85,6 +96,7 @@ function ClassesPage() {
         <Input placeholder="Düzey (ör. Orta Düzey N2)" value={form["level"] ?? ""} onChange={(e) => set("level", e.target.value)} />
         <Input placeholder="Eğitmen adı" value={form["instructor_name"] ?? ""} onChange={(e) => set("instructor_name", e.target.value)} />
         <Input placeholder="Program saati (ör. Salı 20:00)" value={form["schedule"] ?? ""} onChange={(e) => set("schedule", e.target.value)} />
+        <Input type="number" min={0} placeholder="Kontenjan (kişi)" value={form["capacity"] ?? ""} onChange={(e) => set("capacity", e.target.value)} />
         <Textarea placeholder="Not" value={form["notes"] ?? ""} onChange={(e) => set("notes", e.target.value)} className="sm:col-span-2" />
         <div className="flex gap-2 sm:col-span-2">
           <button
@@ -116,23 +128,34 @@ function ClassesPage() {
               <th className="px-5 py-3">Sınıf</th>
               <th className="px-5 py-3">Eğitmen</th>
               <th className="px-5 py-3">Program Saati</th>
+              <th className="px-5 py-3">Kontenjan</th>
               <th className="px-5 py-3" />
             </tr>
           </thead>
           <tbody>
             {isLoading && (
-              <tr><td colSpan={4} className="px-5 py-6 text-muted-foreground">Yükleniyor…</td></tr>
+              <tr><td colSpan={5} className="px-5 py-6 text-muted-foreground">Yükleniyor…</td></tr>
             )}
             {!isLoading && classes.length === 0 && (
-              <tr><td colSpan={4} className="px-5 py-6 text-muted-foreground">Henüz sınıf eklenmedi.</td></tr>
+              <tr><td colSpan={5} className="px-5 py-6 text-muted-foreground">Henüz sınıf eklenmedi.</td></tr>
             )}
             {classes.map((c) => (
               <tr key={c.id} className="border-b border-border/70 last:border-0">
                 <td className="px-5 py-3 text-foreground">{classLabel(c)}</td>
                 <td className="px-5 py-3 text-muted-foreground">{c.instructor_name || "—"}</td>
                 <td className="px-5 py-3 text-muted-foreground">{c.schedule || "—"}</td>
+                <td className="px-5 py-3 text-muted-foreground">
+                  {students.filter((s) => s.class_id === c.id).length}
+                  {c.capacity ? ` / ${c.capacity}` : ""}
+                </td>
                 <td className="px-5 py-3">
                   <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setOpenRoster((v) => (v === c.id ? null : c.id))}
+                      className="rounded-full border border-border px-3 py-1 text-[12px] text-muted-foreground hover:text-primary"
+                    >
+                      {openRoster === c.id ? "Listeyi Kapat" : "Öğrenci Listesi"}
+                    </button>
                     <button onClick={() => edit(c)} className="rounded-full border border-border p-2 text-muted-foreground hover:text-primary">
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
@@ -143,6 +166,74 @@ function ClassesPage() {
                 </td>
               </tr>
             ))}
+            {classes
+              .filter((c) => c.id === openRoster)
+              .map((c) => (
+                <tr key={`${c.id}-roster`} className="border-b border-border/70 bg-secondary/40">
+                  <td colSpan={5} className="px-5 py-4">
+                    <p className="eyebrow">{classLabel(c)} · Öğrenci Listesi</p>
+                    <div className="mt-3 space-y-2">
+                      {students.filter((s) => s.class_id === c.id).length === 0 && (
+                        <p className="text-sm text-muted-foreground">Bu sınıfta öğrenci yok.</p>
+                      )}
+                      {students
+                        .filter((s) => s.class_id === c.id)
+                        .map((s) => (
+                          <div key={s.id} className="flex flex-wrap items-center gap-2">
+                            <span className="min-w-40 text-sm text-foreground">{s.full_name}</span>
+                            <select
+                              value={moveTo[s.id] ?? ""}
+                              onChange={(e) => setMoveTo((m) => ({ ...m, [s.id]: e.target.value }))}
+                              className="h-8 rounded-md border border-input bg-card px-2 text-[13px] text-foreground"
+                            >
+                              <option value="">Başka sınıfa taşı…</option>
+                              {classes
+                                .filter((x) => x.id !== c.id)
+                                .map((x) => (
+                                  <option key={x.id} value={x.id}>
+                                    {classLabel(x)}
+                                  </option>
+                                ))}
+                            </select>
+                            <button
+                              onClick={() => {
+                                const target = moveTo[s.id];
+                                if (!target) {
+                                  toast.error("Önce hedef sınıf seçiniz.");
+                                  return;
+                                }
+                                saveStudent.mutate(
+                                  { id: s.id, class_id: target },
+                                  {
+                                    onSuccess: () => toast.success("Öğrenci taşındı."),
+                                    onError: () => toast.error("Öğrenci taşınamadı."),
+                                  },
+                                );
+                              }}
+                              className="rounded-full border border-border px-3 py-1 text-[12px] text-muted-foreground hover:text-primary"
+                            >
+                              Taşı
+                            </button>
+                            <button
+                              onClick={() =>
+                                saveStudent.mutate(
+                                  { id: s.id, class_id: null },
+                                  {
+                                    onSuccess: () => toast.success("Öğrenci sınıftan çıkarıldı."),
+                                    onError: () => toast.error("İşlem başarısız."),
+                                  },
+                                )
+                              }
+                              className="rounded-full border border-border px-3 py-1 text-[12px] text-muted-foreground hover:text-destructive"
+                            >
+                              Sınıftan Çıkar
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

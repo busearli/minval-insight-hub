@@ -99,6 +99,7 @@ export function useDeleteApplication() {
 
 export async function submitApplication(input: {
   full_name: string;
+  email: string;
   phone: string;
   program_id: string;
   program_label: string;
