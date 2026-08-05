@@ -12,9 +12,15 @@ import {
   useStudents,
   useRemoveClass,
   useSaveClass,
+  useProfiles,
+  useAllRoles,
+  useClassInstructors,
+  useAssignInstructor,
+  useUnassignInstructor,
   type ClassRow,
 } from "@/lib/admin-api";
 import { useMyRoles } from "@/lib/rbac";
+
 
 export const Route = createFileRoute("/admin/siniflar")({
   component: ClassesPage,
@@ -31,6 +37,7 @@ const empty = {
   end_time: "",
   capacity: "",
   notes: "",
+  instructor_user_id: "",
 };
 
 const weekDays = [
@@ -65,6 +72,11 @@ function ClassesPage() {
   const remove = useRemoveClass();
   const { data: students = [] } = useStudents();
   const saveStudent = useSave("students");
+  const { data: profiles = [] } = useProfiles();
+  const { data: roles = [] } = useAllRoles();
+  const { data: links = [] } = useClassInstructors();
+  const assign = useAssignInstructor();
+  const unassign = useUnassignInstructor();
   const [openRoster, setOpenRoster] = useState<string | null>(null);
   const [moveTo, setMoveTo] = useState<Record<string, string>>({});
   const [newStudent, setNewStudent] = useState<Record<string, string>>({});
@@ -75,6 +87,15 @@ function ClassesPage() {
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  /** Eğitmen rolüne sahip kullanıcılar. */
+  const instructors = profiles.filter((p) =>
+    roles.some((r) => r.user_id === p.user_id && r.role === "instructor"),
+  );
+  const instructorOf = (classId: string) =>
+    links.find((l) => l.class_id === classId) ?? null;
+  const instructorName = (userId: string) =>
+    profiles.find((p) => p.user_id === userId)?.name ?? "—";
+
   if (!isAdmin && !isInstructor) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -83,28 +104,40 @@ function ClassesPage() {
     );
   }
 
+  /** Sınıfın eğitmen bağlantısını seçilen kullanıcıya göre günceller. */
+  const syncInstructor = async (classId: string, userId: string) => {
+    const current = links.filter((l) => l.class_id === classId);
+    const keep = current.find((l) => l.user_id === userId);
+    for (const l of current) {
+      if (l.id !== keep?.id) await unassign.mutateAsync(l.id);
+    }
+    if (userId && !keep) await assign.mutateAsync({ class_id: classId, user_id: userId });
+  };
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form["name"]?.trim()) {
       toast.error("Lütfen grup adını girin.");
       return;
     }
-    const { day, start_time, end_time, ...rest } = form;
+    const { day, start_time, end_time, instructor_user_id, ...rest } = form;
     const payload: Record<string, unknown> = {
       ...rest,
       schedule: composeSchedule(day ?? "", start_time ?? "", end_time ?? ""),
       capacity: Number(form["capacity"] ?? 0) || 0,
       ...(editing ? { id: editing } : {}),
     };
+    const wasEditing = editing;
     setForm(empty);
     setEditing(null);
     save.mutate(payload, {
-      onSuccess: ({ local }) => {
-        if (local) {
-          toast.warning("Sunucuya kaydedilemedi — sınıf bu cihazda yerel olarak saklandı.");
-        } else {
-          toast.success(editing ? "Sınıf güncellendi" : "Sınıf başarıyla oluşturuldu");
+      onSuccess: async ({ id }) => {
+        try {
+          await syncInstructor(id, instructor_user_id ?? "");
+        } catch {
+          toast.error("Sınıf kaydedildi ama hoca ataması yapılamadı.");
         }
+        toast.success(wasEditing ? "Sınıf güncellendi" : "Sınıf başarıyla oluşturuldu");
       },
       onError: () => toast.error("Sınıf kaydedilemedi."),
     });
@@ -122,8 +155,10 @@ function ClassesPage() {
       ...parseSchedule(c.schedule ?? ""),
       capacity: String(c.capacity ?? 0),
       notes: c.notes,
+      instructor_user_id: instructorOf(c.id)?.user_id ?? "",
     });
   };
+
 
   return (
     <div className="space-y-6">
@@ -144,6 +179,24 @@ function ClassesPage() {
         <Input placeholder="Grup adı (ör. Grup 1)" value={form["name"] ?? ""} onChange={(e) => set("name", e.target.value)} />
         <Input placeholder="Düzey (ör. Orta Düzey N2)" value={form["level"] ?? ""} onChange={(e) => set("level", e.target.value)} />
         <Input placeholder="Eğitmen adı" value={form["instructor_name"] ?? ""} onChange={(e) => set("instructor_name", e.target.value)} />
+        <select
+          aria-label="Sorumlu hoca hesabı"
+          value={form["instructor_user_id"] ?? ""}
+          onChange={(e) => {
+            set("instructor_user_id", e.target.value);
+            const n = e.target.value ? instructorName(e.target.value) : "";
+            if (n && n !== "—") set("instructor_name", n);
+          }}
+          className="h-10 rounded-md border border-input bg-card px-3 text-sm text-foreground sm:col-span-2"
+        >
+          <option value="">Sorumlu hoca hesabı seçin (panelde görsün)</option>
+          {instructors.map((p) => (
+            <option key={p.user_id} value={p.user_id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+
         <div className="grid grid-cols-3 gap-2 sm:col-span-2">
           <select
             value={form["day"] ?? ""}
@@ -217,7 +270,13 @@ function ClassesPage() {
             {classes.map((c) => (
               <tr key={c.id} className="border-b border-border/70 last:border-0">
                 <td className="px-5 py-3 text-foreground">{classLabel(c)}</td>
-                <td className="px-5 py-3 text-muted-foreground">{c.instructor_name || "—"}</td>
+                <td className="px-5 py-3 text-muted-foreground">
+                  {instructorOf(c.id) ? instructorName(instructorOf(c.id)!.user_id) : c.instructor_name || "—"}
+                  {!instructorOf(c.id) && (
+                    <span className="ml-2 text-[11px] text-destructive">hesap atanmadı</span>
+                  )}
+                </td>
+
                 <td className="px-5 py-3 text-muted-foreground">{c.schedule || "—"}</td>
                 <td className="px-5 py-3 text-muted-foreground">
                   {students.filter((s) => s.class_id === c.id).length}
