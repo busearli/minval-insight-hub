@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      attendance_records: {
+        Row: {
+          class_id: string
+          created_at: string
+          id: string
+          session_date: string
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          id?: string
+          session_date: string
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          id?: string
+          session_date?: string
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_records_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_records_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          created_at: string
+          id: string
+          instructor_name: string
+          level: string
+          name: string
+          notes: string
+          program: string
+          schedule: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          instructor_name?: string
+          level?: string
+          name: string
+          notes?: string
+          program?: string
+          schedule?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          instructor_name?: string
+          level?: string
+          name?: string
+          notes?: string
+          program?: string
+          schedule?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       enrollments: {
         Row: {
           completion_rate: number
@@ -46,6 +127,89 @@ export type Database = {
           },
         ]
       }
+      homework: {
+        Row: {
+          class_id: string
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homework_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      homework_submissions: {
+        Row: {
+          created_at: string
+          feedback: string
+          homework_id: string
+          id: string
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          feedback?: string
+          homework_id: string
+          id?: string
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          feedback?: string
+          homework_id?: string
+          id?: string
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homework_submissions_homework_id_fkey"
+            columns: ["homework_id"]
+            isOneToOne: false
+            referencedRelation: "homework"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homework_submissions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -69,6 +233,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      students: {
+        Row: {
+          class_id: string | null
+          created_at: string
+          full_name: string
+          id: string
+          notes: string
+          phone: string
+          registered_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          class_id?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          notes?: string
+          phone?: string
+          registered_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          notes?: string
+          phone?: string
+          registered_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workshops: {
         Row: {
