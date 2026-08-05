@@ -51,10 +51,13 @@ function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
+      <PendingMembers />
+
       <div>
         <p className="eyebrow">Başvuru Yönetimi</p>
-        <h1 className="mt-2 text-2xl text-foreground">Onay Bekleyen Kayıtlar</h1>
+        <h1 className="mt-2 text-2xl text-foreground">Onay Bekleyen Ön Kayıtlar</h1>
       </div>
+
 
       <div className="flex flex-wrap gap-2">
         {[
