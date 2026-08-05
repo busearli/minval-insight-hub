@@ -16,6 +16,7 @@ import { Route as IletisimRouteImport } from './routes/iletisim'
 import { Route as MinvalSanatRouteImport } from './routes/minval-sanat'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as ProgramlarRouteImport } from './routes/programlar'
+import { Route as AdminOgrencilerRouteImport } from './routes/admin.ogrenciler'
 import { Route as AdminSiniflarRouteImport } from './routes/admin.siniflar'
 import { Route as AtolyeWorkshopIdRouteImport } from './routes/atolye.$workshopId'
 
@@ -54,6 +55,11 @@ const ProgramlarRoute = ProgramlarRouteImport.update({
   path: '/programlar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOgrencilerRoute = AdminOgrencilerRouteImport.update({
+  id: '/ogrenciler',
+  path: '/ogrenciler',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSiniflarRoute = AdminSiniflarRouteImport.update({
   id: '/siniflar',
   path: '/siniflar',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
+    | '/admin/ogrenciler'
     | '/admin/siniflar'
     | '/atolye/$workshopId'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
+    | '/admin/ogrenciler'
     | '/admin/siniflar'
     | '/atolye/$workshopId'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
+    | '/admin/ogrenciler'
     | '/admin/siniflar'
     | '/atolye/$workshopId'
   fileRoutesById: FileRoutesById
@@ -197,6 +209,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramlarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/ogrenciler': {
+      id: '/admin/ogrenciler'
+      path: '/ogrenciler'
+      fullPath: '/admin/ogrenciler'
+      preLoaderRoute: typeof AdminOgrencilerRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/siniflar': {
       id: '/admin/siniflar'
       path: '/siniflar'
@@ -215,10 +234,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminOgrencilerRoute: typeof AdminOgrencilerRoute
   AdminSiniflarRoute: typeof AdminSiniflarRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminOgrencilerRoute: AdminOgrencilerRoute,
   AdminSiniflarRoute: AdminSiniflarRoute,
 }
 
