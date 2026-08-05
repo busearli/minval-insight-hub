@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HakkimizdaRouteImport } from './routes/hakkimizda'
+import { Route as IletisimRouteImport } from './routes/iletisim'
 import { Route as MinvalSanatRouteImport } from './routes/minval-sanat'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as ProgramlarRouteImport } from './routes/programlar'
@@ -24,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const HakkimizdaRoute = HakkimizdaRouteImport.update({
   id: '/hakkimizda',
   path: '/hakkimizda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IletisimRoute = IletisimRouteImport.update({
+  id: '/iletisim',
+  path: '/iletisim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MinvalSanatRoute = MinvalSanatRouteImport.update({
@@ -50,6 +56,7 @@ const AtolyeWorkshopIdRoute = AtolyeWorkshopIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
+  '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
+  '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/hakkimizda': typeof HakkimizdaRoute
+  '/iletisim': typeof IletisimRoute
   '/minval-sanat': typeof MinvalSanatRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/hakkimizda'
+    | '/iletisim'
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/hakkimizda'
+    | '/iletisim'
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/hakkimizda'
+    | '/iletisim'
     | '/minval-sanat'
     | '/panel'
     | '/programlar'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HakkimizdaRoute: typeof HakkimizdaRoute
+  IletisimRoute: typeof IletisimRoute
   MinvalSanatRoute: typeof MinvalSanatRoute
   PanelRoute: typeof PanelRoute
   ProgramlarRoute: typeof ProgramlarRoute
@@ -122,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/hakkimizda'
       fullPath: '/hakkimizda'
       preLoaderRoute: typeof HakkimizdaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/iletisim': {
+      id: '/iletisim'
+      path: '/iletisim'
+      fullPath: '/iletisim'
+      preLoaderRoute: typeof IletisimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/minval-sanat': {
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HakkimizdaRoute: HakkimizdaRoute,
+  IletisimRoute: IletisimRoute,
   MinvalSanatRoute: MinvalSanatRoute,
   PanelRoute: PanelRoute,
   ProgramlarRoute: ProgramlarRoute,
