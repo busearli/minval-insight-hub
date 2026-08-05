@@ -23,6 +23,19 @@ export const defaultSettings: SiteSettings = {
   pre_registration_enabled: true,
   cuz_tracking_enabled: false,
   updated_at: "",
+  hero_eyebrow: "Minval Akademi | Kahve",
+  hero_title: "İlim, Hikmet ve Güzel Ahlak Ekseninde Bir Gelecek",
+  hero_subtitle:
+    "Maneviyat, kültür ve sanatı bir arada yaşatmayı hedefleyen bağımsız eğitim ve gönül merkezi.",
+  about_quote:
+    "Minval Akademi, ilim, hikmet ve güzel ahlak ekseninde; insanın aklına, kalbine ve hayatına dokunmayı amaçlayan bağımsız bir ilim, kültür ve gençlik hareketidir.",
+  programs_heading: "Açık okuma halkalarımız",
+  schedule_heading: "Hangi grup, hangi gün?",
+  cta_title: "Ön kayıt formu ile başlayın",
+  cta_text:
+    "Formu doldurun; kontenjan durumuna göre kurumsal WhatsApp hattımızdan sizinle iletişime geçelim.",
+  programs_section_enabled: true,
+  schedule_section_enabled: true,
 };
 
 export const mapsUrl = (address: string) =>
