@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { CalendarCheck, LogOut } from "lucide-react";
+import { CalendarCheck, LogOut, Sparkles } from "lucide-react";
 
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { getStudentPortal } from "@/lib/student-portal.functions";
-import { attendanceLabel, submissionLabel } from "@/lib/admin-api";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { attendanceLabel, classLabel, cuzLabel, submissionLabel } from "@/lib/admin-api";
+import { useSiteSettings } from "@/lib/site-api";
 
 export const Route = createFileRoute("/ogrenci")({
   head: () => ({
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/ogrenci")({
       { title: "Öğrenci Paneli — Minval Akademi | Kahve" },
       {
         name: "description",
-        content: "Kayıtlı katılımcılar için sınıf bilgisi, yoklama durumu ve ödev takibi.",
+        content: "Kayıtlı katılımcılar için sınıf bilgisi, yoklama durumu, ödev ve cüz takibi.",
       },
       { property: "og:title", content: "Öğrenci Paneli — Minval Akademi" },
       { property: "og:description", content: "Sınıfınız, yoklamanız ve ödevleriniz tek ekranda." },
@@ -26,35 +27,75 @@ export const Route = createFileRoute("/ogrenci")({
   component: StudentPortalPage,
 });
 
-function StudentPortalPage() {
-  const [phone, setPhone] = useState<string | null>(null);
+const statusTone: Record<string, string> = {
+  var: "bg-present/15 text-foreground",
+  yok: "bg-absent/15 text-foreground",
+  izinli: "bg-secondary text-secondary-foreground",
+  gec: "bg-late/15 text-foreground",
+};
 
-  useEffect(() => {
-    setPhone(localStorage.getItem("minval_student_phone"));
-  }, []);
+function StudentPortalPage() {
+  const { user, profile, loading, signOut } = useAuth();
+  const { settings } = useSiteSettings();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["student-portal", phone],
-    enabled: !!phone,
-    queryFn: () => getStudentPortal({ data: { phone: phone! } }),
-  });
+    queryKey: ["student-self", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data: student } = await supabase
+        .from("students")
+        .select("*")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (!student) return null;
 
-  const statusTone: Record<string, string> = {
-    var: "bg-present/15 text-foreground",
-    yok: "bg-absent/15 text-foreground",
-    izinli: "bg-secondary text-secondary-foreground",
-    gec: "bg-late/15 text-foreground",
-  };
+      const [{ data: cls }, { data: attendance }, { data: homework }, { data: subs }, { data: cuz }] =
+        await Promise.all([
+          student.class_id
+            ? supabase.from("classes").select("*").eq("id", student.class_id).maybeSingle()
+            : Promise.resolve({ data: null }),
+          supabase
+            .from("attendance_records")
+            .select("session_date,status")
+            .eq("student_id", student.id)
+            .order("session_date", { ascending: false })
+            .limit(20),
+          student.class_id
+            ? supabase.from("homework").select("*").eq("class_id", student.class_id)
+            : Promise.resolve({ data: [] as { id: string; title: string; due_date: string | null }[] }),
+          supabase.from("homework_submissions").select("*").eq("student_id", student.id),
+          supabase.from("cuz_records").select("*").eq("student_id", student.id).order("cuz_no"),
+        ]);
+
+      return {
+        student,
+        className: cls ? classLabel(cls) : "Sınıf atanmadı",
+        schedule: cls?.schedule ?? "",
+        instructor: cls?.instructor_name ?? "",
+        attendance: attendance ?? [],
+        homework: (homework ?? []).map((h) => {
+          const sub = (subs ?? []).find((s) => s.homework_id === h.id);
+          return {
+            title: h.title,
+            due_date: h.due_date ?? null,
+            status: sub?.status ?? "edilmedi",
+            feedback: sub?.feedback ?? "",
+          };
+        }),
+        cuz: (cuz ?? []).filter((c) => c.status !== "baslanmadi"),
+      };
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-5 py-14">
-        {!phone && (
+        {!loading && !user && (
           <div className="card-soft border-accent/40 p-8 text-center">
             <h1 className="text-2xl text-foreground">Öğrenci Paneli</h1>
             <p className="mt-3 text-sm text-muted-foreground">
-              Devam etmek için üstteki “Giriş Yap” butonundan telefon numaranızla giriş yapın.
+              Devam etmek için üstteki “Giriş Yap” butonundan hesabınıza giriş yapın.
             </p>
             <Link to="/" className="mt-6 inline-block text-[13px] text-primary hover:underline">
               Ana sayfaya dön
@@ -62,11 +103,23 @@ function StudentPortalPage() {
           </div>
         )}
 
-        {phone && isLoading && <p className="text-sm text-muted-foreground">Yükleniyor…</p>}
+        {user && isLoading && <p className="text-sm text-muted-foreground">Yükleniyor…</p>}
 
-        {phone && !isLoading && !data && (
-          <div className="card-soft border-accent/40 p-8">
-            <p className="text-sm text-muted-foreground">Kayıt bulunamadı.</p>
+        {user && !isLoading && !data && (
+          <div className="card-soft border-accent/40 p-8 text-center">
+            <h1 className="text-2xl text-foreground">
+              Hoş geldiniz{profile?.name ? `, ${profile.name}` : ""}
+            </h1>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              Kayıt talebiniz alındı. Yöneticilerimiz tarafından sınıf atamanız yapıldıktan sonra
+              paneliniz aktifleşecektir.
+            </p>
+            <button
+              onClick={() => void signOut()}
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+            >
+              <LogOut className="h-3.5 w-3.5" /> Çıkış
+            </button>
           </div>
         )}
 
@@ -80,10 +133,7 @@ function StudentPortalPage() {
                 </h1>
               </div>
               <button
-                onClick={() => {
-                  localStorage.removeItem("minval_student_phone");
-                  setPhone(null);
-                }}
+                onClick={() => void signOut()}
                 className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
               >
                 <LogOut className="h-3.5 w-3.5" /> Çıkış
@@ -144,6 +194,27 @@ function StudentPortalPage() {
                 ))}
               </ul>
             </div>
+
+            {settings.cuz_tracking_enabled && (
+              <div className="card-soft border-accent/40 p-6">
+                <h2 className="flex items-center gap-2 text-lg text-foreground">
+                  <Sparkles className="h-4 w-4" /> Cüz & Ezber İlerlemem
+                </h2>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {data.cuz.length === 0 && (
+                    <p className="text-sm text-muted-foreground">Henüz cüz kaydı bulunmuyor.</p>
+                  )}
+                  {data.cuz.map((c) => (
+                    <span
+                      key={c.id}
+                      className="rounded-full bg-secondary px-3 py-1 text-[12px] text-secondary-foreground"
+                    >
+                      {c.cuz_no}. Cüz · {cuzLabel[c.status] ?? c.status} · {c.pages_memorized} sayfa
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>
