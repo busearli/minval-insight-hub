@@ -37,6 +37,7 @@ const empty = {
   end_time: "",
   capacity: "",
   notes: "",
+  instructor_user_id: "",
 };
 
 const weekDays = [
