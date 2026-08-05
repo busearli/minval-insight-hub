@@ -20,6 +20,7 @@ import { PortalDialog } from "@/components/PortalDialog";
 import { useAuth } from "@/hooks/use-auth";
 import { disableDevAdmin, useDevAdmin } from "@/lib/dev-mode";
 import { useMyRoles, roleLabel } from "@/lib/rbac";
+import { useRealtimeSync } from "@/lib/use-realtime-sync";
 import { useSiteSettings } from "@/lib/site-api";
 
 export const Route = createFileRoute("/admin")({
@@ -68,6 +69,7 @@ function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user, loading, signOut } = useAuth();
   const { isSuperAdmin, isAdmin, isStaff, roles, loading: rolesLoading } = useMyRoles();
+  useRealtimeSync();
   const { settings } = useSiteSettings();
   const [authOpen, setAuthOpen] = useState(false);
   const devAdmin = useDevAdmin();
