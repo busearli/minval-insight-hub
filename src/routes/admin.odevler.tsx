@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { BookOpen, CheckCircle2, Clock, Plus, Trash2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,24 @@ export const Route = createFileRoute("/admin/odevler")({
   component: HomeworkPage,
 });
 
+/** Hazır geri bildirim şablonları */
+const FEEDBACK_TEMPLATES = [
+  "Tebrikler, ödev eksiksiz teslim edildi. 🌿",
+  "Güzel bir çalışma; ifadeleri biraz daha derinleştirebilirsin.",
+  "Eksik bölümler var, lütfen tamamlayıp tekrar teslim et.",
+  "Geç teslim edildi; bir sonraki hafta zamanında bekliyorum.",
+  "Okuma tamamlanmamış görünüyor, kalan sayfaları bitirelim.",
+];
+
+const TASK_TYPES = [
+  { value: "onay", label: "Yapıldı / Yapılmadı" },
+  { value: "sayfa", label: "Okuma (sayfa sayısı)" },
+] as const;
+
+function taskTypeLabel(v: string) {
+  return TASK_TYPES.find((t) => t.value === v)?.label ?? "Yapıldı / Yapılmadı";
+}
+
 function HomeworkPage() {
   const { isAdmin, myClassIds } = useMyRoles();
   const { data: allClasses = [] } = useClasses();
@@ -38,7 +56,15 @@ function HomeworkPage() {
   );
   const classIds = useMemo(() => new Set(classes.map((c) => c.id)), [classes]);
 
-  const [form, setForm] = useState({ class_id: "", title: "", description: "", due_date: "" });
+  const emptyForm = {
+    class_id: "",
+    title: "",
+    description: "",
+    due_date: "",
+    task_type: "onay",
+    target_pages: "",
+  };
+  const [form, setForm] = useState(emptyForm);
   const [selected, setSelected] = useState<string | null>(null);
 
   const visibleHomework = useMemo(
@@ -56,10 +82,40 @@ function HomeworkPage() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.class_id || !form.title.trim()) return;
-    save.mutate({ ...form, due_date: form.due_date || null }, {
-      onSuccess: () => setForm({ class_id: "", title: "", description: "", due_date: "" }),
+    save.mutate(
+      {
+        class_id: form.class_id,
+        title: form.title,
+        description: form.description,
+        due_date: form.due_date || null,
+        task_type: form.task_type,
+        target_pages: form.task_type === "sayfa" ? Number(form.target_pages || 0) : 0,
+      },
+      { onSuccess: () => setForm(emptyForm) },
+    );
+  };
+
+  /** Bir öğrencinin teslim kaydını güncelle (mevcut alanları koruyarak) */
+  const patchSub = (studentId: string, patch: Record<string, unknown>) => {
+    if (!active) return;
+    const sub = subOf(studentId);
+    upsert.mutate({
+      homework_id: active.id,
+      student_id: studentId,
+      status: sub?.status ?? "edilmedi",
+      feedback: sub?.feedback ?? "",
+      pages_read: sub?.pages_read ?? 0,
+      ...patch,
     });
   };
+
+  const stats = useMemo(() => {
+    if (!active) return null;
+    const rows = roster.map((s) => subOf(s.id));
+    const done = rows.filter((r) => r?.status === "edildi").length;
+    const late = rows.filter((r) => r?.status === "gec").length;
+    return { total: roster.length, done, late, pending: roster.length - done - late };
+  }, [active, roster, submissions]);
 
   return (
     <div className="space-y-6">
@@ -84,6 +140,26 @@ function HomeworkPage() {
           value={form.due_date}
           onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
         />
+        <select
+          value={form.task_type}
+          onChange={(e) => setForm((f) => ({ ...f, task_type: e.target.value }))}
+          className="h-9 rounded-md border border-input bg-card px-3 text-sm text-foreground"
+        >
+          {TASK_TYPES.map((t) => (
+            <option key={t.value} value={t.value}>{t.label}</option>
+          ))}
+        </select>
+        {form.task_type === "sayfa" ? (
+          <Input
+            type="number"
+            min={0}
+            placeholder="Hedef sayfa sayısı"
+            value={form.target_pages}
+            onChange={(e) => setForm((f) => ({ ...f, target_pages: e.target.value }))}
+          />
+        ) : (
+          <div className="hidden sm:block" />
+        )}
         <Input
           placeholder="Ödev başlığı"
           value={form.title}
@@ -122,6 +198,12 @@ function HomeworkPage() {
                   <div className="mt-1 truncate text-[12px] text-muted-foreground">
                     {c ? classLabel(c) : "—"} · {h.due_date ?? "tarihsiz"}
                   </div>
+                  <span className="mt-2 inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+                    {h.task_type === "sayfa" ? <BookOpen className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />}
+                    {h.task_type === "sayfa"
+                      ? `${h.target_pages || "?"} sayfa okuma`
+                      : "Yapıldı / Yapılmadı"}
+                  </span>
                 </button>
                 <button
                   onClick={() => remove.mutate(h.id)}
@@ -142,31 +224,52 @@ function HomeworkPage() {
           ) : (
             <>
               <h2 className="text-lg text-foreground">{active.title}</h2>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                {taskTypeLabel(active.task_type)}
+                {active.task_type === "sayfa" && active.target_pages
+                  ? ` · Hedef: ${active.target_pages} sayfa`
+                  : ""}
+              </p>
               {active.description && (
                 <p className="mt-2 text-sm text-muted-foreground">{active.description}</p>
               )}
+
+              {stats && (
+                <div className="mt-4 flex flex-wrap gap-2 text-[12px]">
+                  <span className="rounded-full bg-secondary px-3 py-1 text-foreground">
+                    Toplam {stats.total}
+                  </span>
+                  <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                    Teslim {stats.done}
+                  </span>
+                  <span className="rounded-full bg-accent/20 px-3 py-1 text-foreground">
+                    Geç {stats.late}
+                  </span>
+                  <span className="rounded-full border border-border px-3 py-1 text-muted-foreground">
+                    Bekleyen {stats.pending}
+                  </span>
+                </div>
+              )}
+
               <div className="mt-6 space-y-5">
                 {roster.length === 0 && (
                   <p className="text-sm text-muted-foreground">Bu sınıfta öğrenci yok.</p>
                 )}
                 {roster.map((s) => {
                   const sub = subOf(s.id);
+                  const pct =
+                    active.task_type === "sayfa" && active.target_pages
+                      ? Math.min(100, Math.round(((sub?.pages_read ?? 0) / active.target_pages) * 100))
+                      : null;
                   return (
                     <div key={s.id} className="border-t border-border pt-4 first:border-0 first:pt-0">
                       <div className="flex flex-wrap items-center gap-3">
                         <span className="min-w-40 flex-1 text-sm text-foreground">{s.full_name}</span>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                           {SUBMISSION_STATUSES.map((st) => (
                             <button
                               key={st}
-                              onClick={() =>
-                                upsert.mutate({
-                                  homework_id: active.id,
-                                  student_id: s.id,
-                                  status: st,
-                                  feedback: sub?.feedback ?? "",
-                                })
-                              }
+                              onClick={() => patchSub(s.id, { status: st })}
                               className={`rounded-full border px-4 py-1.5 text-[12px] ${
                                 sub?.status === st
                                   ? "border-primary bg-primary text-primary-foreground"
@@ -178,17 +281,72 @@ function HomeworkPage() {
                           ))}
                         </div>
                       </div>
+
+                      {sub?.submitted_at && (
+                        <p className="mt-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          {new Date(sub.submitted_at).toLocaleString("tr-TR")} tarihinde teslim edildi
+                        </p>
+                      )}
+
+                      {/* Öğrencinin teslim notu (salt okunur) */}
+                      <div className="mt-3 rounded-md border border-border bg-secondary/40 p-3">
+                        <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          Öğrenci teslim notu
+                        </p>
+                        <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">
+                          {sub?.submission_text?.trim()
+                            ? sub.submission_text
+                            : "Öğrenci henüz bir not göndermedi."}
+                        </p>
+                      </div>
+
+                      {active.task_type === "sayfa" && (
+                        <div className="mt-3 flex flex-wrap items-center gap-3">
+                          <label className="text-[12px] text-muted-foreground">Okunan sayfa</label>
+                          <Input
+                            type="number"
+                            min={0}
+                            className="h-8 w-24"
+                            defaultValue={sub?.pages_read ?? 0}
+                            onBlur={(e) =>
+                              patchSub(s.id, { pages_read: Number(e.target.value || 0) })
+                            }
+                          />
+                          {active.target_pages > 0 && (
+                            <>
+                              <div className="h-2 min-w-32 flex-1 overflow-hidden rounded-full bg-secondary">
+                                <div
+                                  className="h-full rounded-full bg-primary"
+                                  style={{ width: `${pct ?? 0}%` }}
+                                />
+                              </div>
+                              <span className="text-[12px] text-muted-foreground">
+                                {sub?.pages_read ?? 0}/{active.target_pages}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {FEEDBACK_TEMPLATES.map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => patchSub(s.id, { feedback: t })}
+                            className="rounded-full border border-border px-3 py-1 text-[11px] text-muted-foreground hover:border-accent hover:text-foreground"
+                          >
+                            {t.length > 32 ? `${t.slice(0, 32)}…` : t}
+                          </button>
+                        ))}
+                      </div>
+
                       <Textarea
                         placeholder="Eğitmen geri bildirimi"
+                        key={`${s.id}-${sub?.feedback ?? ""}`}
                         defaultValue={sub?.feedback ?? ""}
-                        onBlur={(e) =>
-                          upsert.mutate({
-                            homework_id: active.id,
-                            student_id: s.id,
-                            status: sub?.status ?? "edilmedi",
-                            feedback: e.target.value,
-                          })
-                        }
+                        onBlur={(e) => patchSub(s.id, { feedback: e.target.value })}
                         className="mt-3"
                       />
                     </div>
