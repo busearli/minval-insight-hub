@@ -18,6 +18,7 @@ import { Route as PanelRouteImport } from './routes/panel'
 import { Route as ProgramlarRouteImport } from './routes/programlar'
 import { Route as AdminOgrencilerRouteImport } from './routes/admin.ogrenciler'
 import { Route as AdminSiniflarRouteImport } from './routes/admin.siniflar'
+import { Route as AdminYoklamaRouteImport } from './routes/admin.yoklama'
 import { Route as AtolyeWorkshopIdRouteImport } from './routes/atolye.$workshopId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +66,11 @@ const AdminSiniflarRoute = AdminSiniflarRouteImport.update({
   path: '/siniflar',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminYoklamaRoute = AdminYoklamaRouteImport.update({
+  id: '/yoklama',
+  path: '/yoklama',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AtolyeWorkshopIdRoute = AtolyeWorkshopIdRouteImport.update({
   id: '/atolye/$workshopId',
   path: '/atolye/$workshopId',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/programlar': typeof ProgramlarRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
+  '/admin/yoklama': typeof AdminYoklamaRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/programlar': typeof ProgramlarRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
+  '/admin/yoklama': typeof AdminYoklamaRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/programlar': typeof ProgramlarRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
+  '/admin/yoklama': typeof AdminYoklamaRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/programlar'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
+    | '/admin/yoklama'
     | '/atolye/$workshopId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/programlar'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
+    | '/admin/yoklama'
     | '/atolye/$workshopId'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/programlar'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
+    | '/admin/yoklama'
     | '/atolye/$workshopId'
   fileRoutesById: FileRoutesById
 }
@@ -223,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSiniflarRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/yoklama': {
+      id: '/admin/yoklama'
+      path: '/yoklama'
+      fullPath: '/admin/yoklama'
+      preLoaderRoute: typeof AdminYoklamaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/atolye/$workshopId': {
       id: '/atolye/$workshopId'
       path: '/atolye/$workshopId'
@@ -236,11 +255,13 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminOgrencilerRoute: typeof AdminOgrencilerRoute
   AdminSiniflarRoute: typeof AdminSiniflarRoute
+  AdminYoklamaRoute: typeof AdminYoklamaRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminOgrencilerRoute: AdminOgrencilerRoute,
   AdminSiniflarRoute: AdminSiniflarRoute,
+  AdminYoklamaRoute: AdminYoklamaRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
