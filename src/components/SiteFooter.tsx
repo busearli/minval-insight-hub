@@ -3,7 +3,7 @@ import { Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { MinvalMark } from "@/components/MinvalMark";
 import { whatsappUrl } from "@/lib/minval-programs";
-import { useSiteSettings } from "@/lib/site-api";
+import { mapsUrl, telUrl, useSiteSettings } from "@/lib/site-api";
 
 export function SiteFooter() {
   const { settings } = useSiteSettings();
