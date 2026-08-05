@@ -10,7 +10,14 @@ import { ProgramDetailModal } from "@/components/ProgramDetailModal";
 import { RegistrationModal } from "@/components/RegistrationModal";
 import { WeeklySchedule } from "@/components/WeeklySchedule";
 import { WHATSAPP_URL, principles, programs, type Program } from "@/lib/minval-programs";
-import { useSiteSettings } from "@/lib/site-api";
+import {
+  asList,
+  useSiteSettings,
+  type FaqItem,
+  type PrincipleItem,
+  type StatItem,
+  type TestimonialItem,
+} from "@/lib/site-api";
 
 
 export const Route = createFileRoute("/")({
