@@ -12,6 +12,7 @@ import {
   useStudents,
   type StudentRow,
 } from "@/lib/admin-api";
+import { useMyRoles } from "@/lib/rbac";
 
 export const Route = createFileRoute("/admin/ogrenciler")({
   component: StudentsPage,
@@ -22,6 +23,7 @@ const empty = { full_name: "", phone: "", class_id: "", status: "aktif", notes: 
 function StudentsPage() {
   const { data: students = [], isLoading } = useStudents();
   const { data: classes = [] } = useClasses();
+  const { isAdmin } = useMyRoles();
   const save = useSave("students");
   const remove = useRemove("students");
   const [form, setForm] = useState<Record<string, string>>(empty);
@@ -129,9 +131,12 @@ function StudentsPage() {
                     <button onClick={() => edit(s)} className="rounded-full border border-border p-2 text-muted-foreground hover:text-primary">
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
-                    <button onClick={() => remove.mutate(s.id)} className="rounded-full border border-border p-2 text-muted-foreground hover:text-destructive">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                    {isAdmin && (
+                      <button onClick={() => remove.mutate(s.id)} className="rounded-full border border-border p-2 text-muted-foreground hover:text-destructive">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+
                   </div>
                 </td>
               </tr>

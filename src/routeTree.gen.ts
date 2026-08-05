@@ -21,6 +21,8 @@ import { Route as ProgramlarRouteImport } from './routes/programlar'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAyarlarRouteImport } from './routes/admin.ayarlar'
 import { Route as AdminBasvurularRouteImport } from './routes/admin.basvurular'
+import { Route as AdminCuzRouteImport } from './routes/admin.cuz'
+import { Route as AdminKullanicilarRouteImport } from './routes/admin.kullanicilar'
 import { Route as AdminOdevlerRouteImport } from './routes/admin.odevler'
 import { Route as AdminOgrencilerRouteImport } from './routes/admin.ogrenciler'
 import { Route as AdminSiniflarRouteImport } from './routes/admin.siniflar'
@@ -87,6 +89,16 @@ const AdminBasvurularRoute = AdminBasvurularRouteImport.update({
   path: '/basvurular',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCuzRoute = AdminCuzRouteImport.update({
+  id: '/cuz',
+  path: '/cuz',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminKullanicilarRoute = AdminKullanicilarRouteImport.update({
+  id: '/kullanicilar',
+  path: '/kullanicilar',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOdevlerRoute = AdminOdevlerRouteImport.update({
   id: '/odevler',
   path: '/odevler',
@@ -125,6 +137,8 @@ export interface FileRoutesByFullPath {
   '/programlar': typeof ProgramlarRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
+  '/admin/cuz': typeof AdminCuzRoute
+  '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
@@ -143,6 +157,8 @@ export interface FileRoutesByTo {
   '/programlar': typeof ProgramlarRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
+  '/admin/cuz': typeof AdminCuzRoute
+  '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
@@ -163,6 +179,8 @@ export interface FileRoutesById {
   '/programlar': typeof ProgramlarRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
+  '/admin/cuz': typeof AdminCuzRoute
+  '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
@@ -184,6 +202,8 @@ export interface FileRouteTypes {
     | '/programlar'
     | '/admin/ayarlar'
     | '/admin/basvurular'
+    | '/admin/cuz'
+    | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
@@ -202,6 +222,8 @@ export interface FileRouteTypes {
     | '/programlar'
     | '/admin/ayarlar'
     | '/admin/basvurular'
+    | '/admin/cuz'
+    | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
@@ -221,6 +243,8 @@ export interface FileRouteTypes {
     | '/programlar'
     | '/admin/ayarlar'
     | '/admin/basvurular'
+    | '/admin/cuz'
+    | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
     | '/admin/siniflar'
@@ -328,6 +352,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBasvurularRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/cuz': {
+      id: '/admin/cuz'
+      path: '/cuz'
+      fullPath: '/admin/cuz'
+      preLoaderRoute: typeof AdminCuzRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/kullanicilar': {
+      id: '/admin/kullanicilar'
+      path: '/kullanicilar'
+      fullPath: '/admin/kullanicilar'
+      preLoaderRoute: typeof AdminKullanicilarRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/odevler': {
       id: '/admin/odevler'
       path: '/odevler'
@@ -369,6 +407,8 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminAyarlarRoute: typeof AdminAyarlarRoute
   AdminBasvurularRoute: typeof AdminBasvurularRoute
+  AdminCuzRoute: typeof AdminCuzRoute
+  AdminKullanicilarRoute: typeof AdminKullanicilarRoute
   AdminOdevlerRoute: typeof AdminOdevlerRoute
   AdminOgrencilerRoute: typeof AdminOgrencilerRoute
   AdminSiniflarRoute: typeof AdminSiniflarRoute
@@ -379,6 +419,8 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAyarlarRoute: AdminAyarlarRoute,
   AdminBasvurularRoute: AdminBasvurularRoute,
+  AdminCuzRoute: AdminCuzRoute,
+  AdminKullanicilarRoute: AdminKullanicilarRoute,
   AdminOdevlerRoute: AdminOdevlerRoute,
   AdminOgrencilerRoute: AdminOgrencilerRoute,
   AdminSiniflarRoute: AdminSiniflarRoute,

@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { LogIn, Menu, Sparkles, X } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu, Sparkles, X } from "lucide-react";
 
 import { MinvalMark, ArchPattern } from "@/components/MinvalMark";
 import { PortalDialog } from "@/components/PortalDialog";
 import { RegistrationModal } from "@/components/RegistrationModal";
+import { useSiteSettings } from "@/lib/site-api";
+import { useAuth } from "@/hooks/use-auth";
+import { useMyRoles } from "@/lib/rbac";
 
 const navLinks = [
   { label: "Hakkımızda", to: "/hakkimizda" },
@@ -18,6 +21,12 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [portal, setPortal] = useState(false);
   const [register, setRegister] = useState(false);
+  const { settings } = useSiteSettings();
+  const { user } = useAuth();
+  const { isStaff } = useMyRoles();
+
+  const showPreRegistration = settings.pre_registration_enabled !== false;
+  const panelTo = isStaff ? "/admin" : "/ogrenci";
 
   return (
     <header className="sticky top-0 z-40 overflow-hidden border-b border-border bg-background/90 backdrop-blur">
@@ -49,18 +58,29 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
-          <button
-            onClick={() => setPortal(true)}
-            className="hidden items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground transition-colors hover:border-accent hover:text-primary sm:inline-flex"
-          >
-            <LogIn className="h-3.5 w-3.5" /> Giriş Yap
-          </button>
-          <button
-            onClick={() => setRegister(true)}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[13px] text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
-          </button>
+          {user ? (
+            <Link
+              to={panelTo}
+              className="hidden items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground transition-colors hover:border-accent hover:text-primary sm:inline-flex"
+            >
+              <LayoutDashboard className="h-3.5 w-3.5" /> Panelim
+            </Link>
+          ) : (
+            <button
+              onClick={() => setPortal(true)}
+              className="hidden items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground transition-colors hover:border-accent hover:text-primary sm:inline-flex"
+            >
+              <LogIn className="h-3.5 w-3.5" /> Giriş Yap
+            </button>
+          )}
+          {showPreRegistration && (
+            <button
+              onClick={() => setRegister(true)}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[13px] text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+            </button>
+          )}
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label="Menü"
@@ -84,15 +104,21 @@ export function SiteHeader() {
                 {l.label}
               </Link>
             ))}
-            <button
-              onClick={() => {
-                setOpen(false);
-                setPortal(true);
-              }}
-              className="text-left text-sm text-muted-foreground"
-            >
-              Giriş Yap
-            </button>
+            {user ? (
+              <Link to={panelTo} onClick={() => setOpen(false)} className="text-sm text-muted-foreground">
+                Panelim
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  setPortal(true);
+                }}
+                className="text-left text-sm text-muted-foreground"
+              >
+                Giriş Yap
+              </button>
+            )}
           </div>
         </div>
       )}

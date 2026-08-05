@@ -119,3 +119,136 @@ export function useRemove(table: TableName) {
 export function classLabel(c: ClassRow) {
   return [c.program, c.level, c.name].filter(Boolean).join(" · ");
 }
+
+/* ---------- Kullanıcı & yetki yönetimi ---------- */
+
+export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
+export type AppRole = "super_admin" | "admin" | "instructor" | "student";
+
+export function useProfiles() {
+  return useQuery({
+    queryKey: ["profiles"],
+    queryFn: async () =>
+      throwIf(await supabase.from("profiles").select("*").order("created_at")) as ProfileRow[],
+  });
+}
+
+export function useAllRoles() {
+  return useQuery({
+    queryKey: ["all-roles"],
+    queryFn: async () =>
+      throwIf(await supabase.from("user_roles").select("id, user_id, role")) as {
+        id: string;
+        user_id: string;
+        role: AppRole;
+      }[],
+  });
+}
+
+export function useGrantRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ user_id, role }: { user_id: string; role: AppRole }) => {
+      const res = await supabase.from("user_roles").insert({ user_id, role } as never);
+      if (res.error) throw new Error(res.error.message);
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["all-roles"] }),
+  });
+}
+
+export function useRevokeRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ user_id, role }: { user_id: string; role: AppRole }) => {
+      const res = await supabase.from("user_roles").delete().eq("user_id", user_id).eq("role", role);
+      if (res.error) throw new Error(res.error.message);
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["all-roles"] }),
+  });
+}
+
+export function useSetProfileStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ user_id, status }: { user_id: string; status: string }) => {
+      const res = await supabase.from("profiles").update({ status } as never).eq("user_id", user_id);
+      if (res.error) throw new Error(res.error.message);
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["profiles"] }),
+  });
+}
+
+/* ---------- Sınıf – eğitmen atamaları ---------- */
+
+export function useClassInstructors() {
+  return useQuery({
+    queryKey: ["class-instructors"],
+    queryFn: async () =>
+      throwIf(await supabase.from("class_instructors").select("id, class_id, user_id")) as {
+        id: string;
+        class_id: string;
+        user_id: string;
+      }[],
+  });
+}
+
+export function useAssignInstructor() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ class_id, user_id }: { class_id: string; user_id: string }) => {
+      const res = await supabase.from("class_instructors").insert({ class_id, user_id } as never);
+      if (res.error) throw new Error(res.error.message);
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["class-instructors"] }),
+  });
+}
+
+export function useUnassignInstructor() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await supabase.from("class_instructors").delete().eq("id", id);
+      if (res.error) throw new Error(res.error.message);
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["class-instructors"] }),
+  });
+}
+
+/* ---------- Cüz & ezber takibi ---------- */
+
+export type CuzRow = Database["public"]["Tables"]["cuz_records"]["Row"];
+
+export const CUZ_STATUSES = ["baslanmadi", "devam", "tamamlandi"] as const;
+export const cuzLabel: Record<string, string> = {
+  baslanmadi: "Başlanmadı",
+  devam: "Devam Ediyor",
+  tamamlandi: "Tamamlandı",
+};
+
+export function useCuzRecords() {
+  return useQuery({
+    queryKey: ["cuz"],
+    queryFn: async () =>
+      throwIf(await supabase.from("cuz_records").select("*").order("cuz_no")) as CuzRow[],
+  });
+}
+
+export function useSaveCuz() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (row: {
+      student_id: string;
+      cuz_no: number;
+      status: string;
+      pages_memorized?: number;
+      feedback?: string;
+    }) => {
+      const res = await supabase
+        .from("cuz_records")
+        .upsert(row as never, { onConflict: "student_id,cuz_no" });
+      if (res.error) throw new Error(res.error.message);
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["cuz"] }),
+  });
+}
+

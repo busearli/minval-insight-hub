@@ -5,6 +5,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { classLabel, useClasses, useRemove, useSave, type ClassRow } from "@/lib/admin-api";
+import { useMyRoles } from "@/lib/rbac";
 
 export const Route = createFileRoute("/admin/siniflar")({
   component: ClassesPage,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/admin/siniflar")({
 const empty = { program: "", name: "", level: "", instructor_name: "", schedule: "", notes: "" };
 
 function ClassesPage() {
+  const { isAdmin } = useMyRoles();
   const { data: classes = [], isLoading } = useClasses();
   const save = useSave("classes");
   const remove = useRemove("classes");
@@ -20,6 +22,14 @@ function ClassesPage() {
   const [editing, setEditing] = useState<string | null>(null);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  if (!isAdmin) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Sınıf oluşturma ve düzenleme yetkisi yalnızca yöneticilere aittir.
+      </p>
+    );
+  }
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
