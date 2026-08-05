@@ -6,6 +6,7 @@ import {
   GraduationCap,
   Home,
   Inbox,
+  LayoutTemplate,
   Megaphone,
   Settings,
   ShieldCheck,
@@ -61,8 +62,9 @@ const items: NavItem[] = [
   { to: "/admin/yoklama", label: "Yoklama", icon: CalendarCheck },
   { to: "/admin/odevler", label: "Ödevler", icon: BookOpen },
   { to: "/admin/cuz", label: "Cüz & Ezber", icon: Sparkles, module: "cuz" },
+  { to: "/admin/anasayfa", label: "Ana Sayfa İçeriği", icon: LayoutTemplate, adminOnly: true },
   { to: "/admin/duyurular", label: "Duyurular & İçerik", icon: Megaphone, adminOnly: true },
-  { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings, superOnly: true },
+  { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings, adminOnly: true },
 ];
 
 function AdminLayout() {

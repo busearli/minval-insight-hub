@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Repeat, ShieldCheck, UserMinus, UserPlus } from "lucide-react";
+import { Crown, Repeat, ShieldCheck, UserMinus, UserPlus } from "lucide-react";
 
 import {
   classLabel,
@@ -69,6 +69,8 @@ function UsersPage() {
     if (filter === "pending") return p.status === "pending_assignment";
     return true;
   });
+
+  const superAdminCount = roles.filter((r) => r.role === "super_admin").length;
 
   const run = async (p: Promise<unknown>, msg: string) => {
     try {
@@ -167,6 +169,20 @@ function UsersPage() {
                 >
                   <ShieldCheck className="h-3.5 w-3.5" />
                   {isInstructor ? "Hoca Yetkisini Al" : "Hoca Yap"}
+                </button>
+                <button
+                  onClick={() => {
+                    const isSuper = mine.includes("super_admin");
+                    if (isSuper && superAdminCount <= 1) {
+                      toast.error("En az bir Ana Yönetici kalmalı.");
+                      return;
+                    }
+                    toggleRole(p.user_id, "super_admin", isSuper);
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+                >
+                  <Crown className="h-3.5 w-3.5" />
+                  {mine.includes("super_admin") ? "Ana Yöneticiliği Al" : "Ana Yönetici Yap"}
                 </button>
                 <button
                   onClick={() => toggleRole(p.user_id, "admin", mine.includes("admin"))}
