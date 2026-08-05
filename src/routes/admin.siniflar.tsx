@@ -1,10 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { classLabel, useClasses, useRemove, useSave, type ClassRow } from "@/lib/admin-api";
+import {
+  classLabel,
+  useClasses,
+  useRemoveClass,
+  useSaveClass,
+  type ClassRow,
+} from "@/lib/admin-api";
 import { useMyRoles } from "@/lib/rbac";
 
 export const Route = createFileRoute("/admin/siniflar")({
@@ -16,8 +23,8 @@ const empty = { program: "", name: "", level: "", instructor_name: "", schedule:
 function ClassesPage() {
   const { isAdmin } = useMyRoles();
   const { data: classes = [], isLoading } = useClasses();
-  const save = useSave("classes");
-  const remove = useRemove("classes");
+  const save = useSaveClass();
+  const remove = useRemoveClass();
   const [form, setForm] = useState<Record<string, string>>(empty);
   const [editing, setEditing] = useState<string | null>(null);
 
@@ -33,14 +40,25 @@ function ClassesPage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form["name"]?.trim()) return;
-    save.mutate(editing ? { ...form, id: editing } : form, {
-      onSuccess: () => {
-        setForm(empty);
-        setEditing(null);
+    if (!form["name"]?.trim()) {
+      toast.error("Lütfen grup adını girin.");
+      return;
+    }
+    const payload = editing ? { ...form, id: editing } : form;
+    setForm(empty);
+    setEditing(null);
+    save.mutate(payload, {
+      onSuccess: ({ local }) => {
+        if (local) {
+          toast.warning("Sunucuya kaydedilemedi — sınıf bu cihazda yerel olarak saklandı.");
+        } else {
+          toast.success(editing ? "Sınıf güncellendi" : "Sınıf başarıyla oluşturuldu");
+        }
       },
+      onError: () => toast.error("Sınıf kaydedilemedi."),
     });
   };
+
 
   const edit = (c: ClassRow) => {
     setEditing(c.id);
