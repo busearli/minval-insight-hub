@@ -6,6 +6,8 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { signInWithPhone } from "@/lib/auth-lookup.functions";
+import { devSuperAdminLogin } from "@/lib/dev-admin.functions";
+
 import { programs } from "@/lib/minval-programs";
 import {
   Dialog,
@@ -191,7 +193,29 @@ export function PortalDialog({
     }
   };
 
+  const devLogin = async () => {
+    setBusy(true);
+    try {
+      const res = await devSuperAdminLogin();
+      if (res.error || !res.session) {
+        toast.error(res.error ?? "Süper admin girişi başarısız.");
+        return;
+      }
+      const { error } = await supabase.auth.setSession(res.session);
+      if (error) {
+        toast.error(trAuthError(error.message));
+        return;
+      }
+      toast.success("Süper Admin olarak giriş yapıldı.");
+      onOpenChange(false);
+      void navigate({ to: "/admin" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const google = async () => {
+
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
@@ -382,17 +406,14 @@ export function PortalDialog({
             {import.meta.env.DEV && (
               <button
                 type="button"
-                onClick={() => {
-                  set("email", "admin@minvalakademi.com");
-                  toast.info(
-                    "Süper Admin e-postası dolduruldu. Bu adresle kayıt olan hesap otomatik olarak Ana Yönetici yetkisi alır.",
-                  );
-                }}
-                className="w-full rounded-full border border-dashed border-accent px-4 py-2 text-[12px] text-muted-foreground transition-colors hover:text-primary"
+                disabled={busy}
+                onClick={devLogin}
+                className="w-full rounded-full bg-[#2e7d32] px-4 py-2.5 text-[13px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
               >
-                Süper Admin İle İlk Giriş (geliştirme)
+                {busy ? "Hazırlanıyor…" : "Süper Admin Girişi Yap (Geliştirici Modu)"}
               </button>
             )}
+
             <p className="text-[12px] leading-relaxed text-muted-foreground">
               Bu alana sadece yetkili yöneticiler ve eğitmenler giriş yapabilir. Eğitmenler yalnızca
               kendilerine atanmış sınıfları görüntüleyebilir.
