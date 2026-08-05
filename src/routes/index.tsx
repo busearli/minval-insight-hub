@@ -81,14 +81,14 @@ function HomePage() {
               to="/programlar"
               className="inline-flex items-center gap-2 rounded-full bg-background px-6 py-3 text-sm text-foreground transition-opacity hover:opacity-90"
             >
-              Programlarımızı Keşfedin <ArrowRight className="h-4 w-4" />
+              {settings.hero_primary_label} <ArrowRight className="h-4 w-4" />
             </Link>
             {settings.pre_registration_enabled && (
               <button
                 onClick={() => openRegister()}
                 className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/40 px-6 py-3 text-sm transition-colors hover:bg-primary-foreground/10"
               >
-                <Sparkles className="h-4 w-4" /> Ön Kayıt Ol
+                <Sparkles className="h-4 w-4" /> {settings.hero_secondary_label}
               </button>
             )}
 
