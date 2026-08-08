@@ -470,6 +470,16 @@ export function PortalDialog({
               </button>
             </form>
 
+            <button
+              type="button"
+              onClick={() => void forgotPassword()}
+              disabled={busy}
+              className="text-[12px] text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+            >
+              Şifremi unuttum — kurtarma e-postası gönder
+            </button>
+
+
             <p className="text-[12px] leading-relaxed text-muted-foreground">
               Bu alana sadece yetkili yöneticiler ve eğitmenler giriş yapabilir. Eğitmenler yalnızca
               kendilerine atanmış sınıfları görüntüleyebilir.
