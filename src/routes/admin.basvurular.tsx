@@ -24,7 +24,9 @@ export const Route = createFileRoute("/admin/basvurular")({
 
 function ApplicationsPage() {
   const { data: apps = [], isLoading, refetch, isFetching } = useApplications();
-  const { data: classes = [] } = useClasses();
+  const { data: allClasses = [] } = useClasses();
+  const { isAdmin, myClassIds } = useMyRoles();
+  const classes = isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id));
   const { refetch: refetchStudents } = useStudents();
   const update = useUpdateApplication();
   const remove = useDeleteApplication();
@@ -32,7 +34,19 @@ function ApplicationsPage() {
   const [assign, setAssign] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState("bekliyor");
 
-  const list = filter === "all" ? apps : apps.filter((a) => a.status === filter);
+  const visible = isAdmin
+    ? apps
+    : apps.filter(
+        (a) =>
+          (a.requested_class_id && myClassIds.includes(a.requested_class_id)) ||
+          (a.assigned_class_id && myClassIds.includes(a.assigned_class_id)),
+      );
+  const list = filter === "all" ? visible : visible.filter((a) => a.status === filter);
+  const classNameOf = (id: string | null) => {
+    const c = allClasses.find((x) => x.id === id);
+    return c ? classLabel(c) : "";
+  };
+
 
   const approve = async (id: string, name: string, phone: string, notes: string) => {
     const classId = assign[id];
