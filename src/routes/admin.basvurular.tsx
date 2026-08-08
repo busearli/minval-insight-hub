@@ -17,6 +17,8 @@ import {
   useDeleteApplication,
   useUpdateApplication,
 } from "@/lib/site-api";
+import { useMyRoles } from "@/lib/rbac";
+
 
 export const Route = createFileRoute("/admin/basvurular")({
   component: ApplicationsPage,
