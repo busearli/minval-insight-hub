@@ -8,6 +8,8 @@ import { lovable } from "@/integrations/lovable/index";
 import { signInWithPhone } from "@/lib/auth-lookup.functions";
 
 import { programs } from "@/lib/minval-programs";
+import { publicClassLabel, usePublicClasses } from "@/lib/classes-public";
+
 import {
   Dialog,
   DialogContent,
