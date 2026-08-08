@@ -1,24 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  classLabel,
-  useClasses,
-  useRemove,
-  useSave,
-  useStudents,
-  type StudentRow,
-} from "@/lib/admin-api";
+import { classLabel, useClasses, useRemove, useStudents } from "@/lib/admin-api";
 import { useMyRoles } from "@/lib/rbac";
 
 export const Route = createFileRoute("/admin/ogrenciler")({
   component: StudentsPage,
 });
-
-const empty = { full_name: "", phone: "", class_id: "", status: "aktif", notes: "" };
 
 function StudentsPage() {
   const { data: allStudents = [], isLoading } = useStudents();
@@ -28,39 +16,13 @@ function StudentsPage() {
   const students = isAdmin
     ? allStudents
     : allStudents.filter((s) => s.class_id && myClassIds.includes(s.class_id));
-  const save = useSave("students");
   const remove = useRemove("students");
-  const [form, setForm] = useState<Record<string, string>>(empty);
-  const [editing, setEditing] = useState<string | null>(null);
 
-  const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
   const className = (id: string | null) => {
     const c = classes.find((x) => x.id === id);
     return c ? classLabel(c) : "—";
   };
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form["full_name"]?.trim()) return;
-    const payload = { ...form, class_id: form["class_id"] || null };
-    save.mutate(editing ? { ...payload, id: editing } : payload, {
-      onSuccess: () => {
-        setForm(empty);
-        setEditing(null);
-      },
-    });
-  };
-
-  const edit = (s: StudentRow) => {
-    setEditing(s.id);
-    setForm({
-      full_name: s.full_name,
-      phone: s.phone,
-      class_id: s.class_id ?? "",
-      status: s.status,
-      notes: s.notes,
-    });
-  };
 
   return (
     <div className="space-y-6">
