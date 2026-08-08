@@ -257,7 +257,7 @@ function PendingMembers() {
             {p.notes && <p className="mt-3 text-sm text-muted-foreground">{p.notes}</p>}
             <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-5">
               <select
-                value={pick[p.user_id] ?? ""}
+                value={pick[p.user_id] ?? p.requested_class_id ?? ""}
                 onChange={(e) => setPick((s) => ({ ...s, [p.user_id]: e.target.value }))}
                 className="h-9 min-w-56 rounded-md border border-input bg-card px-3 text-sm text-foreground"
               >
