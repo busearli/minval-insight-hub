@@ -416,9 +416,18 @@ export function PortalDialog({
                 {busy ? "Giriş yapılıyor…" : "Öğrenci Paneline Gir"}
               </button>
             </form>
+            <button
+              type="button"
+              onClick={() => void forgotPassword()}
+              disabled={busy}
+              className="text-[12px] text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+            >
+              Şifremi unuttum — kurtarma e-postası gönder
+            </button>
             <p className="text-[12px] leading-relaxed text-muted-foreground">
               Sınıfınızı, yoklama durumunuzu, ödevlerinizi ve cüz ilerlemenizi görüntüleyebilirsiniz.
             </p>
+
           </>
         )}
 
