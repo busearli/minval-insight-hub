@@ -128,6 +128,8 @@ function ApplicationsPage() {
                 </p>
                 <p className="mt-1 text-[12px] text-muted-foreground">
                   Başvuru tarihi: {a.created_at.slice(0, 10)}
+                  {classNameOf(a.requested_class_id) &&
+                    ` · Talep edilen sınıf: ${classNameOf(a.requested_class_id)}`}
                 </p>
               </div>
               <span className="rounded-full bg-secondary px-3 py-1 text-[11px] text-secondary-foreground">
@@ -140,8 +142,9 @@ function ApplicationsPage() {
             {a.status === "bekliyor" && (
               <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-5">
                 <select
-                  value={assign[a.id] ?? ""}
+                  value={assign[a.id] ?? a.requested_class_id ?? ""}
                   onChange={(e) => setAssign((s) => ({ ...s, [a.id]: e.target.value }))}
+
                   className="h-9 min-w-56 rounded-md border border-input bg-card px-3 text-sm text-foreground"
                 >
                   <option value="">Sınıf seçiniz</option>
