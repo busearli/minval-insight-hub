@@ -50,8 +50,15 @@ function ApplicationsPage() {
   };
 
 
-  const approve = async (id: string, name: string, phone: string, notes: string) => {
-    const classId = assign[id];
+  const approve = async (
+    id: string,
+    name: string,
+    phone: string,
+    notes: string,
+    requestedClassId?: string | null,
+  ) => {
+    const classId = assign[id] || requestedClassId || "";
+
     if (!classId) {
       toast.error("Önce bir sınıf seçiniz.");
       return;
