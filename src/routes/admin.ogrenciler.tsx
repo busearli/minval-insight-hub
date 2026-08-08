@@ -64,9 +64,6 @@ function StudentsPage() {
                 </td>
                 <td className="px-5 py-3">
                   <div className="flex justify-end gap-2">
-                    <button onClick={() => edit(s)} className="rounded-full border border-border p-2 text-muted-foreground hover:text-primary">
-                      <Pencil className="h-3.5 w-3.5" />
-                    </button>
                     {isAdmin && (
                       <button onClick={() => remove.mutate(s.id)} className="rounded-full border border-border p-2 text-muted-foreground hover:text-destructive">
                         <Trash2 className="h-3.5 w-3.5" />
