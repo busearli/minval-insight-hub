@@ -31,9 +31,11 @@ const signUpSchema = z.object({
   phone: phoneSchema,
   password: passwordSchema,
   program_choice: z.string().min(1, { message: "Başvurmak istediğiniz programı seçiniz" }),
+  requested_class_id: z.string().min(1, { message: "Katılmak istediğiniz sınıfı seçiniz" }),
   age_level: z.string().min(1, { message: "Yaş / eğitim durumunuzu seçiniz" }).max(80),
   notes: z.string().trim().max(500),
 });
+
 
 const levels = ["Ortaokul", "Lise", "Üniversite", "Mezun / Yetişkin"];
 
