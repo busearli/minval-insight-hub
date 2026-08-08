@@ -221,10 +221,22 @@ export function PortalDialog({
         toast.error(trAuthError(error.message));
         return;
       }
+      const chosen = openClasses.find((c) => c.id === meta.requested_class_id);
+      await supabase.from("registration_applications").insert({
+        full_name: meta.name,
+        email,
+        phone: meta.phone,
+        program_id: meta.program_choice,
+        program_label: chosen ? publicClassLabel(chosen) : meta.program_choice,
+        requested_class_id: meta.requested_class_id,
+        age_level: meta.age_level,
+        notes: meta.notes,
+      });
       toast.success(
-        "Kayıt talebiniz alındı. Yöneticilerimiz tarafından sınıf atamanız yapıldıktan sonra paneliniz aktifleşecektir.",
+        "Kayıt talebiniz alındı. Sınıf hocanız veya yöneticilerimiz onayladıktan sonra paneliniz aktifleşecektir.",
       );
       onOpenChange(false);
+
     } finally {
       setBusy(false);
     }
