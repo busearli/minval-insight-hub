@@ -289,6 +289,9 @@ function StudentPortalPage() {
 
                 <StudentSessionBars records={stats.att} title="Ders Bazlı Devamım" />
 
+                <ClassMaterials classId={data?.student.class_id ?? null} />
+
+
                 <div className="card-soft border-accent/40 p-6">
                   <p className="eyebrow">Son Yoklamalarım</p>
                   <div className="mt-4 flex flex-wrap gap-2">
