@@ -3,7 +3,9 @@ import { useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { ClassMaterials } from "@/components/ClassMaterials";
 import { Input } from "@/components/ui/input";
+
 import { Textarea } from "@/components/ui/textarea";
 import {
   classLabel,
