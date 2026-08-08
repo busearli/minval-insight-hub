@@ -193,23 +193,28 @@ function ApplicationsPage() {
 
 function PendingMembers() {
   const { data: profiles = [], isLoading } = useProfiles();
-  const { data: classes = [] } = useClasses();
+  const { data: allClasses = [] } = useClasses();
+  const { isAdmin, myClassIds } = useMyRoles();
+  const classes = isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id));
   const { data: students = [] } = useStudents();
   const saveStudent = useSave("students");
   const setStatus = useSetProfileStatus();
   const [pick, setPick] = useState<Record<string, string>>({});
 
   const linked = new Set(students.map((s) => s.user_id).filter(Boolean) as string[]);
-  const pending = profiles.filter(
-    (p) => p.status === "pending_assignment" && !linked.has(p.user_id),
-  );
+  const pending = profiles
+    .filter((p) => p.status === "pending_assignment" && !linked.has(p.user_id))
+    .filter(
+      (p) => isAdmin || (p.requested_class_id && myClassIds.includes(p.requested_class_id)),
+    );
 
   const addToClass = async (p: (typeof profiles)[number]) => {
-    const classId = pick[p.user_id];
+    const classId = pick[p.user_id] || p.requested_class_id || "";
     if (!classId) {
       toast.error("Önce bir sınıf seçiniz.");
       return;
     }
+
     try {
       await saveStudent.mutateAsync({
         full_name: p.name || "İsimsiz",
