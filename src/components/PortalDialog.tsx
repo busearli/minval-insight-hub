@@ -75,11 +75,34 @@ export function PortalDialog({
     name: "",
     phone: "",
     program_choice: "",
+    requested_class_id: "",
     age_level: "",
     notes: "",
   });
+  const { data: openClasses = [] } = usePublicClasses();
   const navigate = useNavigate();
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  /** Şifre sıfırlama e-postası gönderir. */
+  const forgotPassword = async () => {
+    const target = isEmail(form.identifier) ? form.identifier : form.email;
+    const parsed = emailSchema.safeParse(target);
+    if (!parsed.success) {
+      toast.error("Önce e-posta adresinizi yazın, ardından tekrar deneyin.");
+      return;
+    }
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+      redirectTo: `${window.location.origin}/sifre-sifirla`,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(trAuthError(error.message));
+      return;
+    }
+    toast.success("Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.");
+  };
+
 
   const rolesOf = async (userId: string) => {
     const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
