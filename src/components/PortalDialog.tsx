@@ -350,6 +350,19 @@ export function PortalDialog({
             </select>
             <select
               className={field}
+              value={form.requested_class_id}
+              onChange={(e) => set("requested_class_id", e.target.value)}
+            >
+              <option value="">Katılmak istediğiniz sınıf *</option>
+              {openClasses.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {publicClassLabel(c)}
+                  {c.schedule ? ` · ${c.schedule}` : ""}
+                </option>
+              ))}
+            </select>
+            <select
+              className={field}
               value={form.age_level}
               onChange={(e) => set("age_level", e.target.value)}
             >
@@ -373,8 +386,10 @@ export function PortalDialog({
             >
               {busy ? "Gönderiliyor…" : "Kayıt Talebi Gönder"}
             </button>
-          </form>
+            </form>
+          </>
         )}
+
 
         {tab === "student" && (
           <>
