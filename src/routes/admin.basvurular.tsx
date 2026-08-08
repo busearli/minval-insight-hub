@@ -162,7 +162,10 @@ function ApplicationsPage() {
                   ))}
                 </select>
                 <button
-                  onClick={() => void approve(a.id, a.full_name, a.phone, a.notes)}
+                  onClick={() =>
+                    void approve(a.id, a.full_name, a.phone, a.notes, a.requested_class_id)
+                  }
+
                   className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[12px] text-primary-foreground"
                 >
                   <Check className="h-3.5 w-3.5" /> Sınıfa Ata ve Onayla
