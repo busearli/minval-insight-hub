@@ -3,7 +3,9 @@ import { useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { ClassMaterials } from "@/components/ClassMaterials";
 import { Input } from "@/components/ui/input";
+
 import { Textarea } from "@/components/ui/textarea";
 import {
   classLabel,
@@ -91,6 +93,7 @@ function ClassesPage() {
   const instructors = profiles.filter((p) =>
     roles.some((r) => r.user_id === p.user_id && r.role === "instructor"),
   );
+  const instructorsOf = (classId: string) => links.filter((l) => l.class_id === classId);
   const instructorOf = (classId: string) =>
     links.find((l) => l.class_id === classId) ?? null;
   const instructorName = (userId: string) =>
@@ -104,15 +107,13 @@ function ClassesPage() {
     );
   }
 
-  /** Sınıfın eğitmen bağlantısını seçilen kullanıcıya göre günceller. */
+  /** Sınıfa yeni bir hoca ekler; mevcut hocalar korunur (bir derse birden çok hoca). */
   const syncInstructor = async (classId: string, userId: string) => {
-    const current = links.filter((l) => l.class_id === classId);
-    const keep = current.find((l) => l.user_id === userId);
-    for (const l of current) {
-      if (l.id !== keep?.id) await unassign.mutateAsync(l.id);
-    }
-    if (userId && !keep) await assign.mutateAsync({ class_id: classId, user_id: userId });
+    if (!userId) return;
+    const exists = links.some((l) => l.class_id === classId && l.user_id === userId);
+    if (!exists) await assign.mutateAsync({ class_id: classId, user_id: userId });
   };
+
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,7 +190,7 @@ function ClassesPage() {
           }}
           className="h-10 rounded-md border border-input bg-card px-3 text-sm text-foreground sm:col-span-2"
         >
-          <option value="">Sorumlu hoca hesabı seçin (panelde görsün)</option>
+          <option value="">Sorumlu hoca hesabı ekle (birden fazla olabilir)</option>
           {instructors.map((p) => (
             <option key={p.user_id} value={p.user_id}>
               {p.name}
@@ -271,11 +272,16 @@ function ClassesPage() {
               <tr key={c.id} className="border-b border-border/70 last:border-0">
                 <td className="px-5 py-3 text-foreground">{classLabel(c)}</td>
                 <td className="px-5 py-3 text-muted-foreground">
-                  {instructorOf(c.id) ? instructorName(instructorOf(c.id)!.user_id) : c.instructor_name || "—"}
-                  {!instructorOf(c.id) && (
+                  {instructorsOf(c.id).length > 0
+                    ? instructorsOf(c.id)
+                        .map((l) => instructorName(l.user_id))
+                        .join(", ")
+                    : c.instructor_name || "—"}
+                  {instructorsOf(c.id).length === 0 && (
                     <span className="ml-2 text-[11px] text-destructive">hesap atanmadı</span>
                   )}
                 </td>
+
 
                 <td className="px-5 py-3 text-muted-foreground">{c.schedule || "—"}</td>
                 <td className="px-5 py-3 text-muted-foreground">
@@ -308,6 +314,56 @@ function ClassesPage() {
                 <tr key={`${c.id}-roster`} className="border-b border-border/70 bg-secondary/40">
                   <td colSpan={5} className="px-5 py-4">
                     <p className="eyebrow">{classLabel(c)} · Öğrenci Listesi</p>
+
+                    <div className="mt-3">
+                      <ClassMaterials classId={c.id} canManage />
+                    </div>
+
+                    {isAdmin && (
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <span className="text-[12px] text-muted-foreground">Sorumlu hocalar:</span>
+                        {instructorsOf(c.id).length === 0 && (
+                          <span className="text-[12px] text-muted-foreground">Atanmadı</span>
+                        )}
+                        {instructorsOf(c.id).map((l) => (
+                          <span
+                            key={l.id}
+                            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-[12px] text-foreground"
+                          >
+                            {instructorName(l.user_id)}
+                            <button
+                              type="button"
+                              onClick={() => unassign.mutate(l.id)}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                        <select
+                          aria-label="Hoca ekle"
+                          value=""
+                          onChange={(e) => {
+                            if (!e.target.value) return;
+                            void syncInstructor(c.id, e.target.value);
+                          }}
+                          className="h-8 rounded-md border border-input bg-card px-2 text-[12px] text-foreground"
+                        >
+                          <option value="">+ Hoca ekle</option>
+                          {instructors
+                            .filter(
+                              (p) => !instructorsOf(c.id).some((l) => l.user_id === p.user_id),
+                            )
+                            .map((p) => (
+                              <option key={p.user_id} value={p.user_id}>
+                                {p.name}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
+
+
 
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                       <Input

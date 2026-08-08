@@ -17,6 +17,8 @@ import {
   useDeleteApplication,
   useUpdateApplication,
 } from "@/lib/site-api";
+import { useMyRoles } from "@/lib/rbac";
+
 
 export const Route = createFileRoute("/admin/basvurular")({
   component: ApplicationsPage,
@@ -24,7 +26,9 @@ export const Route = createFileRoute("/admin/basvurular")({
 
 function ApplicationsPage() {
   const { data: apps = [], isLoading, refetch, isFetching } = useApplications();
-  const { data: classes = [] } = useClasses();
+  const { data: allClasses = [] } = useClasses();
+  const { isAdmin, myClassIds } = useMyRoles();
+  const classes = isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id));
   const { refetch: refetchStudents } = useStudents();
   const update = useUpdateApplication();
   const remove = useDeleteApplication();
@@ -32,10 +36,29 @@ function ApplicationsPage() {
   const [assign, setAssign] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState("bekliyor");
 
-  const list = filter === "all" ? apps : apps.filter((a) => a.status === filter);
+  const visible = isAdmin
+    ? apps
+    : apps.filter(
+        (a) =>
+          (a.requested_class_id && myClassIds.includes(a.requested_class_id)) ||
+          (a.assigned_class_id && myClassIds.includes(a.assigned_class_id)),
+      );
+  const list = filter === "all" ? visible : visible.filter((a) => a.status === filter);
+  const classNameOf = (id: string | null) => {
+    const c = allClasses.find((x) => x.id === id);
+    return c ? classLabel(c) : "";
+  };
 
-  const approve = async (id: string, name: string, phone: string, notes: string) => {
-    const classId = assign[id];
+
+  const approve = async (
+    id: string,
+    name: string,
+    phone: string,
+    notes: string,
+    requestedClassId?: string | null,
+  ) => {
+    const classId = assign[id] || requestedClassId || "";
+
     if (!classId) {
       toast.error("Önce bir sınıf seçiniz.");
       return;
@@ -112,6 +135,8 @@ function ApplicationsPage() {
                 </p>
                 <p className="mt-1 text-[12px] text-muted-foreground">
                   Başvuru tarihi: {a.created_at.slice(0, 10)}
+                  {classNameOf(a.requested_class_id) &&
+                    ` · Talep edilen sınıf: ${classNameOf(a.requested_class_id)}`}
                 </p>
               </div>
               <span className="rounded-full bg-secondary px-3 py-1 text-[11px] text-secondary-foreground">
@@ -124,8 +149,9 @@ function ApplicationsPage() {
             {a.status === "bekliyor" && (
               <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-5">
                 <select
-                  value={assign[a.id] ?? ""}
+                  value={assign[a.id] ?? a.requested_class_id ?? ""}
                   onChange={(e) => setAssign((s) => ({ ...s, [a.id]: e.target.value }))}
+
                   className="h-9 min-w-56 rounded-md border border-input bg-card px-3 text-sm text-foreground"
                 >
                   <option value="">Sınıf seçiniz</option>
@@ -136,7 +162,10 @@ function ApplicationsPage() {
                   ))}
                 </select>
                 <button
-                  onClick={() => void approve(a.id, a.full_name, a.phone, a.notes)}
+                  onClick={() =>
+                    void approve(a.id, a.full_name, a.phone, a.notes, a.requested_class_id)
+                  }
+
                   className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[12px] text-primary-foreground"
                 >
                   <Check className="h-3.5 w-3.5" /> Sınıfa Ata ve Onayla
@@ -164,23 +193,28 @@ function ApplicationsPage() {
 
 function PendingMembers() {
   const { data: profiles = [], isLoading } = useProfiles();
-  const { data: classes = [] } = useClasses();
+  const { data: allClasses = [] } = useClasses();
+  const { isAdmin, myClassIds } = useMyRoles();
+  const classes = isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id));
   const { data: students = [] } = useStudents();
   const saveStudent = useSave("students");
   const setStatus = useSetProfileStatus();
   const [pick, setPick] = useState<Record<string, string>>({});
 
   const linked = new Set(students.map((s) => s.user_id).filter(Boolean) as string[]);
-  const pending = profiles.filter(
-    (p) => p.status === "pending_assignment" && !linked.has(p.user_id),
-  );
+  const pending = profiles
+    .filter((p) => p.status === "pending_assignment" && !linked.has(p.user_id))
+    .filter(
+      (p) => isAdmin || (p.requested_class_id && myClassIds.includes(p.requested_class_id)),
+    );
 
   const addToClass = async (p: (typeof profiles)[number]) => {
-    const classId = pick[p.user_id];
+    const classId = pick[p.user_id] || p.requested_class_id || "";
     if (!classId) {
       toast.error("Önce bir sınıf seçiniz.");
       return;
     }
+
     try {
       await saveStudent.mutateAsync({
         full_name: p.name || "İsimsiz",
@@ -223,7 +257,7 @@ function PendingMembers() {
             {p.notes && <p className="mt-3 text-sm text-muted-foreground">{p.notes}</p>}
             <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-5">
               <select
-                value={pick[p.user_id] ?? ""}
+                value={pick[p.user_id] ?? p.requested_class_id ?? ""}
                 onChange={(e) => setPick((s) => ({ ...s, [p.user_id]: e.target.value }))}
                 className="h-9 min-w-56 rounded-md border border-input bg-card px-3 text-sm text-foreground"
               >

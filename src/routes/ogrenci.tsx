@@ -20,6 +20,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { StudentSessionBars } from "@/components/SessionAttendanceChart";
+import { ClassMaterials } from "@/components/ClassMaterials";
+
 import { HatimBoard } from "@/components/HatimBoard";
 import { attendanceLabel, classLabel, cuzLabel, submissionLabel } from "@/lib/admin-api";
 import { useSiteSettings } from "@/lib/site-api";
@@ -288,6 +290,9 @@ function StudentPortalPage() {
                 </div>
 
                 <StudentSessionBars records={stats.att} title="Ders Bazlı Devamım" />
+
+                <ClassMaterials classId={data?.student.class_id ?? null} />
+
 
                 <div className="card-soft border-accent/40 p-6">
                   <p className="eyebrow">Son Yoklamalarım</p>

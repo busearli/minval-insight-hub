@@ -8,6 +8,8 @@ import { lovable } from "@/integrations/lovable/index";
 import { signInWithPhone } from "@/lib/auth-lookup.functions";
 
 import { programs } from "@/lib/minval-programs";
+import { publicClassLabel, usePublicClasses } from "@/lib/classes-public";
+
 import {
   Dialog,
   DialogContent,
@@ -31,9 +33,11 @@ const signUpSchema = z.object({
   phone: phoneSchema,
   password: passwordSchema,
   program_choice: z.string().min(1, { message: "Başvurmak istediğiniz programı seçiniz" }),
+  requested_class_id: z.string().min(1, { message: "Katılmak istediğiniz sınıfı seçiniz" }),
   age_level: z.string().min(1, { message: "Yaş / eğitim durumunuzu seçiniz" }).max(80),
   notes: z.string().trim().max(500),
 });
+
 
 const levels = ["Ortaokul", "Lise", "Üniversite", "Mezun / Yetişkin"];
 
@@ -73,11 +77,34 @@ export function PortalDialog({
     name: "",
     phone: "",
     program_choice: "",
+    requested_class_id: "",
     age_level: "",
     notes: "",
   });
+  const { data: openClasses = [] } = usePublicClasses();
   const navigate = useNavigate();
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  /** Şifre sıfırlama e-postası gönderir. */
+  const forgotPassword = async () => {
+    const target = isEmail(form.identifier) ? form.identifier : form.email;
+    const parsed = emailSchema.safeParse(target);
+    if (!parsed.success) {
+      toast.error("Önce e-posta adresinizi yazın, ardından tekrar deneyin.");
+      return;
+    }
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+      redirectTo: `${window.location.origin}/sifre-sifirla`,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(trAuthError(error.message));
+      return;
+    }
+    toast.success("Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.");
+  };
+
 
   const rolesOf = async (userId: string) => {
     const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
@@ -194,10 +221,22 @@ export function PortalDialog({
         toast.error(trAuthError(error.message));
         return;
       }
+      const chosen = openClasses.find((c) => c.id === meta.requested_class_id);
+      await supabase.from("registration_applications").insert({
+        full_name: meta.name,
+        email,
+        phone: meta.phone,
+        program_id: meta.program_choice,
+        program_label: chosen ? publicClassLabel(chosen) : meta.program_choice,
+        requested_class_id: meta.requested_class_id,
+        age_level: meta.age_level,
+        notes: meta.notes,
+      });
       toast.success(
-        "Kayıt talebiniz alındı. Yöneticilerimiz tarafından sınıf atamanız yapıldıktan sonra paneliniz aktifleşecektir.",
+        "Kayıt talebiniz alındı. Sınıf hocanız veya yöneticilerimiz onayladıktan sonra paneliniz aktifleşecektir.",
       );
       onOpenChange(false);
+
     } finally {
       setBusy(false);
     }
@@ -251,8 +290,22 @@ export function PortalDialog({
         </div>
 
         {tab === "signup" && (
-          <form onSubmit={signUp} className="space-y-3">
+          <>
+            <button
+              type="button"
+              onClick={google}
+              disabled={busy}
+              className="w-full rounded-full border border-border bg-card px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-secondary disabled:opacity-60"
+            >
+              Google ile kayıt ol / devam et
+            </button>
+            <div className="flex items-center gap-3 text-[11px] tracking-widest text-muted-foreground uppercase">
+              <span className="h-px flex-1 bg-border" /> veya{" "}
+              <span className="h-px flex-1 bg-border" />
+            </div>
+            <form onSubmit={signUp} className="space-y-3">
             <input
+
               className={field}
               placeholder="Ad Soyad *"
               maxLength={80}
@@ -297,6 +350,19 @@ export function PortalDialog({
             </select>
             <select
               className={field}
+              value={form.requested_class_id}
+              onChange={(e) => set("requested_class_id", e.target.value)}
+            >
+              <option value="">Katılmak istediğiniz sınıf *</option>
+              {openClasses.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {publicClassLabel(c)}
+                  {c.schedule ? ` · ${c.schedule}` : ""}
+                </option>
+              ))}
+            </select>
+            <select
+              className={field}
               value={form.age_level}
               onChange={(e) => set("age_level", e.target.value)}
             >
@@ -320,8 +386,10 @@ export function PortalDialog({
             >
               {busy ? "Gönderiliyor…" : "Kayıt Talebi Gönder"}
             </button>
-          </form>
+            </form>
+          </>
         )}
+
 
         {tab === "student" && (
           <>
@@ -348,9 +416,18 @@ export function PortalDialog({
                 {busy ? "Giriş yapılıyor…" : "Öğrenci Paneline Gir"}
               </button>
             </form>
+            <button
+              type="button"
+              onClick={() => void forgotPassword()}
+              disabled={busy}
+              className="text-[12px] text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+            >
+              Şifremi unuttum — kurtarma e-postası gönder
+            </button>
             <p className="text-[12px] leading-relaxed text-muted-foreground">
               Sınıfınızı, yoklama durumunuzu, ödevlerinizi ve cüz ilerlemenizi görüntüleyebilirsiniz.
             </p>
+
           </>
         )}
 
@@ -392,6 +469,16 @@ export function PortalDialog({
                 {busy ? "Giriş yapılıyor…" : "Yönetim Paneline Gir"}
               </button>
             </form>
+
+            <button
+              type="button"
+              onClick={() => void forgotPassword()}
+              disabled={busy}
+              className="text-[12px] text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+            >
+              Şifremi unuttum — kurtarma e-postası gönder
+            </button>
+
 
             <p className="text-[12px] leading-relaxed text-muted-foreground">
               Bu alana sadece yetkili yöneticiler ve eğitmenler giriş yapabilir. Eğitmenler yalnızca

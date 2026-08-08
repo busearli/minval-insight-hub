@@ -126,6 +126,50 @@ export type Database = {
           },
         ]
       }
+      class_materials: {
+        Row: {
+          class_id: string
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          file_name?: string
+          file_path: string
+          file_size?: number
+          id?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_materials_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           capacity: number
@@ -416,6 +460,7 @@ export type Database = {
           notes: string
           phone: string
           program_choice: string
+          requested_class_id: string | null
           role: Database["public"]["Enums"]["app_user_role"]
           status: string
           user_id: string
@@ -428,6 +473,7 @@ export type Database = {
           notes?: string
           phone?: string
           program_choice?: string
+          requested_class_id?: string | null
           role?: Database["public"]["Enums"]["app_user_role"]
           status?: string
           user_id: string
@@ -440,11 +486,20 @@ export type Database = {
           notes?: string
           phone?: string
           program_choice?: string
+          requested_class_id?: string | null
           role?: Database["public"]["Enums"]["app_user_role"]
           status?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_requested_class_id_fkey"
+            columns: ["requested_class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       registration_applications: {
         Row: {
@@ -458,6 +513,7 @@ export type Database = {
           phone: string
           program_id: string
           program_label: string
+          requested_class_id: string | null
           status: string
           updated_at: string
         }
@@ -472,6 +528,7 @@ export type Database = {
           phone: string
           program_id?: string
           program_label?: string
+          requested_class_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -486,6 +543,7 @@ export type Database = {
           phone?: string
           program_id?: string
           program_label?: string
+          requested_class_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -493,6 +551,13 @@ export type Database = {
           {
             foreignKeyName: "registration_applications_assigned_class_id_fkey"
             columns: ["assigned_class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registration_applications_requested_class_id_fkey"
+            columns: ["requested_class_id"]
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]

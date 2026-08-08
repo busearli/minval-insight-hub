@@ -18,6 +18,7 @@ import { Route as MinvalSanatRouteImport } from './routes/minval-sanat'
 import { Route as OgrenciRouteImport } from './routes/ogrenci'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as ProgramlarRouteImport } from './routes/programlar'
+import { Route as SifreSifirlaRouteImport } from './routes/sifre-sifirla'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAnasayfaRouteImport } from './routes/admin.anasayfa'
 import { Route as AdminAyarlarRouteImport } from './routes/admin.ayarlar'
@@ -74,6 +75,11 @@ const PanelRoute = PanelRouteImport.update({
 const ProgramlarRoute = ProgramlarRouteImport.update({
   id: '/programlar',
   path: '/programlar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SifreSifirlaRoute = SifreSifirlaRouteImport.update({
+  id: '/sifre-sifirla',
+  path: '/sifre-sifirla',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/sifre-sifirla': typeof SifreSifirlaRoute
   '/admin/anasayfa': typeof AdminAnasayfaRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/sifre-sifirla': typeof SifreSifirlaRoute
   '/admin/anasayfa': typeof AdminAnasayfaRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/ogrenci': typeof OgrenciRoute
   '/panel': typeof PanelRoute
   '/programlar': typeof ProgramlarRoute
+  '/sifre-sifirla': typeof SifreSifirlaRoute
   '/admin/anasayfa': typeof AdminAnasayfaRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/basvurular': typeof AdminBasvurularRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/sifre-sifirla'
     | '/admin/anasayfa'
     | '/admin/ayarlar'
     | '/admin/basvurular'
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/sifre-sifirla'
     | '/admin/anasayfa'
     | '/admin/ayarlar'
     | '/admin/basvurular'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/ogrenci'
     | '/panel'
     | '/programlar'
+    | '/sifre-sifirla'
     | '/admin/anasayfa'
     | '/admin/ayarlar'
     | '/admin/basvurular'
@@ -287,6 +299,7 @@ export interface RootRouteChildren {
   OgrenciRoute: typeof OgrenciRoute
   PanelRoute: typeof PanelRoute
   ProgramlarRoute: typeof ProgramlarRoute
+  SifreSifirlaRoute: typeof SifreSifirlaRoute
   AtolyeWorkshopIdRoute: typeof AtolyeWorkshopIdRoute
 }
 
@@ -353,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/programlar'
       fullPath: '/programlar'
       preLoaderRoute: typeof ProgramlarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sifre-sifirla': {
+      id: '/sifre-sifirla'
+      path: '/sifre-sifirla'
+      fullPath: '/sifre-sifirla'
+      preLoaderRoute: typeof SifreSifirlaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -482,6 +502,7 @@ const rootRouteChildren: RootRouteChildren = {
   OgrenciRoute: OgrenciRoute,
   PanelRoute: PanelRoute,
   ProgramlarRoute: ProgramlarRoute,
+  SifreSifirlaRoute: SifreSifirlaRoute,
   AtolyeWorkshopIdRoute: AtolyeWorkshopIdRoute,
 }
 export const routeTree = rootRouteImport
