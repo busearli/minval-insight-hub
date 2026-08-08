@@ -188,7 +188,7 @@ function ClassesPage() {
           }}
           className="h-10 rounded-md border border-input bg-card px-3 text-sm text-foreground sm:col-span-2"
         >
-          <option value="">Sorumlu hoca hesabı seçin (panelde görsün)</option>
+          <option value="">Sorumlu hoca hesabı ekle (birden fazla olabilir)</option>
           {instructors.map((p) => (
             <option key={p.user_id} value={p.user_id}>
               {p.name}
