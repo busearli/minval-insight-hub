@@ -313,6 +313,56 @@ function ClassesPage() {
                   <td colSpan={5} className="px-5 py-4">
                     <p className="eyebrow">{classLabel(c)} · Öğrenci Listesi</p>
 
+                    <div className="mt-3">
+                      <ClassMaterials classId={c.id} canManage />
+                    </div>
+
+                    {isAdmin && (
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <span className="text-[12px] text-muted-foreground">Sorumlu hocalar:</span>
+                        {instructorsOf(c.id).length === 0 && (
+                          <span className="text-[12px] text-muted-foreground">Atanmadı</span>
+                        )}
+                        {instructorsOf(c.id).map((l) => (
+                          <span
+                            key={l.id}
+                            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-[12px] text-foreground"
+                          >
+                            {instructorName(l.user_id)}
+                            <button
+                              type="button"
+                              onClick={() => unassign.mutate(l.id)}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                        <select
+                          aria-label="Hoca ekle"
+                          value=""
+                          onChange={(e) => {
+                            if (!e.target.value) return;
+                            void syncInstructor(c.id, e.target.value);
+                          }}
+                          className="h-8 rounded-md border border-input bg-card px-2 text-[12px] text-foreground"
+                        >
+                          <option value="">+ Hoca ekle</option>
+                          {instructors
+                            .filter(
+                              (p) => !instructorsOf(c.id).some((l) => l.user_id === p.user_id),
+                            )
+                            .map((p) => (
+                              <option key={p.user_id} value={p.user_id}>
+                                {p.name}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
+
+
+
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                       <Input
                         placeholder="Yeni öğrenci ad soyad"
