@@ -91,6 +91,7 @@ function ClassesPage() {
   const instructors = profiles.filter((p) =>
     roles.some((r) => r.user_id === p.user_id && r.role === "instructor"),
   );
+  const instructorsOf = (classId: string) => links.filter((l) => l.class_id === classId);
   const instructorOf = (classId: string) =>
     links.find((l) => l.class_id === classId) ?? null;
   const instructorName = (userId: string) =>
@@ -104,15 +105,13 @@ function ClassesPage() {
     );
   }
 
-  /** Sınıfın eğitmen bağlantısını seçilen kullanıcıya göre günceller. */
+  /** Sınıfa yeni bir hoca ekler; mevcut hocalar korunur (bir derse birden çok hoca). */
   const syncInstructor = async (classId: string, userId: string) => {
-    const current = links.filter((l) => l.class_id === classId);
-    const keep = current.find((l) => l.user_id === userId);
-    for (const l of current) {
-      if (l.id !== keep?.id) await unassign.mutateAsync(l.id);
-    }
-    if (userId && !keep) await assign.mutateAsync({ class_id: classId, user_id: userId });
+    if (!userId) return;
+    const exists = links.some((l) => l.class_id === classId && l.user_id === userId);
+    if (!exists) await assign.mutateAsync({ class_id: classId, user_id: userId });
   };
+
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
