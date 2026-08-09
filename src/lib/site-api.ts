@@ -59,6 +59,9 @@ export const defaultSettings: SiteSettings = {
   stats_json: [],
   testimonials_json: [],
   faq_json: [],
+  signup_event_enabled: false,
+  signup_event_label: "Katılmak istediğiniz etkinlik",
+  signup_event_options_json: [],
 };
 
 export type PrincipleItem = { title: string; text: string };
