@@ -11,6 +11,7 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  Target,
   Users,
 } from "lucide-react";
 
@@ -62,6 +63,7 @@ const items: NavItem[] = [
   { to: "/admin/yoklama", label: "Yoklama", icon: CalendarCheck },
   { to: "/admin/odevler", label: "Ödevler", icon: BookOpen },
   { to: "/admin/cuz", label: "Cüz & Ezber", icon: Sparkles, module: "cuz" },
+  { to: "/admin/koordinasyon", label: "Koordinatörlükler", icon: Target },
   { to: "/admin/anasayfa", label: "Ana Sayfa İçeriği", icon: LayoutTemplate, adminOnly: true },
   { to: "/admin/duyurular", label: "Duyurular & İçerik", icon: Megaphone, adminOnly: true },
   { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings, adminOnly: true },
@@ -162,9 +164,15 @@ function AdminLayout() {
               {myRoleLabel}
             </span>
           )}
+          <Link
+            to="/ogrenci"
+            className="ml-auto rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+          >
+            Öğrenci Panelim
+          </Link>
           <button
             onClick={() => void signOut()}
-            className="ml-auto rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+            className="rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
           >
             Çıkış
           </button>

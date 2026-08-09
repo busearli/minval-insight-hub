@@ -209,6 +209,127 @@ export type Database = {
         }
         Relationships: []
       }
+      coordination_goals: {
+        Row: {
+          coordination_id: string
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          notes: string
+          owner_name: string
+          owner_user_id: string | null
+          progress: number
+          sort_order: number
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          coordination_id: string
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          notes?: string
+          owner_name?: string
+          owner_user_id?: string | null
+          progress?: number
+          sort_order?: number
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          coordination_id?: string
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          notes?: string
+          owner_name?: string
+          owner_user_id?: string | null
+          progress?: number
+          sort_order?: number
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coordination_goals_coordination_id_fkey"
+            columns: ["coordination_id"]
+            isOneToOne: false
+            referencedRelation: "coordinations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coordination_members: {
+        Row: {
+          coordination_id: string
+          created_at: string
+          id: string
+          is_lead: boolean
+          title: string
+          user_id: string
+        }
+        Insert: {
+          coordination_id: string
+          created_at?: string
+          id?: string
+          is_lead?: boolean
+          title?: string
+          user_id: string
+        }
+        Update: {
+          coordination_id?: string
+          created_at?: string
+          id?: string
+          is_lead?: boolean
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coordination_members_coordination_id_fkey"
+            columns: ["coordination_id"]
+            isOneToOne: false
+            referencedRelation: "coordinations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coordinations: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cuz_records: {
         Row: {
           created_at: string
@@ -601,6 +722,9 @@ export type Database = {
           schedule_eyebrow: string
           schedule_heading: string
           schedule_section_enabled: boolean
+          signup_event_enabled: boolean
+          signup_event_label: string
+          signup_event_options_json: Json
           stats_heading: string
           stats_json: Json
           stats_section_enabled: boolean
@@ -646,6 +770,9 @@ export type Database = {
           schedule_eyebrow?: string
           schedule_heading?: string
           schedule_section_enabled?: boolean
+          signup_event_enabled?: boolean
+          signup_event_label?: string
+          signup_event_options_json?: Json
           stats_heading?: string
           stats_json?: Json
           stats_section_enabled?: boolean
@@ -691,6 +818,9 @@ export type Database = {
           schedule_eyebrow?: string
           schedule_heading?: string
           schedule_section_enabled?: boolean
+          signup_event_enabled?: boolean
+          signup_event_label?: string
+          signup_event_options_json?: Json
           stats_heading?: string
           stats_json?: Json
           stats_section_enabled?: boolean
@@ -819,6 +949,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      in_coordination: {
+        Args: { _coordination_id: string; _user_id: string }
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }

@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { signInWithPhone } from "@/lib/auth-lookup.functions";
 
-import { programs } from "@/lib/minval-programs";
+import { asList, useSiteSettings } from "@/lib/site-api";
 import { publicClassLabel, usePublicClasses } from "@/lib/classes-public";
 
 import {
@@ -32,7 +32,7 @@ const signUpSchema = z.object({
   email: emailSchema,
   phone: phoneSchema,
   password: passwordSchema,
-  program_choice: z.string().min(1, { message: "Başvurmak istediğiniz programı seçiniz" }),
+  program_choice: z.string().max(120),
   requested_class_id: z.string().min(1, { message: "Katılmak istediğiniz sınıfı seçiniz" }),
   age_level: z.string().min(1, { message: "Yaş / eğitim durumunuzu seçiniz" }).max(80),
   notes: z.string().trim().max(500),
@@ -82,6 +82,7 @@ export function PortalDialog({
     notes: "",
   });
   const { data: openClasses = [] } = usePublicClasses();
+  const { settings } = useSiteSettings();
   const navigate = useNavigate();
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -149,18 +150,16 @@ export function PortalDialog({
           return;
         }
       }
+      // Bir kişi aynı anda hem öğrenci hem hoca/yönetici olabilir:
+      // öğrenci sekmesinden giriş herkese açıktır, yalnızca bilgilendirme yapılır.
       const { data: sess } = await supabase.auth.getUser();
       const roles = sess.user ? await rolesOf(sess.user.id) : [];
-      if (roles.some((r) => ["super_admin", "admin", "instructor"].includes(r))) {
-        await supabase.auth.signOut();
-        setForm((f) => ({ ...f, password: "" }));
-        setTab("staff");
-        toast.error(
-          "Hesabınız eğitmen/yönetici olarak tanımlı. Lütfen “Yönetici / Eğitmen” sekmesinden giriş yapın.",
-        );
-        return;
-      }
-      toast.success("Hoş geldiniz.");
+      const staff = roles.some((r) => ["super_admin", "admin", "instructor"].includes(r));
+      toast.success(
+        staff
+          ? "Hoş geldiniz. Yönetim paneline üstteki menüden de geçebilirsiniz."
+          : "Hoş geldiniz.",
+      );
       onOpenChange(false);
       void navigate({ to: "/ogrenci" });
     } catch (err) {
@@ -226,7 +225,7 @@ export function PortalDialog({
         full_name: meta.name,
         email,
         phone: meta.phone,
-        program_id: meta.program_choice,
+        program_id: meta.program_choice || "genel",
         program_label: chosen ? publicClassLabel(chosen) : meta.program_choice,
         requested_class_id: meta.requested_class_id,
         age_level: meta.age_level,
@@ -336,18 +335,20 @@ export function PortalDialog({
               value={form.password}
               onChange={(e) => set("password", e.target.value)}
             />
-            <select
-              className={field}
-              value={form.program_choice}
-              onChange={(e) => set("program_choice", e.target.value)}
-            >
-              <option value="">Başvurmak istediğiniz program *</option>
-              {programs.map((p) => (
-                <option key={p.id} value={p.title}>
-                  {p.title}
-                </option>
-              ))}
-            </select>
+            {settings.signup_event_enabled && (
+              <select
+                className={field}
+                value={form.program_choice}
+                onChange={(e) => set("program_choice", e.target.value)}
+              >
+                <option value="">{settings.signup_event_label} (opsiyonel)</option>
+                {asList<string>(settings.signup_event_options_json).map((o: string) => (
+                  <option key={o} value={o}>
+                    {o}
+                  </option>
+                ))}
+              </select>
+            )}
             <select
               className={field}
               value={form.requested_class_id}
