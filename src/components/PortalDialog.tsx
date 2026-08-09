@@ -336,18 +336,20 @@ export function PortalDialog({
               value={form.password}
               onChange={(e) => set("password", e.target.value)}
             />
-            <select
-              className={field}
-              value={form.program_choice}
-              onChange={(e) => set("program_choice", e.target.value)}
-            >
-              <option value="">Başvurmak istediğiniz program *</option>
-              {programs.map((p) => (
-                <option key={p.id} value={p.title}>
-                  {p.title}
-                </option>
-              ))}
-            </select>
+            {settings.signup_event_enabled && (
+              <select
+                className={field}
+                value={form.program_choice}
+                onChange={(e) => set("program_choice", e.target.value)}
+              >
+                <option value="">{settings.signup_event_label} (opsiyonel)</option>
+                {asList<string>(settings.signup_event_options_json).map((o) => (
+                  <option key={o} value={o}>
+                    {o}
+                  </option>
+                ))}
+              </select>
+            )}
             <select
               className={field}
               value={form.requested_class_id}
