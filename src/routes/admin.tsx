@@ -11,6 +11,7 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  Target,
   Users,
 } from "lucide-react";
 
