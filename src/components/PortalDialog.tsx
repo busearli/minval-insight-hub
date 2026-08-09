@@ -150,18 +150,16 @@ export function PortalDialog({
           return;
         }
       }
+      // Bir kişi aynı anda hem öğrenci hem hoca/yönetici olabilir:
+      // öğrenci sekmesinden giriş herkese açıktır, yalnızca bilgilendirme yapılır.
       const { data: sess } = await supabase.auth.getUser();
       const roles = sess.user ? await rolesOf(sess.user.id) : [];
-      if (roles.some((r) => ["super_admin", "admin", "instructor"].includes(r))) {
-        await supabase.auth.signOut();
-        setForm((f) => ({ ...f, password: "" }));
-        setTab("staff");
-        toast.error(
-          "Hesabınız eğitmen/yönetici olarak tanımlı. Lütfen “Yönetici / Eğitmen” sekmesinden giriş yapın.",
-        );
-        return;
-      }
-      toast.success("Hoş geldiniz.");
+      const staff = roles.some((r) => ["super_admin", "admin", "instructor"].includes(r));
+      toast.success(
+        staff
+          ? "Hoş geldiniz. Yönetim paneline üstteki menüden de geçebilirsiniz."
+          : "Hoş geldiniz.",
+      );
       onOpenChange(false);
       void navigate({ to: "/ogrenci" });
     } catch (err) {
