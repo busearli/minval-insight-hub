@@ -164,9 +164,15 @@ function AdminLayout() {
               {myRoleLabel}
             </span>
           )}
+          <Link
+            to="/ogrenci"
+            className="ml-auto rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+          >
+            Öğrenci Panelim
+          </Link>
           <button
             onClick={() => void signOut()}
-            className="ml-auto rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+            className="rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
           >
             Çıkış
           </button>
