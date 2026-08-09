@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { signInWithPhone } from "@/lib/auth-lookup.functions";
 
-import { programs } from "@/lib/minval-programs";
+import { asList, useSiteSettings } from "@/lib/site-api";
 import { publicClassLabel, usePublicClasses } from "@/lib/classes-public";
 
 import {
@@ -82,6 +82,7 @@ export function PortalDialog({
     notes: "",
   });
   const { data: openClasses = [] } = usePublicClasses();
+  const { settings } = useSiteSettings();
   const navigate = useNavigate();
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -226,7 +227,7 @@ export function PortalDialog({
         full_name: meta.name,
         email,
         phone: meta.phone,
-        program_id: meta.program_choice,
+        program_id: meta.program_choice || "genel",
         program_label: chosen ? publicClassLabel(chosen) : meta.program_choice,
         requested_class_id: meta.requested_class_id,
         age_level: meta.age_level,
@@ -343,7 +344,7 @@ export function PortalDialog({
                 onChange={(e) => set("program_choice", e.target.value)}
               >
                 <option value="">{settings.signup_event_label} (opsiyonel)</option>
-                {asList<string>(settings.signup_event_options_json).map((o) => (
+                {asList<string>(settings.signup_event_options_json).map((o: string) => (
                   <option key={o} value={o}>
                     {o}
                   </option>
