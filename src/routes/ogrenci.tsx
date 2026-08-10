@@ -150,6 +150,8 @@ function StudentPortalPage() {
     return { att, present, rate, hw, done, pending, upcoming, pages };
   }, [data]);
 
+  const isCoordMember = useIsCoordinationMember(user?.id);
+
   const tabs: { id: TabId; label: string; icon: typeof LayoutGrid }[] = [
     { id: "genel", label: "Genel Bakış", icon: LayoutGrid },
     { id: "yoklama", label: "Yoklamam", icon: CalendarCheck },
@@ -158,6 +160,10 @@ function StudentPortalPage() {
     ...(settings.cuz_tracking_enabled
       ? [{ id: "cuz" as TabId, label: "Cüz & Ezber", icon: Sparkles }]
       : []),
+    ...(isCoordMember
+      ? [{ id: "koordinasyon" as TabId, label: "Koordinatörlüğüm", icon: Target }]
+      : []),
+    { id: "etkinlik", label: "Etkinlikler", icon: CalendarDays },
     { id: "profil", label: "Profilim", icon: User },
   ];
 
