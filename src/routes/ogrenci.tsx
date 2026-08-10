@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import {
   BookOpen,
   CalendarCheck,
+  CalendarDays,
   CheckCircle2,
   Clock,
   GraduationCap,
@@ -12,6 +13,7 @@ import {
   LogOut,
   Megaphone,
   Sparkles,
+  Target,
   User,
 } from "lucide-react";
 
@@ -23,6 +25,8 @@ import { StudentSessionBars } from "@/components/SessionAttendanceChart";
 import { ClassMaterials } from "@/components/ClassMaterials";
 
 import { HatimBoard } from "@/components/HatimBoard";
+import { EventBoard } from "@/components/EventBoard";
+import { MyCoordinations, useIsCoordinationMember } from "@/components/MyCoordinations";
 import { attendanceLabel, classLabel, cuzLabel, submissionLabel } from "@/lib/admin-api";
 import { useSiteSettings } from "@/lib/site-api";
 import { useRealtimeSync } from "@/lib/use-realtime-sync";
