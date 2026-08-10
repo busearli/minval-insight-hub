@@ -402,13 +402,12 @@ export function PortalDialog({
                 value={form.identifier}
                 onChange={(e) => set("identifier", e.target.value)}
               />
-              <input
-                type="password"
-                className={field}
+              <PasswordField
                 placeholder="Şifre"
-                maxLength={72}
                 value={form.password}
-                onChange={(e) => set("password", e.target.value)}
+                onChange={(v) => set("password", v)}
+                show={showPass}
+                onToggle={() => setShowPass((s) => !s)}
               />
               <button
                 disabled={busy}
