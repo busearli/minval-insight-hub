@@ -327,13 +327,12 @@ export function PortalDialog({
               value={form.phone}
               onChange={(e) => set("phone", e.target.value)}
             />
-            <input
-              type="password"
-              className={field}
+            <PasswordField
               placeholder="Şifre (en az 6 karakter) *"
-              maxLength={72}
               value={form.password}
-              onChange={(e) => set("password", e.target.value)}
+              onChange={(v) => set("password", v)}
+              show={showPass}
+              onToggle={() => setShowPass((s) => !s)}
             />
             {settings.signup_event_enabled && (
               <select
