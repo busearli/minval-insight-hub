@@ -403,6 +403,106 @@ export type Database = {
           },
         ]
       }
+      event_registrations: {
+        Row: {
+          attended: boolean
+          created_at: string
+          event_id: string
+          full_name: string
+          id: string
+          notes: string
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          attended?: boolean
+          created_at?: string
+          event_id: string
+          full_name?: string
+          id?: string
+          notes?: string
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          attended?: boolean
+          created_at?: string
+          event_id?: string
+          full_name?: string
+          id?: string
+          notes?: string
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          capacity: number
+          coordination_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          is_open: boolean
+          is_published: boolean
+          location: string
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number
+          coordination_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_open?: boolean
+          is_published?: boolean
+          location?: string
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number
+          coordination_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_open?: boolean
+          is_published?: boolean
+          location?: string
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_coordination_id_fkey"
+            columns: ["coordination_id"]
+            isOneToOne: false
+            referencedRelation: "coordinations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hatim_claims: {
         Row: {
           completed: boolean

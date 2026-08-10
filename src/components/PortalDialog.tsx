@@ -59,6 +59,39 @@ function trAuthError(message: string) {
 
 type Tab = "student" | "staff" | "signup";
 
+/** Şifre alanı + "Şifreyi göster" kutucuğu. */
+function PasswordField({
+  placeholder,
+  value,
+  onChange,
+  show,
+  onToggle,
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  show: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <input
+        type={show ? "text" : "password"}
+        className={field}
+        placeholder={placeholder}
+        maxLength={72}
+        autoComplete={show ? "off" : "current-password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <label className="flex cursor-pointer items-center gap-2 text-[12px] text-muted-foreground">
+        <input type="checkbox" checked={show} onChange={onToggle} className="accent-primary" />
+        Şifreyi göster
+      </label>
+    </div>
+  );
+}
+
 export function PortalDialog({
   open,
   onOpenChange,
@@ -70,6 +103,7 @@ export function PortalDialog({
 }) {
   const [tab, setTab] = useState<Tab>(defaultTab);
   const [busy, setBusy] = useState(false);
+  const [showPass, setShowPass] = useState(false);
   const [form, setForm] = useState({
     identifier: "",
     email: "",
@@ -327,13 +361,12 @@ export function PortalDialog({
               value={form.phone}
               onChange={(e) => set("phone", e.target.value)}
             />
-            <input
-              type="password"
-              className={field}
+            <PasswordField
               placeholder="Şifre (en az 6 karakter) *"
-              maxLength={72}
               value={form.password}
-              onChange={(e) => set("password", e.target.value)}
+              onChange={(v) => set("password", v)}
+              show={showPass}
+              onToggle={() => setShowPass((s) => !s)}
             />
             {settings.signup_event_enabled && (
               <select
@@ -402,13 +435,12 @@ export function PortalDialog({
                 value={form.identifier}
                 onChange={(e) => set("identifier", e.target.value)}
               />
-              <input
-                type="password"
-                className={field}
+              <PasswordField
                 placeholder="Şifre"
-                maxLength={72}
                 value={form.password}
-                onChange={(e) => set("password", e.target.value)}
+                onChange={(v) => set("password", v)}
+                show={showPass}
+                onToggle={() => setShowPass((s) => !s)}
               />
               <button
                 disabled={busy}
@@ -455,13 +487,12 @@ export function PortalDialog({
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
               />
-              <input
-                type="password"
-                className={field}
+              <PasswordField
                 placeholder="Şifre"
-                maxLength={72}
                 value={form.password}
-                onChange={(e) => set("password", e.target.value)}
+                onChange={(v) => set("password", v)}
+                show={showPass}
+                onToggle={() => setShowPass((s) => !s)}
               />
               <button
                 disabled={busy}

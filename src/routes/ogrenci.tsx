@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import {
   BookOpen,
   CalendarCheck,
+  CalendarDays,
   CheckCircle2,
   Clock,
   GraduationCap,
@@ -12,6 +13,7 @@ import {
   LogOut,
   Megaphone,
   Sparkles,
+  Target,
   User,
 } from "lucide-react";
 
@@ -23,6 +25,8 @@ import { StudentSessionBars } from "@/components/SessionAttendanceChart";
 import { ClassMaterials } from "@/components/ClassMaterials";
 
 import { HatimBoard } from "@/components/HatimBoard";
+import { EventBoard } from "@/components/EventBoard";
+import { MyCoordinations, useIsCoordinationMember } from "@/components/MyCoordinations";
 import { attendanceLabel, classLabel, cuzLabel, submissionLabel } from "@/lib/admin-api";
 import { useSiteSettings } from "@/lib/site-api";
 import { useRealtimeSync } from "@/lib/use-realtime-sync";
@@ -52,7 +56,15 @@ const statusTone: Record<string, string> = {
   gec: "bg-late/15 text-foreground",
 };
 
-type TabId = "genel" | "yoklama" | "odev" | "duyuru" | "cuz" | "profil";
+type TabId =
+  | "genel"
+  | "yoklama"
+  | "odev"
+  | "duyuru"
+  | "cuz"
+  | "koordinasyon"
+  | "etkinlik"
+  | "profil";
 
 function StudentPortalPage() {
   const { user, profile, loading, signOut } = useAuth();
@@ -142,6 +154,8 @@ function StudentPortalPage() {
     return { att, present, rate, hw, done, pending, upcoming, pages };
   }, [data]);
 
+  const isCoordMember = useIsCoordinationMember(user?.id);
+
   const tabs: { id: TabId; label: string; icon: typeof LayoutGrid }[] = [
     { id: "genel", label: "Genel Bakış", icon: LayoutGrid },
     { id: "yoklama", label: "Yoklamam", icon: CalendarCheck },
@@ -150,6 +164,10 @@ function StudentPortalPage() {
     ...(settings.cuz_tracking_enabled
       ? [{ id: "cuz" as TabId, label: "Cüz & Ezber", icon: Sparkles }]
       : []),
+    ...(isCoordMember
+      ? [{ id: "koordinasyon" as TabId, label: "Koordinatörlüğüm", icon: Target }]
+      : []),
+    { id: "etkinlik", label: "Etkinlikler", icon: CalendarDays },
     { id: "profil", label: "Profilim", icon: User },
   ];
 
@@ -172,20 +190,32 @@ function StudentPortalPage() {
         {user && isLoading && <p className="text-sm text-muted-foreground">Yükleniyor…</p>}
 
         {user && !isLoading && !data && (
-          <div className="card-soft border-accent/40 p-8 text-center">
-            <h1 className="text-2xl text-foreground">
-              Hoş geldiniz{profile?.name ? `, ${profile.name}` : ""}
-            </h1>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Kayıt talebiniz alındı. Yöneticilerimiz tarafından sınıf atamanız yapıldıktan sonra
-              paneliniz aktifleşecektir.
-            </p>
-            <button
-              onClick={() => void signOut()}
-              className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
-            >
-              <LogOut className="h-3.5 w-3.5" /> Çıkış
-            </button>
+          <div className="space-y-6">
+            <div className="card-soft border-accent/40 p-8 text-center">
+              <h1 className="text-2xl text-foreground">
+                Hoş geldiniz{profile?.name ? `, ${profile.name}` : ""}
+              </h1>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {isCoordMember
+                  ? "Sınıf kaydınız bulunmuyor; aşağıda görevli olduğunuz koordinatörlükleri ve etkinlikleri takip edebilirsiniz."
+                  : "Kayıt talebiniz alındı. Yöneticilerimiz tarafından sınıf atamanız yapıldıktan sonra paneliniz aktifleşecektir."}
+              </p>
+              <button
+                onClick={() => void signOut()}
+                className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+              >
+                <LogOut className="h-3.5 w-3.5" /> Çıkış
+              </button>
+            </div>
+
+            <MyCoordinations userId={user.id} />
+
+            <div className="space-y-3">
+              <h2 className="flex items-center gap-2 text-lg text-foreground">
+                <CalendarDays className="h-4 w-4" /> Etkinlikler
+              </h2>
+              <EventBoard userId={user.id} fullName={profile?.name ?? ""} />
+            </div>
           </div>
         )}
 
@@ -473,6 +503,21 @@ function StudentPortalPage() {
                     ))}
                   </ul>
                 </div>
+              </div>
+            )}
+
+            {tab === "koordinasyon" && <MyCoordinations userId={user?.id} />}
+
+            {tab === "etkinlik" && (
+              <div className="space-y-3">
+                <h2 className="flex items-center gap-2 text-lg text-foreground">
+                  <CalendarDays className="h-4 w-4" /> Etkinlikler
+                </h2>
+                <EventBoard
+                  userId={user?.id}
+                  fullName={data.student.full_name}
+                  phone={data.student.phone ?? ""}
+                />
               </div>
             )}
 
