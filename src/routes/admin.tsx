@@ -64,6 +64,7 @@ const items: NavItem[] = [
   { to: "/admin/odevler", label: "Ödevler", icon: BookOpen },
   { to: "/admin/cuz", label: "Cüz & Ezber", icon: Sparkles, module: "cuz" },
   { to: "/admin/koordinasyon", label: "Koordinatörlükler", icon: Target },
+  { to: "/admin/etkinlikler", label: "Etkinlik & Kayıtlar", icon: CalendarDays },
   { to: "/admin/anasayfa", label: "Ana Sayfa İçeriği", icon: LayoutTemplate, adminOnly: true },
   { to: "/admin/duyurular", label: "Duyurular & İçerik", icon: Megaphone, adminOnly: true },
   { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings, adminOnly: true },
