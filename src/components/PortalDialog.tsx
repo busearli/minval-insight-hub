@@ -59,6 +59,39 @@ function trAuthError(message: string) {
 
 type Tab = "student" | "staff" | "signup";
 
+/** Şifre alanı + "Şifreyi göster" kutucuğu. */
+function PasswordField({
+  placeholder,
+  value,
+  onChange,
+  show,
+  onToggle,
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  show: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <input
+        type={show ? "text" : "password"}
+        className={field}
+        placeholder={placeholder}
+        maxLength={72}
+        autoComplete={show ? "off" : "current-password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <label className="flex cursor-pointer items-center gap-2 text-[12px] text-muted-foreground">
+        <input type="checkbox" checked={show} onChange={onToggle} className="accent-primary" />
+        Şifreyi göster
+      </label>
+    </div>
+  );
+}
+
 export function PortalDialog({
   open,
   onOpenChange,
