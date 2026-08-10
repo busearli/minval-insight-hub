@@ -25,6 +25,7 @@ import { Route as AdminAyarlarRouteImport } from './routes/admin.ayarlar'
 import { Route as AdminBasvurularRouteImport } from './routes/admin.basvurular'
 import { Route as AdminCuzRouteImport } from './routes/admin.cuz'
 import { Route as AdminDuyurularRouteImport } from './routes/admin.duyurular'
+import { Route as AdminEtkinliklerRouteImport } from './routes/admin.etkinlikler'
 import { Route as AdminKoordinasyonRouteImport } from './routes/admin.koordinasyon'
 import { Route as AdminKullanicilarRouteImport } from './routes/admin.kullanicilar'
 import { Route as AdminOdevlerRouteImport } from './routes/admin.odevler'
@@ -113,6 +114,11 @@ const AdminDuyurularRoute = AdminDuyurularRouteImport.update({
   path: '/duyurular',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminEtkinliklerRoute = AdminEtkinliklerRouteImport.update({
+  id: '/etkinlikler',
+  path: '/etkinlikler',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminKoordinasyonRoute = AdminKoordinasyonRouteImport.update({
   id: '/koordinasyon',
   path: '/koordinasyon',
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/cuz': typeof AdminCuzRoute
   '/admin/duyurular': typeof AdminDuyurularRoute
+  '/admin/etkinlikler': typeof AdminEtkinliklerRoute
   '/admin/koordinasyon': typeof AdminKoordinasyonRoute
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/cuz': typeof AdminCuzRoute
   '/admin/duyurular': typeof AdminDuyurularRoute
+  '/admin/etkinlikler': typeof AdminEtkinliklerRoute
   '/admin/koordinasyon': typeof AdminKoordinasyonRoute
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/admin/basvurular': typeof AdminBasvurularRoute
   '/admin/cuz': typeof AdminCuzRoute
   '/admin/duyurular': typeof AdminDuyurularRoute
+  '/admin/etkinlikler': typeof AdminEtkinliklerRoute
   '/admin/koordinasyon': typeof AdminKoordinasyonRoute
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/admin/basvurular'
     | '/admin/cuz'
     | '/admin/duyurular'
+    | '/admin/etkinlikler'
     | '/admin/koordinasyon'
     | '/admin/kullanicilar'
     | '/admin/odevler'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/admin/basvurular'
     | '/admin/cuz'
     | '/admin/duyurular'
+    | '/admin/etkinlikler'
     | '/admin/koordinasyon'
     | '/admin/kullanicilar'
     | '/admin/odevler'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/admin/basvurular'
     | '/admin/cuz'
     | '/admin/duyurular'
+    | '/admin/etkinlikler'
     | '/admin/koordinasyon'
     | '/admin/kullanicilar'
     | '/admin/odevler'
@@ -429,6 +441,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDuyurularRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/etkinlikler': {
+      id: '/admin/etkinlikler'
+      path: '/etkinlikler'
+      fullPath: '/admin/etkinlikler'
+      preLoaderRoute: typeof AdminEtkinliklerRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/koordinasyon': {
       id: '/admin/koordinasyon'
       path: '/koordinasyon'
@@ -487,6 +506,7 @@ interface AdminRouteChildren {
   AdminBasvurularRoute: typeof AdminBasvurularRoute
   AdminCuzRoute: typeof AdminCuzRoute
   AdminDuyurularRoute: typeof AdminDuyurularRoute
+  AdminEtkinliklerRoute: typeof AdminEtkinliklerRoute
   AdminKoordinasyonRoute: typeof AdminKoordinasyonRoute
   AdminKullanicilarRoute: typeof AdminKullanicilarRoute
   AdminOdevlerRoute: typeof AdminOdevlerRoute
@@ -502,6 +522,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBasvurularRoute: AdminBasvurularRoute,
   AdminCuzRoute: AdminCuzRoute,
   AdminDuyurularRoute: AdminDuyurularRoute,
+  AdminEtkinliklerRoute: AdminEtkinliklerRoute,
   AdminKoordinasyonRoute: AdminKoordinasyonRoute,
   AdminKullanicilarRoute: AdminKullanicilarRoute,
   AdminOdevlerRoute: AdminOdevlerRoute,
@@ -529,13 +550,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
