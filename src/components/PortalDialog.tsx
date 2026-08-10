@@ -103,6 +103,7 @@ export function PortalDialog({
 }) {
   const [tab, setTab] = useState<Tab>(defaultTab);
   const [busy, setBusy] = useState(false);
+  const [showPass, setShowPass] = useState(false);
   const [form, setForm] = useState({
     identifier: "",
     email: "",
