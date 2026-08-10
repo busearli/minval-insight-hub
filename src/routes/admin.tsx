@@ -3,6 +3,7 @@ import {
   BarChart3,
   BookOpen,
   CalendarCheck,
+  CalendarDays,
   GraduationCap,
   Home,
   Inbox,
