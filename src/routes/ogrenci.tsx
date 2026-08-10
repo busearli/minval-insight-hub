@@ -52,7 +52,15 @@ const statusTone: Record<string, string> = {
   gec: "bg-late/15 text-foreground",
 };
 
-type TabId = "genel" | "yoklama" | "odev" | "duyuru" | "cuz" | "profil";
+type TabId =
+  | "genel"
+  | "yoklama"
+  | "odev"
+  | "duyuru"
+  | "cuz"
+  | "koordinasyon"
+  | "etkinlik"
+  | "profil";
 
 function StudentPortalPage() {
   const { user, profile, loading, signOut } = useAuth();
