@@ -494,6 +494,21 @@ function StudentPortalPage() {
               </div>
             )}
 
+            {tab === "koordinasyon" && <MyCoordinations userId={user?.id} />}
+
+            {tab === "etkinlik" && (
+              <div className="space-y-3">
+                <h2 className="flex items-center gap-2 text-lg text-foreground">
+                  <CalendarDays className="h-4 w-4" /> Etkinlikler
+                </h2>
+                <EventBoard
+                  userId={user?.id}
+                  fullName={data.student.full_name}
+                  phone={data.student.phone ?? ""}
+                />
+              </div>
+            )}
+
             {tab === "profil" && (
               <div className="card-soft border-accent/40 p-6">
                 <h2 className="flex items-center gap-2 text-lg text-foreground">
