@@ -190,20 +190,32 @@ function StudentPortalPage() {
         {user && isLoading && <p className="text-sm text-muted-foreground">Yükleniyor…</p>}
 
         {user && !isLoading && !data && (
-          <div className="card-soft border-accent/40 p-8 text-center">
-            <h1 className="text-2xl text-foreground">
-              Hoş geldiniz{profile?.name ? `, ${profile.name}` : ""}
-            </h1>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Kayıt talebiniz alındı. Yöneticilerimiz tarafından sınıf atamanız yapıldıktan sonra
-              paneliniz aktifleşecektir.
-            </p>
-            <button
-              onClick={() => void signOut()}
-              className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
-            >
-              <LogOut className="h-3.5 w-3.5" /> Çıkış
-            </button>
+          <div className="space-y-6">
+            <div className="card-soft border-accent/40 p-8 text-center">
+              <h1 className="text-2xl text-foreground">
+                Hoş geldiniz{profile?.name ? `, ${profile.name}` : ""}
+              </h1>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {isCoordMember
+                  ? "Sınıf kaydınız bulunmuyor; aşağıda görevli olduğunuz koordinatörlükleri ve etkinlikleri takip edebilirsiniz."
+                  : "Kayıt talebiniz alındı. Yöneticilerimiz tarafından sınıf atamanız yapıldıktan sonra paneliniz aktifleşecektir."}
+              </p>
+              <button
+                onClick={() => void signOut()}
+                className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-primary"
+              >
+                <LogOut className="h-3.5 w-3.5" /> Çıkış
+              </button>
+            </div>
+
+            <MyCoordinations userId={user.id} />
+
+            <div className="space-y-3">
+              <h2 className="flex items-center gap-2 text-lg text-foreground">
+                <CalendarDays className="h-4 w-4" /> Etkinlikler
+              </h2>
+              <EventBoard userId={user.id} fullName={profile?.name ?? ""} />
+            </div>
           </div>
         )}
 
