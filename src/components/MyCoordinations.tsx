@@ -21,7 +21,7 @@ const field =
  * Kullanıcının üyesi olduğu koordinatörlükler: hedefleri görüntüler ve
  * kendi ekibinin hedeflerinde durum / gerçekleşme oranını güncellemesine izin verir.
  */
-export function MyCoordinations({ userId }: { userId?: string }) {
+export function MyCoordinations({ userId }: { userId?: string | undefined }) {
   const { data: coordinations = [] } = useCoordinations();
   const { data: members = [] } = useCoordinationMembers();
   const { data: goals = [] } = useCoordinationGoals();
@@ -136,7 +136,7 @@ export function MyCoordinations({ userId }: { userId?: string }) {
 }
 
 /** Kullanıcı herhangi bir koordinatörlüğe üye mi? */
-export function useIsCoordinationMember(userId?: string) {
+export function useIsCoordinationMember(userId?: string | undefined) {
   const { data: members = [] } = useCoordinationMembers();
   return !!userId && members.some((m) => m.user_id === userId);
 }

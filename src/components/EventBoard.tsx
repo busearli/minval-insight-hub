@@ -16,9 +16,9 @@ export function EventBoard({
   fullName,
   phone,
 }: {
-  userId?: string;
+  userId?: string | undefined;
   fullName: string;
-  phone?: string;
+  phone?: string | undefined;
 }) {
   const { data: events = [] } = useEvents();
   const { data: myRegs = [] } = useEventRegistrations(!!userId);
