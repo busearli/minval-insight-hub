@@ -30,6 +30,7 @@ import { Route as AdminKoordinasyonRouteImport } from './routes/admin.koordinasy
 import { Route as AdminKullanicilarRouteImport } from './routes/admin.kullanicilar'
 import { Route as AdminOdevlerRouteImport } from './routes/admin.odevler'
 import { Route as AdminOgrencilerRouteImport } from './routes/admin.ogrenciler'
+import { Route as AdminProgramlarRouteImport } from './routes/admin.programlar'
 import { Route as AdminSiniflarRouteImport } from './routes/admin.siniflar'
 import { Route as AdminYoklamaRouteImport } from './routes/admin.yoklama'
 import { Route as AtolyeWorkshopIdRouteImport } from './routes/atolye.$workshopId'
@@ -139,6 +140,11 @@ const AdminOgrencilerRoute = AdminOgrencilerRouteImport.update({
   path: '/ogrenciler',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminProgramlarRoute = AdminProgramlarRouteImport.update({
+  id: '/programlar',
+  path: '/programlar',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSiniflarRoute = AdminSiniflarRouteImport.update({
   id: '/siniflar',
   path: '/siniflar',
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
+  '/admin/programlar': typeof AdminProgramlarRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/admin/yoklama': typeof AdminYoklamaRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
+  '/admin/programlar': typeof AdminProgramlarRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/admin/yoklama': typeof AdminYoklamaRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
+  '/admin/programlar': typeof AdminProgramlarRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/admin/yoklama': typeof AdminYoklamaRoute
   '/atolye/$workshopId': typeof AtolyeWorkshopIdRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
+    | '/admin/programlar'
     | '/admin/siniflar'
     | '/admin/yoklama'
     | '/atolye/$workshopId'
@@ -281,6 +291,7 @@ export interface FileRouteTypes {
     | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
+    | '/admin/programlar'
     | '/admin/siniflar'
     | '/admin/yoklama'
     | '/atolye/$workshopId'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
+    | '/admin/programlar'
     | '/admin/siniflar'
     | '/admin/yoklama'
     | '/atolye/$workshopId'
@@ -476,6 +488,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOgrencilerRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/programlar': {
+      id: '/admin/programlar'
+      path: '/programlar'
+      fullPath: '/admin/programlar'
+      preLoaderRoute: typeof AdminProgramlarRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/siniflar': {
       id: '/admin/siniflar'
       path: '/siniflar'
@@ -511,6 +530,7 @@ interface AdminRouteChildren {
   AdminKullanicilarRoute: typeof AdminKullanicilarRoute
   AdminOdevlerRoute: typeof AdminOdevlerRoute
   AdminOgrencilerRoute: typeof AdminOgrencilerRoute
+  AdminProgramlarRoute: typeof AdminProgramlarRoute
   AdminSiniflarRoute: typeof AdminSiniflarRoute
   AdminYoklamaRoute: typeof AdminYoklamaRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -527,6 +547,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminKullanicilarRoute: AdminKullanicilarRoute,
   AdminOdevlerRoute: AdminOdevlerRoute,
   AdminOgrencilerRoute: AdminOgrencilerRoute,
+  AdminProgramlarRoute: AdminProgramlarRoute,
   AdminSiniflarRoute: AdminSiniflarRoute,
   AdminYoklamaRoute: AdminYoklamaRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -550,13 +571,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

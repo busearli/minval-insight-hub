@@ -9,6 +9,7 @@ import {
   usePrograms,
   useSaveProgram,
   useSaveTimetableEntry,
+  useTimetable,
   type ProgramRow,
   type TimetableRow,
 } from "@/lib/programs-api";
@@ -384,7 +385,7 @@ function ProgramEditor({
 }
 
 function TimetableTab({ programs }: { programs: ProgramRow[] }) {
-  const { rows } = useTimetableRows();
+  const { rows } = useTimetable();
   const save = useSaveTimetableEntry();
   const remove = useDeleteTimetableEntry();
   const [draft, setDraft] = useState<Partial<TimetableRow>>({
@@ -515,12 +516,6 @@ function TimetableTab({ programs }: { programs: ProgramRow[] }) {
       </div>
     </div>
   );
-}
-
-function useTimetableRows() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { useTimetable } = require("@/lib/programs-api") as typeof import("@/lib/programs-api");
-  return useTimetable();
 }
 
 function ProgramsAdmin() {
