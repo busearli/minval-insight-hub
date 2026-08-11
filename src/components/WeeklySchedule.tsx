@@ -27,7 +27,7 @@ export function WeeklySchedule() {
                   <div
                     key={i}
                     className={`rounded-lg border px-3 py-2.5 text-[12px] ${
-                      programColor[e.programId] ?? ""
+                      programColor[e.programId] ?? "bg-secondary text-secondary-foreground border-border"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
