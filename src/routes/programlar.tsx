@@ -7,7 +7,8 @@ import { ProgramCard } from "@/components/ProgramCard";
 import { ProgramDetailModal } from "@/components/ProgramDetailModal";
 import { RegistrationModal } from "@/components/RegistrationModal";
 import { ArchPattern } from "@/components/MinvalMark";
-import { categoryTabs, programs, type Program } from "@/lib/minval-programs";
+import { categoryTabs, type Program } from "@/lib/minval-programs";
+import { usePrograms } from "@/lib/programs-api";
 
 export const Route = createFileRoute("/programlar")({
   head: () => ({
@@ -35,6 +36,7 @@ function ProgramsPage() {
   const [detail, setDetail] = useState<Program | null>(null);
   const [regOpen, setRegOpen] = useState(false);
   const [regProgram, setRegProgram] = useState("");
+  const { programs } = usePrograms();
 
   const list = tab === "all" ? programs : programs.filter((p) => p.category === tab);
 

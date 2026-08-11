@@ -785,6 +785,81 @@ export type Database = {
           },
         ]
       }
+      site_programs: {
+        Row: {
+          audience: string
+          badges_json: Json
+          books_json: Json
+          category: string
+          category_label: string
+          created_at: string
+          curriculum_json: Json
+          description: string
+          emoji: string
+          fee: string
+          groups_json: Json
+          id: string
+          instructor: string
+          is_published: boolean
+          paid: boolean
+          quote: string
+          schedule: string
+          soon: boolean
+          sort_order: number
+          subtitle: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          badges_json?: Json
+          books_json?: Json
+          category?: string
+          category_label?: string
+          created_at?: string
+          curriculum_json?: Json
+          description?: string
+          emoji?: string
+          fee?: string
+          groups_json?: Json
+          id: string
+          instructor?: string
+          is_published?: boolean
+          paid?: boolean
+          quote?: string
+          schedule?: string
+          soon?: boolean
+          sort_order?: number
+          subtitle?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          badges_json?: Json
+          books_json?: Json
+          category?: string
+          category_label?: string
+          created_at?: string
+          curriculum_json?: Json
+          description?: string
+          emoji?: string
+          fee?: string
+          groups_json?: Json
+          id?: string
+          instructor?: string
+          is_published?: boolean
+          paid?: boolean
+          quote?: string
+          schedule?: string
+          soon?: boolean
+          sort_order?: number
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           about_eyebrow: string
@@ -931,6 +1006,47 @@ export type Database = {
           whatsapp_number?: string
         }
         Relationships: []
+      }
+      site_timetable: {
+        Row: {
+          created_at: string
+          day: string
+          group_label: string
+          id: string
+          program_id: string | null
+          sort_order: number
+          time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          group_label?: string
+          id?: string
+          program_id?: string | null
+          sort_order?: number
+          time?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          group_label?: string
+          id?: string
+          program_id?: string | null
+          sort_order?: number
+          time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_timetable_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "site_programs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       students: {
         Row: {

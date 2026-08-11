@@ -9,7 +9,8 @@ import { ProgramCard } from "@/components/ProgramCard";
 import { ProgramDetailModal } from "@/components/ProgramDetailModal";
 import { RegistrationModal } from "@/components/RegistrationModal";
 import { WeeklySchedule } from "@/components/WeeklySchedule";
-import { WHATSAPP_URL, principles, programs, type Program } from "@/lib/minval-programs";
+import { WHATSAPP_URL, principles, type Program } from "@/lib/minval-programs";
+import { usePrograms } from "@/lib/programs-api";
 import {
   asList,
   useSiteSettings,
@@ -44,6 +45,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const { settings } = useSiteSettings();
+  const { programs } = usePrograms();
   const customPrinciples = asList<PrincipleItem>(settings.principles_json);
   const principleList = customPrinciples.length > 0 ? customPrinciples : principles;
   const stats = asList<StatItem>(settings.stats_json);
