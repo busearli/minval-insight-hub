@@ -1,6 +1,10 @@
-import { programColor, programs, timetable, weekDays } from "@/lib/minval-programs";
+import { programColor, weekDays } from "@/lib/minval-programs";
+import { usePrograms, useTimetable } from "@/lib/programs-api";
 
 export function WeeklySchedule() {
+  const { programs } = usePrograms();
+  const { entries: timetable } = useTimetable();
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {weekDays.map((day) => {

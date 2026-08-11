@@ -7,6 +7,7 @@ import {
   GraduationCap,
   Home,
   Inbox,
+  LayoutGrid,
   LayoutTemplate,
   Megaphone,
   Settings,
@@ -67,6 +68,7 @@ const items: NavItem[] = [
   { to: "/admin/koordinasyon", label: "Koordinatörlükler", icon: Target },
   { to: "/admin/etkinlikler", label: "Etkinlik & Kayıtlar", icon: CalendarDays },
   { to: "/admin/anasayfa", label: "Ana Sayfa İçeriği", icon: LayoutTemplate, adminOnly: true },
+  { to: "/admin/programlar", label: "Program & Takvim", icon: LayoutGrid, adminOnly: true },
   { to: "/admin/duyurular", label: "Duyurular & İçerik", icon: Megaphone, adminOnly: true },
   { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings, adminOnly: true },
 ];
