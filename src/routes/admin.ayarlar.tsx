@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { asList, useSaveSettings, useSiteSettings } from "@/lib/site-api";
+import { useSaveSettings, useSiteSettings } from "@/lib/site-api";
 
 export const Route = createFileRoute("/admin/ayarlar")({
   component: SettingsPage,
@@ -101,80 +101,6 @@ function SettingsPage() {
         </form>
       )}
 
-      <EventFieldCard />
     </div>
-  );
-}
-
-/** Kayıt formundaki opsiyonel "etkinlik / program" alanının yönetimi. */
-function EventFieldCard() {
-  const { settings } = useSiteSettings();
-  const save = useSaveSettings();
-  const [enabled, setEnabled] = useState(false);
-  const [label, setLabel] = useState("");
-  const [options, setOptions] = useState("");
-
-  useEffect(() => {
-    setEnabled(settings.signup_event_enabled);
-    setLabel(settings.signup_event_label);
-    setOptions(asList<string>(settings.signup_event_options_json).join("\n"));
-  }, [settings]);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await save.mutateAsync({
-        signup_event_enabled: enabled,
-        signup_event_label: label.trim() || "Katılmak istediğiniz etkinlik",
-        signup_event_options_json: options
-          .split("\n")
-          .map((o) => o.trim())
-          .filter(Boolean),
-      });
-      toast.success("Kayıt formu etkinlik alanı güncellendi.");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Kaydedilemedi");
-    }
-  };
-
-  return (
-    <form onSubmit={submit} className="card-soft grid max-w-2xl gap-4 border-accent/40 p-6">
-      <div>
-        <p className="eyebrow">Kayıt Formu</p>
-        <h2 className="mt-1 text-lg text-foreground">Etkinlik / Program Seçimi</h2>
-        <p className="mt-1 text-[13px] text-muted-foreground">
-          Kapalıyken kayıt formunda bu alan hiç görünmez. Açtığınızda seçenekler listelenir ancak
-          seçim zorunlu değildir.
-        </p>
-      </div>
-      <label className="flex items-center gap-3 text-sm text-foreground">
-        <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />
-        Kayıt formunda etkinlik seçimi gösterilsin
-      </label>
-      <label className="grid gap-1.5">
-        <span className="eyebrow">Alan Başlığı</span>
-        <input
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          placeholder="Katılmak istediğiniz etkinlik"
-          className="h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary"
-        />
-      </label>
-      <label className="grid gap-1.5">
-        <span className="eyebrow">Seçenekler (her satıra bir etkinlik)</span>
-        <textarea
-          value={options}
-          onChange={(e) => setOptions(e.target.value)}
-          placeholder={"Strateji Kampı\nGençlik Buluşması"}
-          className="min-h-28 rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
-        />
-      </label>
-      <button
-        disabled={save.isPending}
-        className="mt-1 w-fit rounded-full bg-primary px-6 py-2.5 text-sm text-primary-foreground disabled:opacity-60"
-      >
-        Kaydet
-      </button>
-    </form>
   );
 }
