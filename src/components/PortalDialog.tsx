@@ -7,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { signInWithPhone } from "@/lib/auth-lookup.functions";
 
-import { asList, useSiteSettings } from "@/lib/site-api";
+import { useSiteSettings } from "@/lib/site-api";
+import { formatEventDate, useEvents } from "@/lib/events-api";
 import { publicClassLabel, usePublicClasses } from "@/lib/classes-public";
 
 import {
@@ -33,6 +34,7 @@ const signUpSchema = z.object({
   phone: phoneSchema,
   password: passwordSchema,
   program_choice: z.string().max(120),
+  event_id: z.string().max(64),
   requested_class_id: z.string().min(1, { message: "Katılmak istediğiniz sınıfı seçiniz" }),
   age_level: z.string().min(1, { message: "Yaş / eğitim durumunuzu seçiniz" }).max(80),
   notes: z.string().trim().max(500),
@@ -111,12 +113,15 @@ export function PortalDialog({
     name: "",
     phone: "",
     program_choice: "",
+    event_id: "",
     requested_class_id: "",
     age_level: "",
     notes: "",
   });
   const { data: openClasses = [] } = usePublicClasses();
   const { settings } = useSiteSettings();
+  const { data: allEvents = [] } = useEvents();
+  const openEvents = allEvents.filter((ev) => ev.is_published && ev.is_open);
   const navigate = useNavigate();
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -244,7 +249,7 @@ export function PortalDialog({
     }
     setBusy(true);
     try {
-      const { email, password, ...meta } = parsed.data;
+      const { email, password, event_id, ...meta } = parsed.data;
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -254,6 +259,7 @@ export function PortalDialog({
         toast.error(trAuthError(error.message));
         return;
       }
+      const joinedEvent = openEvents.find((ev) => ev.id === event_id);
       const chosen = openClasses.find((c) => c.id === meta.requested_class_id);
       await supabase.from("registration_applications").insert({
         full_name: meta.name,
@@ -265,6 +271,19 @@ export function PortalDialog({
         age_level: meta.age_level,
         notes: meta.notes,
       });
+      if (joinedEvent) {
+        const { data: sess } = await supabase.auth.getSession();
+        const uid = sess.session?.user.id;
+        if (uid) {
+          await supabase.from("event_registrations").insert({
+            event_id: joinedEvent.id,
+            user_id: uid,
+            full_name: meta.name,
+            phone: meta.phone,
+            notes: meta.notes,
+          });
+        }
+      }
       toast.success(
         "Kayıt talebiniz alındı. Sınıf hocanız veya yöneticilerimiz onayladıktan sonra paneliniz aktifleşecektir.",
       );
@@ -368,16 +387,16 @@ export function PortalDialog({
               show={showPass}
               onToggle={() => setShowPass((s) => !s)}
             />
-            {settings.signup_event_enabled && (
+            {openEvents.length > 0 && (
               <select
                 className={field}
-                value={form.program_choice}
-                onChange={(e) => set("program_choice", e.target.value)}
+                value={form.event_id}
+                onChange={(e) => set("event_id", e.target.value)}
               >
-                <option value="">{settings.signup_event_label} (opsiyonel)</option>
-                {asList<string>(settings.signup_event_options_json).map((o: string) => (
-                  <option key={o} value={o}>
-                    {o}
+                <option value="">Katılmak istediğiniz etkinlik (opsiyonel)</option>
+                {openEvents.map((ev) => (
+                  <option key={ev.id} value={ev.id}>
+                    {ev.title} · {formatEventDate(ev.starts_at)}
                   </option>
                 ))}
               </select>
