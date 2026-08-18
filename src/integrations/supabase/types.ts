@@ -576,6 +576,7 @@ export type Database = {
       }
       homework: {
         Row: {
+          assigned_at: string
           class_id: string
           created_at: string
           description: string
@@ -587,6 +588,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          assigned_at?: string
           class_id: string
           created_at?: string
           description?: string
@@ -598,6 +600,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          assigned_at?: string
           class_id?: string
           created_at?: string
           description?: string
