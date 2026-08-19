@@ -225,7 +225,10 @@ function HomeworkPage() {
                 <button onClick={() => { setSelected(h.id); setListOpen(false); }} className="min-w-0 flex-1 text-left">
                   <div className="truncate text-sm text-foreground">{h.title}</div>
                   <div className="mt-1 truncate text-[12px] text-muted-foreground">
-                    {c ? classLabel(c) : "—"} · {h.due_date ?? "tarihsiz"}
+                    {c ? classLabel(c) : "—"} · Atanma:{" "}
+                    {(h as { assigned_at?: string }).assigned_at ?? "—"} · Son teslim:{" "}
+                    {h.due_date ?? "tarihsiz"}
+
                   </div>
                   <span className="mt-2 inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
                     {h.task_type === "sayfa" ? <BookOpen className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />}
