@@ -14,7 +14,9 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  UserCog,
   Users,
+
 } from "lucide-react";
 
 import { useState } from "react";
