@@ -522,30 +522,39 @@ function StudentPortalPage() {
             )}
 
             {tab === "profil" && (
-              <div className="card-soft border-accent/40 p-6">
-                <h2 className="flex items-center gap-2 text-lg text-foreground">
-                  <User className="h-4 w-4" /> Profil Bilgilerim
-                </h2>
-                <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-                  {[
-                    ["Ad Soyad", data.student.full_name],
-                    ["E-posta", user?.email ?? "—"],
-                    ["Telefon", data.student.phone || "—"],
-                    ["Sınıf", data.className],
-                    ["Eğitmen", data.instructor || "—"],
-                    ["Kayıt Tarihi", data.student.registered_at ?? "—"],
-                  ].map(([l, v]) => (
-                    <div key={l} className="rounded-lg border border-border px-4 py-3">
-                      <dt className="eyebrow">{l}</dt>
-                      <dd className="mt-1 text-sm text-foreground">{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="mt-4 text-[12px] text-muted-foreground">
-                  Bilgilerinizde bir hata varsa akademi yönetimiyle iletişime geçiniz.
-                </p>
+              <div className="space-y-4">
+                <div className="card-soft border-accent/40 p-6">
+                  <h2 className="flex items-center gap-2 text-lg text-foreground">
+                    <User className="h-4 w-4" /> Kayıt Bilgilerim
+                  </h2>
+                  <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+                    {[
+                      ["Sınıf", data.className],
+                      ["Ders Günü & Saati", data.schedule || "—"],
+                      ["Eğitmen", data.instructor || "—"],
+                      ["Kayıt Tarihi", data.student.registered_at ?? "—"],
+                    ].map(([l, v]) => (
+                      <div key={l} className="rounded-lg border border-border px-4 py-3">
+                        <dt className="eyebrow">{l}</dt>
+                        <dd className="mt-1 text-sm text-foreground">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                <ProfileSettings
+                  userId={user!.id}
+                  email={user?.email ?? ""}
+                  initialName={data.student.full_name}
+                  initialPhone={data.student.phone ?? ""}
+                  onSaved={() => {
+                    void refresh();
+                    void qc.invalidateQueries({ queryKey: ["student-self"] });
+                  }}
+                />
               </div>
             )}
+
           </div>
         )}
       </main>
