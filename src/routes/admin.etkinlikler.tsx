@@ -10,6 +10,7 @@ import {
   useRemoveEvent,
   useSaveEvent,
   useUpdateRegistration,
+  REG_STATUS_LABEL,
 } from "@/lib/events-api";
 import { useCoordinations } from "@/lib/coordination-api";
 import { useMyRoles } from "@/lib/rbac";
