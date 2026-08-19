@@ -61,6 +61,7 @@ function HomeworkPage() {
     title: "",
     description: "",
     due_date: "",
+    assigned_at: new Date().toISOString().slice(0, 10),
     task_type: "onay",
     target_pages: "",
   };
@@ -89,6 +90,7 @@ function HomeworkPage() {
         title: form.title,
         description: form.description,
         due_date: form.due_date || null,
+        assigned_at: form.assigned_at || new Date().toISOString().slice(0, 10),
         task_type: form.task_type,
         target_pages: form.task_type === "sayfa" ? Number(form.target_pages || 0) : 0,
       },
@@ -136,11 +138,24 @@ function HomeworkPage() {
             <option key={c.id} value={c.id}>{classLabel(c)}</option>
           ))}
         </select>
-        <Input
-          type="date"
-          value={form.due_date}
-          onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
-        />
+        <div className="grid grid-cols-2 gap-3">
+          <label className="text-[12px] text-muted-foreground">
+            Atanma tarihi
+            <Input
+              type="date"
+              value={form.assigned_at}
+              onChange={(e) => setForm((f) => ({ ...f, assigned_at: e.target.value }))}
+            />
+          </label>
+          <label className="text-[12px] text-muted-foreground">
+            Son teslim tarihi
+            <Input
+              type="date"
+              value={form.due_date}
+              onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
+            />
+          </label>
+        </div>
         <select
           value={form.task_type}
           onChange={(e) => setForm((f) => ({ ...f, task_type: e.target.value }))}
