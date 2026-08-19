@@ -5,7 +5,6 @@ import { z } from "zod";
 
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { signInWithPhone } from "@/lib/auth-lookup.functions";
 
 import { useSiteSettings } from "@/lib/site-api";
 import { formatEventDate, useEvents } from "@/lib/events-api";
@@ -265,7 +264,7 @@ export function PortalDialog({
         }
       }
       toast.success(
-        "Kayıt talebiniz alındı. Sınıf hocanız veya yöneticilerimiz onayladıktan sonra paneliniz aktifleşecektir.",
+        "Kaydınız tamamlandı. Paneliniz açıldı; sınıf atamanız yapıldığında ders bilgileriniz görünecektir.",
       );
       onOpenChange(false);
 
@@ -429,7 +428,7 @@ export function PortalDialog({
             <form onSubmit={studentSignIn} className="space-y-3">
               <input
                 className={field}
-                placeholder="E-posta veya Telefon Numarası"
+                placeholder="E-posta Adresiniz"
                 maxLength={255}
                 value={form.identifier}
                 onChange={(e) => set("identifier", e.target.value)}
