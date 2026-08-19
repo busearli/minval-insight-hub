@@ -66,9 +66,14 @@ export function HatimBoard({
                 return (
                   <div
                     key={no}
-                    className={`rounded-lg border px-3 py-2 text-[13px] ${
-                      taken ? "border-primary/40 bg-secondary/60" : "border-border bg-card"
+                    className={`rounded-lg border px-3 py-2 text-[13px] transition-colors ${
+                      taken?.completed
+                        ? "border-present bg-present/20"
+                        : taken
+                          ? "border-primary/40 bg-secondary/60"
+                          : "border-border bg-card"
                     }`}
+
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-foreground">{no}. Cüz</span>

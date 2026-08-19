@@ -14,7 +14,9 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  UserCog,
   Users,
+
 } from "lucide-react";
 
 import { useState } from "react";
@@ -61,16 +63,18 @@ const items: NavItem[] = [
   { to: "/admin/kullanicilar", label: "Kullanıcı & Yetki", icon: ShieldCheck, superOnly: true },
   { to: "/admin/basvurular", label: "Başvuru & Sınıf Atama", icon: Inbox },
   { to: "/admin/siniflar", label: "Sınıflar", icon: Home },
-  { to: "/admin/ogrenciler", label: "Öğrenciler", icon: Users },
+  { to: "/admin/ogrenciler", label: "Öğrenciler", icon: Users, adminOnly: true },
   { to: "/admin/yoklama", label: "Yoklama", icon: CalendarCheck },
   { to: "/admin/odevler", label: "Ödevler", icon: BookOpen },
   { to: "/admin/cuz", label: "Cüz & Ezber", icon: Sparkles, module: "cuz" },
-  { to: "/admin/koordinasyon", label: "Koordinatörlükler", icon: Target },
+  { to: "/admin/koordinasyon", label: "Koordinatörlükler", icon: Target, adminOnly: true },
   { to: "/admin/etkinlikler", label: "Etkinlik & Kayıtlar", icon: CalendarDays },
   { to: "/admin/anasayfa", label: "Ana Sayfa İçeriği", icon: LayoutTemplate, adminOnly: true },
   { to: "/admin/programlar", label: "Program & Takvim", icon: LayoutGrid, adminOnly: true },
   { to: "/admin/duyurular", label: "Duyurular & İçerik", icon: Megaphone, adminOnly: true },
   { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings, adminOnly: true },
+  { to: "/admin/profil", label: "Bilgilerim", icon: UserCog },
+
 ];
 
 function AdminLayout() {

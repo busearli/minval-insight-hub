@@ -5,7 +5,6 @@ import { z } from "zod";
 
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { signInWithPhone } from "@/lib/auth-lookup.functions";
 
 import { useSiteSettings } from "@/lib/site-api";
 import { formatEventDate, useEvents } from "@/lib/events-api";
@@ -151,43 +150,22 @@ export function PortalDialog({
     return (data ?? []).map((r) => r.role as string);
   };
 
-  /** Öğrenci girişi: e-posta veya telefon + şifre */
+  /** Öğrenci girişi: e-posta + şifre */
   const studentSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    const pass = passwordSchema.safeParse(form.password);
-    if (!pass.success) {
-      toast.error(pass.error.issues[0]?.message ?? "Şifrenizi kontrol edin");
+    const parsed = z
+      .object({ email: emailSchema, password: passwordSchema })
+      .safeParse({ email: form.identifier, password: form.password });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Bilgileri kontrol edin");
       return;
     }
     setBusy(true);
     try {
-      if (isEmail(form.identifier)) {
-        const parsed = emailSchema.safeParse(form.identifier);
-        if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "");
-        const { error } = await supabase.auth.signInWithPassword({
-          email: parsed.data,
-          password: form.password,
-        });
-        if (error) {
-          toast.error(trAuthError(error.message));
-          return;
-        }
-      } else {
-        const parsed = phoneSchema.safeParse(form.identifier);
-        if (!parsed.success) {
-          toast.error("E-posta adresinizi veya telefon numaranızı giriniz");
-          return;
-        }
-        const res = await signInWithPhone({ data: { phone: parsed.data, password: form.password } });
-        if (res.error || !res.session) {
-          toast.error(res.error ?? "Telefon veya şifre hatalı.");
-          return;
-        }
-        const { error } = await supabase.auth.setSession(res.session);
-        if (error) {
-          toast.error(trAuthError(error.message));
-          return;
-        }
+      const { error } = await supabase.auth.signInWithPassword(parsed.data);
+      if (error) {
+        toast.error(trAuthError(error.message));
+        return;
       }
       // Bir kişi aynı anda hem öğrenci hem hoca/yönetici olabilir:
       // öğrenci sekmesinden giriş herkese açıktır, yalnızca bilgilendirme yapılır.
@@ -207,6 +185,7 @@ export function PortalDialog({
       setBusy(false);
     }
   };
+
 
   /** Yönetici / eğitmen girişi: yalnızca yetkili roller */
   const staffSignIn = async (e: React.FormEvent) => {
@@ -285,9 +264,11 @@ export function PortalDialog({
         }
       }
       toast.success(
-        "Kayıt talebiniz alındı. Sınıf hocanız veya yöneticilerimiz onayladıktan sonra paneliniz aktifleşecektir.",
+        "Kaydınız tamamlandı. Paneliniz açıldı; sınıf atamanız yapıldığında ders bilgileriniz görünecektir.",
       );
       onOpenChange(false);
+      void navigate({ to: "/ogrenci" });
+
 
     } finally {
       setBusy(false);
@@ -449,7 +430,7 @@ export function PortalDialog({
             <form onSubmit={studentSignIn} className="space-y-3">
               <input
                 className={field}
-                placeholder="E-posta veya Telefon Numarası"
+                placeholder="E-posta Adresiniz"
                 maxLength={255}
                 value={form.identifier}
                 onChange={(e) => set("identifier", e.target.value)}

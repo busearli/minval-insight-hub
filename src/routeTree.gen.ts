@@ -30,6 +30,7 @@ import { Route as AdminKoordinasyonRouteImport } from './routes/admin.koordinasy
 import { Route as AdminKullanicilarRouteImport } from './routes/admin.kullanicilar'
 import { Route as AdminOdevlerRouteImport } from './routes/admin.odevler'
 import { Route as AdminOgrencilerRouteImport } from './routes/admin.ogrenciler'
+import { Route as AdminProfilRouteImport } from './routes/admin.profil'
 import { Route as AdminProgramlarRouteImport } from './routes/admin.programlar'
 import { Route as AdminSiniflarRouteImport } from './routes/admin.siniflar'
 import { Route as AdminYoklamaRouteImport } from './routes/admin.yoklama'
@@ -140,6 +141,11 @@ const AdminOgrencilerRoute = AdminOgrencilerRouteImport.update({
   path: '/ogrenciler',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminProfilRoute = AdminProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProgramlarRoute = AdminProgramlarRouteImport.update({
   id: '/programlar',
   path: '/programlar',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
+  '/admin/profil': typeof AdminProfilRoute
   '/admin/programlar': typeof AdminProgramlarRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/admin/yoklama': typeof AdminYoklamaRoute
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
+  '/admin/profil': typeof AdminProfilRoute
   '/admin/programlar': typeof AdminProgramlarRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/admin/yoklama': typeof AdminYoklamaRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/admin/kullanicilar': typeof AdminKullanicilarRoute
   '/admin/odevler': typeof AdminOdevlerRoute
   '/admin/ogrenciler': typeof AdminOgrencilerRoute
+  '/admin/profil': typeof AdminProfilRoute
   '/admin/programlar': typeof AdminProgramlarRoute
   '/admin/siniflar': typeof AdminSiniflarRoute
   '/admin/yoklama': typeof AdminYoklamaRoute
@@ -265,6 +274,7 @@ export interface FileRouteTypes {
     | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
+    | '/admin/profil'
     | '/admin/programlar'
     | '/admin/siniflar'
     | '/admin/yoklama'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
+    | '/admin/profil'
     | '/admin/programlar'
     | '/admin/siniflar'
     | '/admin/yoklama'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/admin/kullanicilar'
     | '/admin/odevler'
     | '/admin/ogrenciler'
+    | '/admin/profil'
     | '/admin/programlar'
     | '/admin/siniflar'
     | '/admin/yoklama'
@@ -488,6 +500,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOgrencilerRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/profil': {
+      id: '/admin/profil'
+      path: '/profil'
+      fullPath: '/admin/profil'
+      preLoaderRoute: typeof AdminProfilRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/programlar': {
       id: '/admin/programlar'
       path: '/programlar'
@@ -530,6 +549,7 @@ interface AdminRouteChildren {
   AdminKullanicilarRoute: typeof AdminKullanicilarRoute
   AdminOdevlerRoute: typeof AdminOdevlerRoute
   AdminOgrencilerRoute: typeof AdminOgrencilerRoute
+  AdminProfilRoute: typeof AdminProfilRoute
   AdminProgramlarRoute: typeof AdminProgramlarRoute
   AdminSiniflarRoute: typeof AdminSiniflarRoute
   AdminYoklamaRoute: typeof AdminYoklamaRoute
@@ -547,6 +567,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminKullanicilarRoute: AdminKullanicilarRoute,
   AdminOdevlerRoute: AdminOdevlerRoute,
   AdminOgrencilerRoute: AdminOgrencilerRoute,
+  AdminProfilRoute: AdminProfilRoute,
   AdminProgramlarRoute: AdminProgramlarRoute,
   AdminSiniflarRoute: AdminSiniflarRoute,
   AdminYoklamaRoute: AdminYoklamaRoute,

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { ClassAnnouncements } from "@/components/ClassAnnouncements";
 import { ClassMaterials } from "@/components/ClassMaterials";
 import { Input } from "@/components/ui/input";
 
@@ -317,6 +318,7 @@ function ClassesPage() {
 
                     <div className="mt-3">
                       <ClassMaterials classId={c.id} canManage />
+                      <ClassAnnouncements classId={c.id} />
                     </div>
 
                     {isAdmin && (

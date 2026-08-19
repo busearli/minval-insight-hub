@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { StudentSessionBars } from "@/components/SessionAttendanceChart";
 import { ClassMaterials } from "@/components/ClassMaterials";
+import { ProfileSettings } from "@/components/ProfileSettings";
 
 import { HatimBoard } from "@/components/HatimBoard";
 import { EventBoard } from "@/components/EventBoard";
@@ -67,7 +68,8 @@ type TabId =
   | "profil";
 
 function StudentPortalPage() {
-  const { user, profile, loading, signOut } = useAuth();
+  const { user, profile, loading, signOut, refresh } = useAuth();
+  const qc = useQueryClient();
   const { settings } = useSiteSettings();
   useRealtimeSync(!!user);
   const [tab, setTab] = useState<TabId>("genel");
@@ -423,6 +425,7 @@ function StudentPortalPage() {
                         homeworkId={h.id}
                         studentId={h.student_id}
                         initial={h.submission_text}
+                        dueDate={h.due_date}
                       />
                     </li>
                   ))}
@@ -522,30 +525,39 @@ function StudentPortalPage() {
             )}
 
             {tab === "profil" && (
-              <div className="card-soft border-accent/40 p-6">
-                <h2 className="flex items-center gap-2 text-lg text-foreground">
-                  <User className="h-4 w-4" /> Profil Bilgilerim
-                </h2>
-                <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-                  {[
-                    ["Ad Soyad", data.student.full_name],
-                    ["E-posta", user?.email ?? "—"],
-                    ["Telefon", data.student.phone || "—"],
-                    ["Sınıf", data.className],
-                    ["Eğitmen", data.instructor || "—"],
-                    ["Kayıt Tarihi", data.student.registered_at ?? "—"],
-                  ].map(([l, v]) => (
-                    <div key={l} className="rounded-lg border border-border px-4 py-3">
-                      <dt className="eyebrow">{l}</dt>
-                      <dd className="mt-1 text-sm text-foreground">{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="mt-4 text-[12px] text-muted-foreground">
-                  Bilgilerinizde bir hata varsa akademi yönetimiyle iletişime geçiniz.
-                </p>
+              <div className="space-y-4">
+                <div className="card-soft border-accent/40 p-6">
+                  <h2 className="flex items-center gap-2 text-lg text-foreground">
+                    <User className="h-4 w-4" /> Kayıt Bilgilerim
+                  </h2>
+                  <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+                    {[
+                      ["Sınıf", data.className],
+                      ["Ders Günü & Saati", data.schedule || "—"],
+                      ["Eğitmen", data.instructor || "—"],
+                      ["Kayıt Tarihi", data.student.registered_at ?? "—"],
+                    ].map(([l, v]) => (
+                      <div key={l} className="rounded-lg border border-border px-4 py-3">
+                        <dt className="eyebrow">{l}</dt>
+                        <dd className="mt-1 text-sm text-foreground">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                <ProfileSettings
+                  userId={user!.id}
+                  email={user?.email ?? ""}
+                  initialName={data.student.full_name}
+                  initialPhone={data.student.phone ?? ""}
+                  onSaved={() => {
+                    void refresh();
+                    void qc.invalidateQueries({ queryKey: ["student-self"] });
+                  }}
+                />
               </div>
             )}
+
           </div>
         )}
       </main>
@@ -585,10 +597,12 @@ function SubmitBox({
   homeworkId,
   studentId,
   initial,
+  dueDate,
 }: {
   homeworkId: string;
   studentId: string;
   initial: string;
+  dueDate?: string | null;
 }) {
   const qc = useQueryClient();
   const [text, setText] = useState(initial);
@@ -606,7 +620,8 @@ function SubmitBox({
         student_id: studentId,
         submission_text: text.trim(),
         submitted_at: new Date().toISOString(),
-        status: "edildi",
+        // Son teslim tarihi geçtiyse eğitmene "geç teslim" olarak düşer.
+        status: dueDate && new Date().toISOString().slice(0, 10) > dueDate ? "gec" : "edildi",
       } as never,
       { onConflict: "homework_id,student_id" },
     );
@@ -615,7 +630,11 @@ function SubmitBox({
       toast.error(error.message);
       return;
     }
-    toast.success("Ödeviniz teslim edildi.");
+    toast.success(
+      dueDate && new Date().toISOString().slice(0, 10) > dueDate
+        ? "Ödeviniz geç teslim olarak kaydedildi."
+        : "Ödeviniz teslim edildi.",
+    );
     void qc.invalidateQueries({ queryKey: ["student-self"] });
   };
 

@@ -10,6 +10,7 @@ import {
   useRemoveEvent,
   useSaveEvent,
   useUpdateRegistration,
+  REG_STATUS_LABEL,
 } from "@/lib/events-api";
 import { useCoordinations } from "@/lib/coordination-api";
 import { useMyRoles } from "@/lib/rbac";
@@ -223,13 +224,14 @@ function EventsAdminPage() {
                           <th className="px-4 py-2.5">Katılımcı</th>
                           <th className="px-3 py-2.5">Telefon</th>
                           <th className="px-3 py-2.5">Not</th>
+                          <th className="px-3 py-2.5">Durum</th>
                           <th className="px-3 py-2.5">Katıldı</th>
                         </tr>
                       </thead>
                       <tbody>
                         {list.length === 0 && (
                           <tr>
-                            <td className="px-4 py-3 text-muted-foreground" colSpan={4}>
+                            <td className="px-4 py-3 text-muted-foreground" colSpan={5}>
                               Henüz kayıt yok.
                             </td>
                           </tr>
@@ -239,6 +241,47 @@ function EventsAdminPage() {
                             <td className="px-4 py-2.5 text-foreground">{r.full_name || "—"}</td>
                             <td className="px-3 py-2.5 text-muted-foreground">{r.phone || "—"}</td>
                             <td className="px-3 py-2.5 text-muted-foreground">{r.notes || "—"}</td>
+                            <td className="px-3 py-2.5">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span
+                                  className={`rounded-full px-2.5 py-1 text-[11px] ${
+                                    r.status === "onaylandi"
+                                      ? "bg-present/20 text-foreground"
+                                      : r.status === "reddedildi"
+                                        ? "bg-absent/20 text-foreground"
+                                        : "bg-secondary text-secondary-foreground"
+                                  }`}
+                                >
+                                  {REG_STATUS_LABEL[r.status] ?? r.status}
+                                </span>
+                                {isAdmin && r.status !== "onaylandi" && (
+                                  <button
+                                    onClick={() =>
+                                      void run(
+                                        updateReg.mutateAsync({ id: r.id, status: "onaylandi" }),
+                                        "Katılım onaylandı.",
+                                      )
+                                    }
+                                    className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground hover:text-primary"
+                                  >
+                                    Onayla
+                                  </button>
+                                )}
+                                {isAdmin && r.status !== "reddedildi" && (
+                                  <button
+                                    onClick={() =>
+                                      void run(
+                                        updateReg.mutateAsync({ id: r.id, status: "reddedildi" }),
+                                        "Katılım reddedildi.",
+                                      )
+                                    }
+                                    className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground hover:text-destructive"
+                                  >
+                                    Reddet
+                                  </button>
+                                )}
+                              </div>
+                            </td>
                             <td className="px-3 py-2.5">
                               <input
                                 type="checkbox"
