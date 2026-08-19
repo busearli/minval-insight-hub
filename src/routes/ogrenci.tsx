@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { StudentSessionBars } from "@/components/SessionAttendanceChart";
 import { ClassMaterials } from "@/components/ClassMaterials";
+import { ProfileSettings } from "@/components/ProfileSettings";
 
 import { HatimBoard } from "@/components/HatimBoard";
 import { EventBoard } from "@/components/EventBoard";
@@ -67,7 +68,8 @@ type TabId =
   | "profil";
 
 function StudentPortalPage() {
-  const { user, profile, loading, signOut } = useAuth();
+  const { user, profile, loading, signOut, refresh } = useAuth();
+  const qc = useQueryClient();
   const { settings } = useSiteSettings();
   useRealtimeSync(!!user);
   const [tab, setTab] = useState<TabId>("genel");
