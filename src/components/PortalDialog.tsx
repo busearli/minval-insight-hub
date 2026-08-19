@@ -267,6 +267,8 @@ export function PortalDialog({
         "Kaydınız tamamlandı. Paneliniz açıldı; sınıf atamanız yapıldığında ders bilgileriniz görünecektir.",
       );
       onOpenChange(false);
+      void navigate({ to: "/ogrenci" });
+
 
     } finally {
       setBusy(false);
