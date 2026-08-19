@@ -99,6 +99,12 @@ export function useLeaveEvent() {
   });
 }
 
+export const REG_STATUS_LABEL: Record<string, string> = {
+  beklemede: "Onay bekliyor",
+  onaylandi: "Onaylandı",
+  reddedildi: "Reddedildi",
+};
+
 export function formatEventDate(value: string | null) {
   if (!value) return "Tarih belirtilmedi";
   const d = new Date(value);

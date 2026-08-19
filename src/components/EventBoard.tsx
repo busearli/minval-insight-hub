@@ -8,6 +8,7 @@ import {
   useEvents,
   useJoinEvent,
   useLeaveEvent,
+  REG_STATUS_LABEL,
 } from "@/lib/events-api";
 
 /** Öğrenci/üye tarafı: açık etkinlikleri listeler, kayıt ol / kaydı iptal et. */
@@ -65,14 +66,22 @@ export function EventBoard({
             <div className="mt-4 flex flex-wrap items-center gap-2">
               {mine ? (
                 <>
-                  <span className="rounded-full bg-primary/10 px-3 py-1 text-[12px] text-primary">
-                    Kaydınız alındı
+                  <span
+                    className={`rounded-full px-3 py-1 text-[12px] ${
+                      mine.status === "onaylandi"
+                        ? "bg-present/20 text-foreground"
+                        : mine.status === "reddedildi"
+                          ? "bg-absent/20 text-foreground"
+                          : "bg-secondary text-secondary-foreground"
+                    }`}
+                  >
+                    {REG_STATUS_LABEL[mine.status] ?? "Katılım isteğiniz alındı"}
                   </span>
                   <button
                     onClick={() => void run(leave.mutateAsync(mine.id), "Kaydınız iptal edildi.")}
                     className="rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:text-destructive"
                   >
-                    Kaydımı İptal Et
+                    İsteğimi Geri Çek
                   </button>
                 </>
               ) : ev.is_open ? (
@@ -97,12 +106,12 @@ export function EventBoard({
                           phone: phone ?? "",
                           notes: note[ev.id] ?? "",
                         }),
-                        "Etkinlik kaydınız alındı.",
+                        "Katılım isteğiniz yöneticiye iletildi.",
                       );
                     }}
                     className="rounded-full bg-primary px-4 py-2 text-[12px] text-primary-foreground"
                   >
-                    Etkinliğe Kayıt Ol
+                    Katılma İsteği Gönder
                   </button>
                 </>
               ) : (
