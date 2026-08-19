@@ -134,14 +134,34 @@ export function useSave(table: TableName) {
 
 export function useUpsert(table: TableName, onConflict: string) {
   const qc = useQueryClient();
+  const key = [keyOf[table]];
   return useMutation({
     mutationFn: async (row: Record<string, unknown>) => {
       const res = await supabase.from(table).upsert(row as never, { onConflict });
       if (res.error) throw new Error(res.error.message);
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: [keyOf[table]] }),
+    // Yoklama gibi hızlı tıklamalarda arayüz anında güncellensin.
+    onMutate: async (row: Record<string, unknown>) => {
+      await qc.cancelQueries({ queryKey: key });
+      const previous = qc.getQueryData<Record<string, unknown>[]>(key);
+      if (previous && table === "attendance_records") {
+        const idx = previous.findIndex(
+          (r) => r["student_id"] === row["student_id"] && r["session_date"] === row["session_date"],
+        );
+        const next = [...previous];
+        if (idx >= 0) next[idx] = { ...next[idx], ...row };
+        else next.push({ id: `temp-${Date.now()}`, ...row });
+        qc.setQueryData(key, next);
+      }
+      return { previous };
+    },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.previous) qc.setQueryData(key, ctx.previous);
+    },
+    onSettled: () => void qc.invalidateQueries({ queryKey: key }),
   });
 }
+
 
 export function useRemove(table: TableName) {
   const qc = useQueryClient();
