@@ -425,6 +425,7 @@ function StudentPortalPage() {
                         homeworkId={h.id}
                         studentId={h.student_id}
                         initial={h.submission_text}
+                        dueDate={h.due_date}
                       />
                     </li>
                   ))}
@@ -596,10 +597,12 @@ function SubmitBox({
   homeworkId,
   studentId,
   initial,
+  dueDate,
 }: {
   homeworkId: string;
   studentId: string;
   initial: string;
+  dueDate?: string | null;
 }) {
   const qc = useQueryClient();
   const [text, setText] = useState(initial);
@@ -617,7 +620,8 @@ function SubmitBox({
         student_id: studentId,
         submission_text: text.trim(),
         submitted_at: new Date().toISOString(),
-        status: "edildi",
+        // Son teslim tarihi geçtiyse eğitmene "geç teslim" olarak düşer.
+        status: dueDate && new Date().toISOString().slice(0, 10) > dueDate ? "gec" : "edildi",
       } as never,
       { onConflict: "homework_id,student_id" },
     );
@@ -626,7 +630,11 @@ function SubmitBox({
       toast.error(error.message);
       return;
     }
-    toast.success("Ödeviniz teslim edildi.");
+    toast.success(
+      dueDate && new Date().toISOString().slice(0, 10) > dueDate
+        ? "Ödeviniz geç teslim olarak kaydedildi."
+        : "Ödeviniz teslim edildi.",
+    );
     void qc.invalidateQueries({ queryKey: ["student-self"] });
   };
 
