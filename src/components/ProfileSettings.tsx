@@ -65,18 +65,42 @@ export function ProfileSettings({
   };
 
   const changePassword = async () => {
+    if (!currentPassword) {
+      toast.error("Önce mevcut şifrenizi giriniz.");
+      return;
+    }
     if (password.length < 6) {
       toast.error("Yeni şifre en az 6 karakter olmalı.");
       return;
     }
+    if (password !== password2) {
+      toast.error("Yeni şifreler birbiriyle eşleşmiyor.");
+      return;
+    }
+    if (password === currentPassword) {
+      toast.error("Yeni şifre mevcut şifrenizden farklı olmalı.");
+      return;
+    }
     setBusy(true);
+    // Mevcut şifre doğrulaması
+    const { error: checkError } = await supabase.auth.signInWithPassword({
+      email,
+      password: currentPassword,
+    });
+    if (checkError) {
+      setBusy(false);
+      toast.error("Mevcut şifreniz hatalı.");
+      return;
+    }
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
     if (error) {
       toast.error("Şifre güncellenemedi.");
       return;
     }
+    setCurrentPassword("");
     setPassword("");
+    setPassword2("");
     toast.success("Şifreniz güncellendi.");
   };
 
