@@ -355,7 +355,7 @@ export function PortalDialog({
             />
             <input
               className={field}
-              placeholder="WhatsApp Telefon Numarası *"
+              placeholder="Telefon Numarası *"
               inputMode="tel"
               maxLength={24}
               value={form.phone}
@@ -418,7 +418,7 @@ export function PortalDialog({
               disabled={busy}
               className="w-full rounded-full bg-primary px-4 py-2.5 text-sm text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
             >
-              {busy ? "Gönderiliyor…" : "Kayıt Talebi Gönder"}
+              {busy ? "Kaydediliyor…" : "Kayıt Ol"}
             </button>
             </form>
           </>

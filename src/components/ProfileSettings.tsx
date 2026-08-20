@@ -28,7 +28,9 @@ export function ProfileSettings({
 }) {
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState(initialPhone);
+  const [currentPassword, setCurrentPassword] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -63,18 +65,42 @@ export function ProfileSettings({
   };
 
   const changePassword = async () => {
+    if (!currentPassword) {
+      toast.error("Önce mevcut şifrenizi giriniz.");
+      return;
+    }
     if (password.length < 6) {
       toast.error("Yeni şifre en az 6 karakter olmalı.");
       return;
     }
+    if (password !== password2) {
+      toast.error("Yeni şifreler birbiriyle eşleşmiyor.");
+      return;
+    }
+    if (password === currentPassword) {
+      toast.error("Yeni şifre mevcut şifrenizden farklı olmalı.");
+      return;
+    }
     setBusy(true);
+    // Mevcut şifre doğrulaması
+    const { error: checkError } = await supabase.auth.signInWithPassword({
+      email,
+      password: currentPassword,
+    });
+    if (checkError) {
+      setBusy(false);
+      toast.error("Mevcut şifreniz hatalı.");
+      return;
+    }
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
     if (error) {
       toast.error("Şifre güncellenemedi.");
       return;
     }
+    setCurrentPassword("");
     setPassword("");
+    setPassword2("");
     toast.success("Şifreniz güncellendi.");
   };
 
@@ -113,10 +139,29 @@ export function ProfileSettings({
         <input
           type={showPass ? "text" : "password"}
           className={field}
+          placeholder="Mevcut şifreniz"
+          maxLength={72}
+          autoComplete="current-password"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+        />
+        <input
+          type={showPass ? "text" : "password"}
+          className={field}
           placeholder="Yeni şifre (en az 6 karakter)"
           maxLength={72}
+          autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+        <input
+          type={showPass ? "text" : "password"}
+          className={field}
+          placeholder="Yeni şifre (tekrar)"
+          maxLength={72}
+          autoComplete="new-password"
+          value={password2}
+          onChange={(e) => setPassword2(e.target.value)}
         />
         <label className="flex cursor-pointer items-center gap-2 text-[12px] text-muted-foreground">
           <input

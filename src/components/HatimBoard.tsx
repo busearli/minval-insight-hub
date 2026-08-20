@@ -68,9 +68,9 @@ export function HatimBoard({
                     key={no}
                     className={`rounded-lg border px-3 py-2 text-[13px] transition-colors ${
                       taken?.completed
-                        ? "border-present bg-present/20"
+                        ? "border-present bg-present/60"
                         : taken
-                          ? "border-primary/40 bg-secondary/60"
+                          ? "border-present/40 bg-present/15"
                           : "border-border bg-card"
                     }`}
 

@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Crown, Repeat, ShieldCheck, UserMinus, UserPlus } from "lucide-react";
+import { Crown, Repeat, Search, ShieldCheck, Trash2, UserMinus, UserPlus } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { deleteUserAccount } from "@/lib/user-admin.functions";
 
 import {
   classLabel,
@@ -50,6 +54,9 @@ function UsersPage() {
   const [pick, setPick] = useState<Record<string, string>>({});
   const [moveTo, setMoveTo] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState<FilterId>("all");
+  const [q, setQ] = useState("");
+  const removeUser = useServerFn(deleteUserAccount);
+  const queryClient = useQueryClient();
 
   const rolesOf = useMemo(
     () => (uid: string) => roles.filter((r) => r.user_id === uid).map((r) => r.role),
@@ -60,8 +67,14 @@ function UsersPage() {
     return <p className="text-sm text-muted-foreground">Bu bölüm yalnızca Ana Yönetici içindir.</p>;
   }
 
+  const needle = q.trim().toLocaleLowerCase("tr");
   const list = profiles.filter((p) => {
     const mine = rolesOf(p.user_id);
+    if (
+      needle &&
+      !`${p.name ?? ""} ${p.phone ?? ""}`.toLocaleLowerCase("tr").includes(needle)
+    )
+      return false;
     if (filter === "admins") return mine.includes("admin") || mine.includes("super_admin");
     if (filter === "instructors") return mine.includes("instructor");
     if (filter === "students")
@@ -81,6 +94,21 @@ function UsersPage() {
     }
   };
 
+  const deleteUser = async (uid: string, name: string) => {
+    if (!window.confirm(`${name || "Bu kullanıcı"} kalıcı olarak silinecek. Onaylıyor musunuz?`)) return;
+    try {
+      const res = await removeUser({ data: { user_id: uid } });
+      if (res.error) {
+        toast.error(res.error);
+        return;
+      }
+      await queryClient.invalidateQueries();
+      toast.success("Kullanıcı silindi.");
+    } catch {
+      toast.error("Kullanıcı silinemedi.");
+    }
+  };
+
   const toggleRole = (uid: string, role: AppRole, has: boolean) =>
     void run(
       has ? revoke.mutateAsync({ user_id: uid, role }) : grant.mutateAsync({ user_id: uid, role }),
@@ -96,6 +124,16 @@ function UsersPage() {
           Kullanıcıları Hoca veya Yönetici yapabilir, eğitmenlere sınıf atayabilir, öğrencilerin
           sınıfını değiştirebilirsiniz.
         </p>
+      </div>
+
+      <div className="relative max-w-sm">
+        <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="İsim veya telefon ile ara…"
+          className="h-10 w-full rounded-full border border-border bg-card pr-4 pl-9 text-sm text-foreground outline-none focus:border-primary"
+        />
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -206,6 +244,14 @@ function UsersPage() {
                   <UserMinus className="h-3.5 w-3.5" />
                   {p.status === "inactive" ? "Hesabı Aktife Al" : "Hesabı Dondur / Pasife Al"}
                 </button>
+                {!mine.includes("super_admin") && (
+                  <button
+                    onClick={() => void deleteUser(p.user_id, p.name)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground hover:border-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" /> Kullanıcıyı Sil
+                  </button>
+                )}
               </div>
 
               {studentRow && (
