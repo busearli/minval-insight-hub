@@ -6,7 +6,6 @@ import {
   CalendarDays,
   GraduationCap,
   Home,
-  Inbox,
   LayoutGrid,
   LayoutTemplate,
   Megaphone,
@@ -15,7 +14,6 @@ import {
   Sparkles,
   Target,
   UserCog,
-  Users,
 
 } from "lucide-react";
 
@@ -28,6 +26,7 @@ import { disableDevAdmin, useDevAdmin } from "@/lib/dev-mode";
 import { useMyRoles, roleLabel } from "@/lib/rbac";
 import { useRealtimeSync } from "@/lib/use-realtime-sync";
 import { useSiteSettings } from "@/lib/site-api";
+import { useEventRegistrations } from "@/lib/events-api";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -79,6 +78,8 @@ function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user, loading, signOut } = useAuth();
   const { isSuperAdmin, isAdmin, isStaff, roles, loading: rolesLoading } = useMyRoles();
+  const { data: eventRegs = [] } = useEventRegistrations(isAdmin);
+  const pendingRegs = eventRegs.filter((r) => r.status === "beklemede").length;
   useRealtimeSync();
   const { settings } = useSiteSettings();
   const [authOpen, setAuthOpen] = useState(false);
@@ -200,6 +201,9 @@ function AdminLayout() {
                 }`}
               >
                 <it.icon className="h-4 w-4" /> {it.label}
+                {it.to === "/admin/etkinlikler" && pendingRegs > 0 && (
+                  <span className="ml-auto inline-flex h-2 w-2 shrink-0 rounded-full bg-destructive" aria-label={`${pendingRegs} bekleyen kayıt`} />
+                )}
               </Link>
             );
           })}
