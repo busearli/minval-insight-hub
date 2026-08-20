@@ -139,10 +139,29 @@ export function ProfileSettings({
         <input
           type={showPass ? "text" : "password"}
           className={field}
+          placeholder="Mevcut şifreniz"
+          maxLength={72}
+          autoComplete="current-password"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+        />
+        <input
+          type={showPass ? "text" : "password"}
+          className={field}
           placeholder="Yeni şifre (en az 6 karakter)"
           maxLength={72}
+          autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+        <input
+          type={showPass ? "text" : "password"}
+          className={field}
+          placeholder="Yeni şifre (tekrar)"
+          maxLength={72}
+          autoComplete="new-password"
+          value={password2}
+          onChange={(e) => setPassword2(e.target.value)}
         />
         <label className="flex cursor-pointer items-center gap-2 text-[12px] text-muted-foreground">
           <input
