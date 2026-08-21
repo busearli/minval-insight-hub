@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, LogIn, Menu, Sparkles, X } from "lucide-react";
 
 import { MinvalMark, ArchPattern } from "@/components/MinvalMark";
@@ -25,8 +25,19 @@ export function SiteHeader() {
   const { user } = useAuth();
   const { isStaff } = useMyRoles();
 
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const showPreRegistration = settings.pre_registration_enabled !== false;
-  const panelTo = isStaff ? "/admin" : "/ogrenci";
+
+  // Çift rollü kullanıcılar için: bulunduğu panelin dışındaki paneli göster.
+  const onAdmin = pathname.startsWith("/admin");
+  const onStudent = pathname.startsWith("/ogrenci");
+  const panel = isStaff
+    ? onAdmin
+      ? { to: "/ogrenci" as const, label: "Öğrenci Panelim" }
+      : { to: "/admin" as const, label: "Eğitmen Panelim" }
+    : onStudent
+      ? null
+      : { to: "/ogrenci" as const, label: "Öğrenci Panelim" };
 
   return (
     <header className="sticky top-0 z-40 overflow-hidden border-b border-border bg-background/90 backdrop-blur">
@@ -59,12 +70,14 @@ export function SiteHeader() {
 
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
           {user ? (
-            <Link
-              to={panelTo}
-              className="hidden items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground transition-colors hover:border-accent hover:text-primary sm:inline-flex"
-            >
-              <LayoutDashboard className="h-3.5 w-3.5" /> Panelim
-            </Link>
+            panel && (
+              <Link
+                to={panel.to}
+                className="hidden items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12px] text-muted-foreground transition-colors hover:border-accent hover:text-primary sm:inline-flex"
+              >
+                <LayoutDashboard className="h-3.5 w-3.5" /> {panel.label}
+              </Link>
+            )
           ) : (
             <button
               onClick={() => setPortal(true)}
@@ -105,9 +118,11 @@ export function SiteHeader() {
               </Link>
             ))}
             {user ? (
-              <Link to={panelTo} onClick={() => setOpen(false)} className="text-sm text-muted-foreground">
-                Panelim
-              </Link>
+              panel && (
+                <Link to={panel.to} onClick={() => setOpen(false)} className="text-sm text-muted-foreground">
+                  {panel.label}
+                </Link>
+              )
             ) : (
               <button
                 onClick={() => {

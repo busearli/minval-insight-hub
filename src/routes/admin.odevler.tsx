@@ -120,6 +120,15 @@ function HomeworkPage() {
     return { total: roster.length, done, late, pending: roster.length - done - late };
   }, [active, roster, submissions]);
 
+  /** Sadece teslim eden öğrenciler listelenir. */
+  const submittedRoster = useMemo(() => {
+    if (!active) return [];
+    return roster.filter((s) => {
+      const sub = subOf(s.id);
+      return Boolean(sub?.submitted_at) || sub?.status === "edildi" || sub?.status === "gec";
+    });
+  }, [active, roster, submissions]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -283,11 +292,32 @@ function HomeworkPage() {
                 </div>
               )}
 
+              {stats && stats.total > 0 && (
+                <div className="mt-3 space-y-1.5">
+                  <div className="flex h-2.5 overflow-hidden rounded-full bg-secondary">
+                    <div
+                      className="h-full bg-present"
+                      style={{ width: `${(stats.done / stats.total) * 100}%` }}
+                    />
+                    <div
+                      className="h-full bg-accent"
+                      style={{ width: `${(stats.late / stats.total) * 100}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {stats.done + stats.late}/{stats.total} öğrenci teslim etti
+                  </p>
+                </div>
+              )}
+
               <div className="mt-6 space-y-5">
                 {roster.length === 0 && (
                   <p className="text-sm text-muted-foreground">Bu sınıfta öğrenci yok.</p>
                 )}
-                {roster.map((s) => {
+                {roster.length > 0 && submittedRoster.length === 0 && (
+                  <p className="text-sm text-muted-foreground">Henüz teslim eden öğrenci yok.</p>
+                )}
+                {submittedRoster.map((s) => {
                   const sub = subOf(s.id);
                   const pct =
                     active.task_type === "sayfa" && active.target_pages
