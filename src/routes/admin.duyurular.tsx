@@ -15,13 +15,18 @@ export const Route = createFileRoute("/admin/duyurular")({
 });
 
 function AnnouncementsPage() {
-  const { isAdmin } = useMyRoles();
-  const { data: classes = [] } = useClasses();
-  const { data: list = [], isLoading } = useAnnouncements();
+  const { isAdmin, isInstructor, isStaff, myClassIds } = useMyRoles();
+  const { data: allClasses = [] } = useClasses();
+  const classes = isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id));
+  const { data: allList = [], isLoading } = useAnnouncements();
   const save = useSaveAnnouncement();
   const remove = useDeleteAnnouncement();
   const { settings } = useSiteSettings();
   const saveSettings = useSaveSettings();
+
+  const list = isAdmin
+    ? allList
+    : allList.filter((a) => a.class_id && myClassIds.includes(a.class_id));
 
   const [form, setForm] = useState({ title: "", body: "", class_id: "" });
   const [contact, setContact] = useState<Record<string, string> | null>(null);
@@ -35,14 +40,18 @@ function AnnouncementsPage() {
   };
   const setC = (k: string, v: string) => setContact({ ...c, [k]: v });
 
-  if (!isAdmin) {
-    return <p className="text-sm text-muted-foreground">Bu bölüm yalnızca yöneticiler içindir.</p>;
+  if (!isStaff) {
+    return <p className="text-sm text-muted-foreground">Bu bölüm yalnızca yönetici ve eğitmenler içindir.</p>;
   }
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) {
       toast.error("Duyuru başlığı giriniz.");
+      return;
+    }
+    if (!isAdmin && !form.class_id) {
+      toast.error("Lütfen duyuruyu göndereceğiniz sınıfı seçiniz.");
       return;
     }
     save.mutate(
@@ -72,7 +81,9 @@ function AnnouncementsPage() {
     <div className="space-y-6">
       <div>
         <p className="eyebrow">İçerik Yönetimi</p>
-        <h1 className="mt-2 text-2xl text-foreground">Duyurular & Site İçeriği</h1>
+        <h1 className="mt-2 text-2xl text-foreground">
+          {isAdmin ? "Duyurular & Site İçeriği" : "Sınıf Duyurularım"}
+        </h1>
       </div>
 
       <form onSubmit={submit} className="card-soft grid gap-3 border-accent/40 p-6 sm:grid-cols-2">
@@ -86,7 +97,7 @@ function AnnouncementsPage() {
           onChange={(e) => setForm((f) => ({ ...f, class_id: e.target.value }))}
           className="h-9 rounded-md border border-input bg-card px-3 text-sm text-foreground"
         >
-          <option value="">Tüm öğrenciler</option>
+          <option value="">{isAdmin ? "Tüm öğrenciler" : "Sınıf seçiniz"}</option>
           {classes.map((cl) => (
             <option key={cl.id} value={cl.id}>
               {classLabel(cl)}
@@ -137,6 +148,7 @@ function AnnouncementsPage() {
         })}
       </div>
 
+      {isAdmin && (
       <form onSubmit={saveContact} className="card-soft grid gap-3 border-accent/40 p-6 sm:grid-cols-2">
         <h2 className="text-lg text-foreground sm:col-span-2">Site İletişim Bilgileri</h2>
         <Input placeholder="WhatsApp numarası" value={c["whatsapp_number"] ?? ""} onChange={(e) => setC("whatsapp_number", e.target.value)} />
@@ -152,6 +164,7 @@ function AnnouncementsPage() {
           Bilgileri Kaydet
         </button>
       </form>
+      )}
     </div>
   );
 }
