@@ -137,9 +137,15 @@ function AdminLayout() {
     return true;
   });
 
-  const myRoleLabel = roles.length
-    ? roleLabel[roles.includes("super_admin") ? "super_admin" : roles.includes("admin") ? "admin" : roles[0]!]
-    : "";
+  // Panelde her zaman en yetkili rol gösterilir (öğrenci rolü burada gösterilmez).
+  const myRoleLabel = roles.includes("super_admin")
+    ? roleLabel.super_admin
+    : roles.includes("admin")
+      ? roleLabel.admin
+      : roles.includes("instructor")
+        ? roleLabel.instructor
+        : "";
+
 
   return (
     <div className="min-h-screen bg-background">
