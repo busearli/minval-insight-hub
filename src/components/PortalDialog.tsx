@@ -4,10 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, Shield, User, GraduationCap, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Shield, GraduationCap, Lock, Mail } from "lucide-react";
 
 interface PortalDialogProps {
   open: boolean;
@@ -21,17 +21,12 @@ export function PortalDialog({ open, onOpenChange, defaultTab = "staff" }: Porta
   const [staffPassword, setStaffPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isStaffSubmitting, setIsStaffSubmitting] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleStaffLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!staffEmail || !staffPassword) {
-      toast({
-        title: "Eksik Bilgi",
-        description: "Lütfen e-posta ve şifrenizi girin.",
-        variant: "destructive",
-      });
+      toast.error("Lütfen e-posta ve şifrenizi girin.");
       return;
     }
 
@@ -60,11 +55,7 @@ export function PortalDialog({ open, onOpenChange, defaultTab = "staff" }: Porta
 
       const userRole = roleData?.role || profileData?.role;
 
-      toast({
-        title: "Giriş Başarılı",
-        description: "Yönlendiriliyorsunuz...",
-      });
-
+      toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
       onOpenChange(false);
 
       if (userRole === "super_admin" || userRole === "admin") {
@@ -74,11 +65,7 @@ export function PortalDialog({ open, onOpenChange, defaultTab = "staff" }: Porta
       }
     } catch (err: any) {
       console.error("Giriş Hatası:", err);
-      toast({
-        title: "Giriş Başarısız",
-        description: err.message || "E-posta veya şifre hatalı.",
-        variant: "destructive",
-      });
+      toast.error(err.message || "E-posta veya şifre hatalı.");
     } finally {
       setIsStaffSubmitting(false);
     }
