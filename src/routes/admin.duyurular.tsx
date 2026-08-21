@@ -15,7 +15,7 @@ export const Route = createFileRoute("/admin/duyurular")({
 });
 
 function AnnouncementsPage() {
-  const { isAdmin, isInstructor, isStaff, myClassIds } = useMyRoles();
+  const { isAdmin, isStaff, myClassIds } = useMyRoles();
   const { data: allClasses = [] } = useClasses();
   const classes = isAdmin ? allClasses : allClasses.filter((c) => myClassIds.includes(c.id));
   const { data: allList = [], isLoading } = useAnnouncements();
