@@ -68,7 +68,7 @@ const items: NavItem[] = [
   { to: "/admin/etkinlikler", label: "Etkinlik & Kayıtlar", icon: CalendarDays, adminOnly: true },
   { to: "/admin/anasayfa", label: "Ana Sayfa İçeriği", icon: LayoutTemplate, adminOnly: true },
   { to: "/admin/programlar", label: "Program & Takvim", icon: LayoutGrid, adminOnly: true },
-  { to: "/admin/duyurular", label: "Duyurular & İçerik", icon: Megaphone, adminOnly: true },
+  { to: "/admin/duyurular", label: "Duyurular", icon: Megaphone },
   { to: "/admin/ayarlar", label: "Site Ayarları", icon: Settings, adminOnly: true },
   { to: "/admin/profil", label: "Bilgilerim", icon: UserCog },
 
