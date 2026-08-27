@@ -253,7 +253,7 @@ export function PortalDialog({
               <div className="space-y-2">
                 <Input
                   type="email"
-                  placeholder="buseaarli@gmail.com"
+                 placeholder="E-mail gir"
                   value={studentEmail}
                   onChange={(e) => setStudentEmail(e.target.value)}
                   className="rounded-xl py-5"
@@ -264,7 +264,7 @@ export function PortalDialog({
                 <div className="relative">
                   <Input
                     type={showStudentPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder="Şifre gir"
                     value={studentPassword}
                     onChange={(e) => setStudentPassword(e.target.value)}
                     className="rounded-xl py-5 pr-10"
@@ -299,7 +299,7 @@ export function PortalDialog({
               <div className="space-y-2">
                 <Input
                   type="email"
-                  placeholder="buseaarli@gmail.com"
+                  placeholder="E-mail gir"
                   value={staffEmail}
                   onChange={(e) => setStaffEmail(e.target.value)}
                   className="rounded-xl py-5"
@@ -310,7 +310,7 @@ export function PortalDialog({
                 <div className="relative">
                   <Input
                     type={showStaffPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                  placeholder="Şifre gir"
                     value={staffPassword}
                     onChange={(e) => setStaffPassword(e.target.value)}
                     className="rounded-xl py-5 pr-10"
