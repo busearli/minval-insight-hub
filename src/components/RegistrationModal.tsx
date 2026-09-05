@@ -12,5 +12,5 @@ export function RegistrationModal({
   onOpenChange: (v: boolean) => void;
   defaultProgramId?: string;
 }) {
-  return <PortalDialog open={open} onOpenChange={onOpenChange} defaultTab="signup" />;
+  return <PortalDialog open={open} onOpenChange={onOpenChange} defaultTab="register" />;
 }
