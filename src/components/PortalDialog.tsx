@@ -411,6 +411,49 @@ export function PortalDialog({
                 className="rounded-xl py-5"
                 required
               />
+
+              {classFieldEnabled && (
+                <div className="rounded-xl border border-border overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setClassPanelOpen((v) => !v)}
+                    className="flex w-full items-center justify-between px-4 py-3 text-sm text-foreground"
+                  >
+                    <span className="flex items-center gap-2">
+                      <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                      {settings.signup_class_label || "Katılmak istediğiniz sınıf"}
+                      {regClassId && (
+                        <span className="text-xs text-muted-foreground">(seçildi)</span>
+                      )}
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${classPanelOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {classPanelOpen && (
+                    <div className="space-y-2 border-t border-border px-4 py-3">
+                      <select
+                        value={regClassId}
+                        onChange={(e) => setRegClassId(e.target.value)}
+                        className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary"
+                      >
+                        <option value="">Seçim yapmadan devam et</option>
+                        {publicClasses.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {publicClassLabel(c)}
+                            {c.schedule ? ` · ${c.schedule}` : ""}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-[11px] leading-relaxed text-muted-foreground">
+                        Seçiminiz bir taleptir; sınıf ataması yönetici veya hocanız tarafından
+                        onaylanır.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <Button
                 type="submit"
                 className="w-full bg-[#4a5d3f] hover:bg-[#3d4d34] text-white rounded-full py-5 mt-2"
