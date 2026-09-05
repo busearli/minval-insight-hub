@@ -202,6 +202,7 @@ export function PortalDialog({
           data: {
             name: regName,
             phone: regPhone,
+            requested_class_id: classFieldEnabled ? regClassId : "",
           },
         },
       });
