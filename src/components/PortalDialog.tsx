@@ -23,7 +23,10 @@ import {
   Lock,
   Mail,
   UserPlus,
+  ChevronDown,
 } from "lucide-react";
+import { usePublicClasses, publicClassLabel } from "@/lib/classes-public";
+import { useSiteSettings } from "@/lib/site-api";
 
 interface PortalDialogProps {
   open: boolean;
