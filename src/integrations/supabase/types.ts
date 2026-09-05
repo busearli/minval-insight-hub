@@ -900,6 +900,8 @@ export type Database = {
           schedule_eyebrow: string
           schedule_heading: string
           schedule_section_enabled: boolean
+          signup_class_enabled: boolean
+          signup_class_label: string
           signup_event_enabled: boolean
           signup_event_label: string
           signup_event_options_json: Json
@@ -948,6 +950,8 @@ export type Database = {
           schedule_eyebrow?: string
           schedule_heading?: string
           schedule_section_enabled?: boolean
+          signup_class_enabled?: boolean
+          signup_class_label?: string
           signup_event_enabled?: boolean
           signup_event_label?: string
           signup_event_options_json?: Json
@@ -996,6 +1000,8 @@ export type Database = {
           schedule_eyebrow?: string
           schedule_heading?: string
           schedule_section_enabled?: boolean
+          signup_class_enabled?: boolean
+          signup_class_label?: string
           signup_event_enabled?: boolean
           signup_event_label?: string
           signup_event_options_json?: Json
