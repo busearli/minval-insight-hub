@@ -61,6 +61,12 @@ export function PortalDialog({
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
+  const [regClassId, setRegClassId] = useState("");
+  const [classPanelOpen, setClassPanelOpen] = useState(false);
+
+  const { settings } = useSiteSettings();
+  const { data: publicClasses = [] } = usePublicClasses();
+  const classFieldEnabled = settings.signup_class_enabled !== false;
 
   const navigate = useNavigate();
 
