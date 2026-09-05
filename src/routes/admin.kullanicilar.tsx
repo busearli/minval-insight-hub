@@ -183,6 +183,11 @@ function UsersPage() {
                       Sınıfı: {currentClass ? classLabel(currentClass) : "Atanmadı"}
                     </p>
                   )}
+                  {requestedClass && (
+                    <p className="mt-1 text-[12px] text-primary">
+                      İstediği sınıf: {classLabel(requestedClass)}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {mine.length === 0 && (
