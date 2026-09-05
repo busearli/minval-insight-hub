@@ -164,6 +164,7 @@ function UsersPage() {
           const isInstructor = mine.includes("instructor");
           const studentRow = students.find((s) => s.user_id === p.user_id);
           const currentClass = classes.find((c) => c.id === studentRow?.class_id);
+          const requestedClass = classes.find((c) => c.id === p.requested_class_id);
           return (
             <div key={p.user_id} className="card-soft border-accent/40 p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -180,6 +181,11 @@ function UsersPage() {
                   {studentRow && (
                     <p className="mt-1 text-[12px] text-muted-foreground">
                       Sınıfı: {currentClass ? classLabel(currentClass) : "Atanmadı"}
+                    </p>
+                  )}
+                  {requestedClass && (
+                    <p className="mt-1 text-[12px] text-primary">
+                      İstediği sınıf: {classLabel(requestedClass)}
                     </p>
                   )}
                 </div>

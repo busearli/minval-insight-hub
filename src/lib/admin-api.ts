@@ -187,7 +187,9 @@ export function useProfiles() {
   return useQuery({
     queryKey: ["profiles"],
     queryFn: async () =>
-      throwIf(await supabase.from("profiles").select("*").order("created_at")) as ProfileRow[],
+      throwIf(
+        await supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+      ) as ProfileRow[],
   });
 }
 
