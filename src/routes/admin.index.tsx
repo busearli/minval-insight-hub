@@ -188,6 +188,12 @@ function ReportsPage() {
             onChange={(v) => toggleModule({ pre_registration_enabled: v })}
           />
           <Toggle
+            label="Kayıtta Sınıf Seçimi"
+            description="Kayıt formundaki açılır “katılmak istediğiniz sınıf” alanını gösterir veya gizler."
+            checked={settings.signup_class_enabled !== false}
+            onChange={(v) => toggleModule({ signup_class_enabled: v })}
+          />
+          <Toggle
             label="Cüz Takip Modülü"
             description="Cüz ve ezber takip ekranlarını panelde ve öğrenci portalında gösterir."
             checked={!!settings.cuz_tracking_enabled}

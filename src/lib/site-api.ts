@@ -62,6 +62,8 @@ export const defaultSettings: SiteSettings = {
   signup_event_enabled: false,
   signup_event_label: "Katılmak istediğiniz etkinlik",
   signup_event_options_json: [],
+  signup_class_enabled: true,
+  signup_class_label: "Katılmak istediğiniz sınıf",
 };
 
 export type PrincipleItem = { title: string; text: string };
