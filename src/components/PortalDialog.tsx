@@ -81,6 +81,8 @@ export function PortalDialog({
     setRegPhone("");
     setRegPassword("");
     setRegConfirmPassword("");
+    setRegClassId("");
+    setClassPanelOpen(false);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
